@@ -134,6 +134,8 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.google.flexbox)
 
+    implementation(libs.bcprov.jdk18on)
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
