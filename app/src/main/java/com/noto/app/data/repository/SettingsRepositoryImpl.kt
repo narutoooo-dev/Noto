@@ -14,6 +14,7 @@ import com.noto.app.domain.model.ScreenBrightnessLevel
 import com.noto.app.domain.model.SettingsConfig
 import com.noto.app.domain.model.SortingOrder
 import com.noto.app.domain.model.Theme
+import com.noto.app.domain.model.UserStatus
 import com.noto.app.domain.model.VaultTimeout
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.filtered.FilteredItemModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
 class SettingsRepositoryImpl(
@@ -166,6 +168,35 @@ class SettingsRepositoryImpl(
     override val previewAutoScroll: Flow<Boolean> = storage.data
         .map { preferences -> preferences[SettingsKeys.PreviewAutoScroll] }
         .map { it ?: true }
+        .flowOn(dispatcher)
+
+    override val accessToken: Flow<String?> = storage.data
+        .map { preferences -> preferences[SettingsKeys.AccessToken] }
+        .flowOn(dispatcher)
+
+    override val refreshToken: Flow<String?> = storage.data
+        .map { preferences -> preferences[SettingsKeys.RefreshToken] }
+        .flowOn(dispatcher)
+
+    override val id: Flow<String> = storage.data
+        .mapNotNull { preferences -> preferences[SettingsKeys.Id] }
+        .flowOn(dispatcher)
+
+    override val name: Flow<String> = storage.data
+        .mapNotNull { preferences -> preferences[SettingsKeys.Name] }
+        .flowOn(dispatcher)
+
+    override val email: Flow<String> = storage.data
+        .mapNotNull { preferences -> preferences[SettingsKeys.Email] }
+        .flowOn(dispatcher)
+
+    override val passwordParameters: Flow<String> = storage.data
+        .mapNotNull { preferences -> preferences[SettingsKeys.PasswordParameters] }
+        .flowOn(dispatcher)
+
+    override val userStatus: Flow<UserStatus> = storage.data
+        .map { preferences -> preferences[SettingsKeys.UserStatus] }
+        .map { if (it != null) UserStatus.valueOf(it) else UserStatus.NotLoggedIn }
         .flowOn(dispatcher)
 
     override fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int> = storage.data
@@ -482,6 +513,56 @@ class SettingsRepositoryImpl(
     override suspend fun updatePreviewAutoScroll(isEnabled: Boolean) {
         withContext(dispatcher) {
             storage.edit { preferences -> preferences[SettingsKeys.PreviewAutoScroll] = isEnabled }
+        }
+    }
+
+    override suspend fun updateAccessToken(accessToken: String) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.AccessToken] = accessToken }
+        }
+    }
+
+    override suspend fun updateRefreshToken(refreshToken: String) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.RefreshToken] = refreshToken }
+        }
+    }
+
+    override suspend fun updateId(id: String) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.Id] = id }
+        }
+    }
+
+    override suspend fun updateName(name: String) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.Name] = name }
+        }
+    }
+
+    override suspend fun updateEmail(email: String) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.Email] = email }
+        }
+    }
+
+    override suspend fun updatePasswordParameters(parameters: String) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.PasswordParameters] = parameters }
+        }
+    }
+
+    override suspend fun updateUserStatus(userStatus: UserStatus) {
+        withContext(dispatcher) {
+            storage.edit { preferences -> preferences[SettingsKeys.UserStatus] = userStatus.toString() }
+        }
+    }
+
+    override suspend fun clearPasswordParameters() {
+        withContext(dispatcher) {
+            storage.edit { preferences ->
+                preferences.remove(SettingsKeys.PasswordParameters)
+            }
         }
     }
 

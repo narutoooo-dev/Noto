@@ -54,6 +54,20 @@ interface SettingsRepository {
 
     val previewAutoScroll: Flow<Boolean>
 
+    val accessToken: Flow<String?>
+
+    val refreshToken: Flow<String?>
+
+    val id: Flow<String>
+
+    val name: Flow<String>
+
+    val email: Flow<String>
+
+    val passwordParameters: Flow<String>
+
+    val userStatus: Flow<UserStatus>
+
     fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int>
 
     fun getWidgetFolderId(widgetId: Int): Flow<Long>
@@ -145,5 +159,21 @@ interface SettingsRepository {
     suspend fun updateContinuousSearch(isEnabled: Boolean)
 
     suspend fun updatePreviewAutoScroll(isEnabled: Boolean)
+
+    suspend fun updateAccessToken(accessToken: String)
+
+    suspend fun updateRefreshToken(refreshToken: String)
+
+    suspend fun updateId(id: String)
+
+    suspend fun updateName(name: String)
+
+    suspend fun updateEmail(email: String)
+
+    suspend fun updatePasswordParameters(parameters: String)
+
+    suspend fun updateUserStatus(userStatus: UserStatus)
+
+    suspend fun clearPasswordParameters()
 
 }

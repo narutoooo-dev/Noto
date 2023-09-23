@@ -32,6 +32,8 @@ androidx-databinding = "8.1.0"
 
 android-tools-desugar-jdk-libs = "2.0.3"
 
+ktor-client = "2.3.4"
+
 timber = "5.0.1"
 
 androidx-core = "1.10.1"
@@ -125,6 +127,18 @@ androidx-navigation-testing = { group = "androidx.navigation", name = "navigatio
 androidx-viewbinding = { group = "androidx.databinding", name = "viewbinding", version.ref = "androidx-databinding" }
 
 android-tools-desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-tools-desugar-jdk-libs" }
+
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor-client" }
+
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-client" }
+
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor-client" }
+
+ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor-client" }
+
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor-client" }
+
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-client" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
