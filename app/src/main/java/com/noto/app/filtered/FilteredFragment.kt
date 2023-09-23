@@ -420,6 +420,8 @@ class FilteredFragment : Fragment() {
                     }
                 }
             }
+
+            else -> {}
         }
     }
 
@@ -543,6 +545,8 @@ class FilteredFragment : Fragment() {
                     }
                 }
             }
+
+            else -> {}
         }
     }
 

@@ -563,6 +563,8 @@ class FolderFragment : Fragment() {
                     }
                 }
             }
+
+            else -> {}
         }
     }
 

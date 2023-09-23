@@ -202,6 +202,8 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
                     }
                 }
             }
+
+            else -> {}
         }
     }
 }
