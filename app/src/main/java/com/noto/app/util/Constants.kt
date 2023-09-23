@@ -49,6 +49,13 @@ object Constants {
     const val Host = "noto.dev"
     const val ApiKey = "apikey"
 
+    const val NameMaxLength = 32
+
+    object Regex {
+        val Email = Regex(".+@.+\\..+")
+        val Password = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#^])[A-Za-z\\d@$!%*?&#^]{8,}$")
+    }
+
     object Intent {
         const val ActionCreateFolder = "com.noto.intent.action.CREATE_FOLDER"
         const val ActionCreateNote = "com.noto.intent.action.CREATE_NOTE"
