@@ -815,4 +815,15 @@
         android:id="@+id/verifyEmailDialogFragment"
         android:name="com.noto.app.login.VerifyEmailDialogFragment"
         android:label="VerifyEmailDialogFragment" />
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.noto.app.StartFragment"
+        android:label="StartFragment" >
+        <action
+            android:id="@+id/action_startFragment_to_getStartedFragment"
+            app:destination="@id/getStartedFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 </navigation>
