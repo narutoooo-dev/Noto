@@ -36,6 +36,10 @@ class LabelRepositoryImpl(
         dataSource.deleteLabel(label)
     }
 
+    override suspend fun clearLabels() = withContext(dispatcher) {
+        dataSource.clearLabels()
+    }
+
     private suspend fun getLabelPosition(folderId: Long) = withContext(dispatcher) {
         dataSource.getLabelsByFolderId(folderId)
             .filterNotNull()

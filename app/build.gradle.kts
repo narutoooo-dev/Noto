@@ -8,6 +8,10 @@ plugins {
     alias(libs.plugins.google.ksp)
 }
 
+val properties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
+}
+
 kotlin {
     jvmToolchain(App.JdkVersion)
 }
@@ -59,6 +63,7 @@ android {
             versionNameSuffix = "-debug"
             applicationIdSuffix = ".debug"
             isDebuggable = true
+            buildConfigField("String", "SupabaseApiKey", properties["supabase.apikey"] as String)
         }
 
         create("release-candidate") {
@@ -88,6 +93,7 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 
     compileOptions {

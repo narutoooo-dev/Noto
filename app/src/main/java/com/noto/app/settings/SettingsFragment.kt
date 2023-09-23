@@ -15,6 +15,8 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.Screen
 import com.noto.app.components.TelegramBanner
+import com.noto.app.domain.model.UserStatus
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.Constants
 import com.noto.app.util.navController
@@ -87,7 +90,21 @@ class SettingsFragment : Fragment() {
 
     @Composable
     private fun MainSection(modifier: Modifier = Modifier) {
+        val userStatus by viewModel.userStatus.collectAsState()
+
         SettingsSection(modifier) {
+            SettingsItem(
+                title = stringResource(id = R.string.account),
+                type = SettingsItemType.None,
+                onClick = {
+                    when (userStatus) {
+                        UserStatus.None, UserStatus.NotLoggedIn -> navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToRegisterFragment())
+                        UserStatus.LoggedIn -> navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToAccountSettingsFragment())
+                    }
+                },
+                painter = painterResource(id = R.drawable.ic_round_account_24),
+            )
+
             SettingsItem(
                 title = stringResource(id = R.string.general),
                 type = SettingsItemType.None,

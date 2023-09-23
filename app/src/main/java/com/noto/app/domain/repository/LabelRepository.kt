@@ -16,4 +16,7 @@ interface LabelRepository {
     suspend fun updateLabel(label: Label)
 
     suspend fun deleteLabel(label: Label)
+
+    suspend fun clearLabels()
+
 }

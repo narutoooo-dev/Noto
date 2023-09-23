@@ -25,4 +25,9 @@ class NoteLabelRepositoryImpl(
     override suspend fun deleteNoteLabel(noteId: Long, labelId: Long) = withContext(dispatcher) {
         source.deleteNoteLabel(noteId, labelId)
     }
+
+    override suspend fun clearNoteLabels() = withContext(dispatcher) {
+        source.clearNoteLabels()
+    }
+
 }

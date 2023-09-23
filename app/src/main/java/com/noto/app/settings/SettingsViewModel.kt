@@ -2,8 +2,11 @@ package com.noto.app.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.noto.app.UiState
+import com.noto.app.components.TextFieldStatus
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.*
+import com.noto.app.toUiState
 import com.noto.app.util.NotoDefaultJson
 import com.noto.app.util.hash
 import com.noto.app.util.isGeneral
@@ -14,12 +17,20 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 
 class SettingsViewModel(
+    private val userRepository: UserRepository,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
     private val noteLabelRepository: NoteLabelRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+
+    val userState = userRepository.user
+        .map { it.toUiState() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UiState.Loading)
+
+    val userStatus = settingsRepository.userStatus
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.NotLoggedIn)
 
     val theme = settingsRepository.theme
         .stateIn(viewModelScope, SharingStarted.Lazily, Theme.System)
@@ -74,6 +85,24 @@ class SettingsViewModel(
 
     val previewAutoScroll = settingsRepository.previewAutoScroll
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    private val mutableName = MutableStateFlow("")
+    val name get() = mutableName.asStateFlow()
+
+    private val mutableNameStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
+    val nameStatus get() = mutableNameStatus.asStateFlow()
+
+    private val mutableNameState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
+    val nameState get() = mutableNameState.asStateFlow()
+
+    private val mutableEmail = MutableStateFlow("")
+    val email get() = mutableEmail.asStateFlow()
+
+    private val mutableEmailStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
+    val emailStatus get() = mutableEmailStatus.asStateFlow()
+
+    private val mutableEmailState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
+    val emailState get() = mutableEmailState.asStateFlow()
 
     fun toggleShowNotesCount() = viewModelScope.launch {
         settingsRepository.updateIsShowNotesCount(!isShowNotesCount.value)
@@ -214,4 +243,43 @@ class SettingsViewModel(
         settingsRepository.updateIsVaultOpen(isOpen = false)
     }
 
+    fun setName(name: String) {
+        mutableName.value = name
+    }
+
+    fun setNameStatus(status: TextFieldStatus) {
+        mutableNameStatus.value = status
+    }
+
+    fun updateName() = viewModelScope.launch {
+        mutableNameState.value = UiState.Loading
+        mutableNameState.value = userRepository.updateName(name.value.trim()).toUiState()
+    }
+
+    fun setEmail(email: String) {
+        mutableEmail.value = email
+    }
+
+    fun setEmailStatus(status: TextFieldStatus) {
+        mutableEmailStatus.value = status
+    }
+
+    fun updateEmail() = viewModelScope.launch {
+        mutableEmailState.value = UiState.Loading
+        mutableEmailState.value = userRepository.updateEmail(email.value.trim()).toUiState()
+    }
+
+    fun logOutUser() = viewModelScope.launch {
+        userRepository.logOutUser()
+        folderRepository.clearFolders()
+        noteRepository.clearNotes()
+        labelRepository.clearLabels()
+        noteLabelRepository.clearNoteLabels()
+        settingsRepository.clearSettings()
+    }
+
+    fun deleteUser() = viewModelScope.launch {
+        logOutUser().join()
+        userRepository.deleteUser()
+    }
 }

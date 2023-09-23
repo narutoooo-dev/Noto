@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
@@ -59,6 +60,10 @@ class AppActivity : BaseActivity() {
         viewModel.setNotificationPermissionResult(isGranted)
     }
 
+    private val currentFragment
+        get() = navHostFragment.parentFragmentManager.fragments
+            .firstOrNull { it != null && it.isVisible }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (appViewModel.currentTheme == null) return
@@ -81,36 +86,47 @@ class AppActivity : BaseActivity() {
     }
 
     private fun setupNavigation() {
-        if (intent?.action !in AppIntents) { // Default action (i.e. opening the app from the home screen.)
-            when (val interfaceId = viewModel.mainInterfaceId.value) { // Set the start destination according to user preference.
-                in FilteredItemModel.Ids -> {
-                    val model = FilteredItemModel.entries.first { it.id == interfaceId }
-                    val args = bundleOf(Constants.Model to model)
-                    inflateGraphAndSetStartDestination(R.id.filteredFragment, args)
-                }
+        viewModel.userStatus
+            .onEach { userStatus ->
+                when (userStatus) {
+                    UserStatus.None, UserStatus.LoggedIn -> {
+                        if (intent?.action !in AppIntents) { // Default action (i.e. opening the app from the home screen.)
+                            when (val interfaceId = viewModel.mainInterfaceId.value) { // Set the start destination according to user preference.
+                                in FilteredItemModel.Ids -> {
+                                    val model = FilteredItemModel.entries.first { it.id == interfaceId }
+                                    val args = bundleOf(Constants.Model to model)
+                                    inflateGraphAndSetStartDestination(R.id.filteredFragment, args)
+                                }
 
-                AllFoldersId -> { // MainFragment + General folder
-                    val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
-                    inflateGraphAndSetStartDestination(R.id.folderFragment, args)
-                    if (navController.currentDestination?.id != R.id.mainFragment && viewModel.shouldNavigateToMainFragment) {
-                        navController.navigateSafely(NavGraphDirections.actionGlobalMainFragment())
-                        viewModel.setShouldNavigateToMainFragment(false)
+                                AllFoldersId -> { // MainFragment + General folder
+                                    val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
+                                    inflateGraphAndSetStartDestination(R.id.folderFragment, args)
+                                    if (navController.currentDestination?.id != R.id.mainFragment && viewModel.shouldNavigateToMainFragment) {
+                                        navController.navigateSafely(NavGraphDirections.actionGlobalMainFragment())
+                                        viewModel.setShouldNavigateToMainFragment(false)
+                                    }
+                                }
+
+                                else -> { // Custom folder
+                                    val args = bundleOf(Constants.FolderId to interfaceId)
+                                    inflateGraphAndSetStartDestination(R.id.folderFragment, args)
+                                }
+                            }
+                        } else { // Custom action (i.e. opening the app from a shortcut, notification, or another app)
+                            val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
+                            inflateGraphAndSetStartDestination(R.id.folderFragment, args) // Set the start destination to the General folder.
+                        }
                     }
-                }
-
-                else -> { // Custom folder
-                    val args = bundleOf(Constants.FolderId to interfaceId)
-                    inflateGraphAndSetStartDestination(R.id.folderFragment, args)
+                    UserStatus.NotLoggedIn -> inflateGraphAndSetStartDestination(R.id.startFragment)
                 }
             }
-        } else { // Custom action (i.e. opening the app from a shortcut, notification, or another app)
-            val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
-            inflateGraphAndSetStartDestination(R.id.folderFragment, args) // Set the start destination to the General folder.
-        }
+            .launchIn(lifecycleScope)
     }
 
     private fun handleIntentContent() {
         when (intent?.action) {
+            Intent.ACTION_VIEW -> handleActionViewIntent(intent)
+
             Intent.ACTION_SEND -> {
                 val content = intent.getStringExtra(Intent.EXTRA_TEXT)
                 showSelectFolderDialog(content)
@@ -178,6 +194,22 @@ class AppActivity : BaseActivity() {
         }
         /** Set [intent] to null, so that the code above doesn't run again after a configuration change.*/
         intent = null
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == Intent.ACTION_VIEW) handleActionViewIntent(intent)
+    }
+
+    private fun handleActionViewIntent(intent: Intent) {
+        viewModel.handleIntentUri(
+            uri = intent.data ?: Uri.EMPTY,
+            onResult = { stringId ->
+                if (navController.currentDestination?.id == R.id.verifyEmailDialogFragment) navController.navigateUp()
+                if (navController.currentDestination?.id == R.id.changeEmailDialogFragment) navController.navigateUp()
+                if (stringId != null) currentFragment?.view?.snackbar(stringResource(stringId))
+            },
+        )
     }
 
     private fun showSelectFolderDialog(content: String?) {

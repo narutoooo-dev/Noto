@@ -566,5 +566,11 @@ class SettingsRepositoryImpl(
         }
     }
 
+    override suspend fun clearSettings() {
+        withContext(dispatcher) {
+            storage.edit { it.clear() }
+        }
+    }
+
     private fun String.toLongList() = split(", ").mapNotNull { it.toLongOrNull() }
 }

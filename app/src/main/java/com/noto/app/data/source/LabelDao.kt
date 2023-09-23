@@ -25,4 +25,8 @@ interface LabelDao : LocalLabelDataSource {
 
     @Delete
     override suspend fun deleteLabel(label: Label)
+
+    @Query("DELETE FROM labels")
+    override suspend fun clearLabels()
+
 }

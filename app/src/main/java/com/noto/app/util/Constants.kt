@@ -48,6 +48,8 @@ object Constants {
     const val VerifyPath = "verify"
     const val Host = "noto.dev"
     const val ApiKey = "apikey"
+    const val LogOut = "log_out"
+    const val DeleteAccount = "delete_account"
 
     const val NameMaxLength = 32
 

@@ -1,6 +1,16 @@
 package com.noto.app.domain.repository
 
-import com.noto.app.domain.model.*
+import com.noto.app.domain.model.FilteringType
+import com.noto.app.domain.model.FolderListSortingType
+import com.noto.app.domain.model.Font
+import com.noto.app.domain.model.Icon
+import com.noto.app.domain.model.Language
+import com.noto.app.domain.model.ScreenBrightnessLevel
+import com.noto.app.domain.model.SettingsConfig
+import com.noto.app.domain.model.SortingOrder
+import com.noto.app.domain.model.Theme
+import com.noto.app.domain.model.UserStatus
+import com.noto.app.domain.model.VaultTimeout
 import com.noto.app.filtered.FilteredItemModel
 import kotlinx.coroutines.flow.Flow
 
@@ -175,5 +185,7 @@ interface SettingsRepository {
     suspend fun updateUserStatus(userStatus: UserStatus)
 
     suspend fun clearPasswordParameters()
+
+    suspend fun clearSettings()
 
 }
