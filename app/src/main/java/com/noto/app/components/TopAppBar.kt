@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ fun NotoTopAppbar(
     isScrolling: Boolean,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    color: Color = LocalContentColor.current,
     onNavigationIconClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -67,6 +69,10 @@ fun NotoTopAppbar(
             }
         },
         actions = actions,
-        colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = color,
+            navigationIconContentColor = color,
+        )
     )
 }

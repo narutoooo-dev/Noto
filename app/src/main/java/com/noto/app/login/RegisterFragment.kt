@@ -76,7 +76,7 @@ class RegisterFragment : Fragment() {
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally,
-//                    color = color,
+                    color = color,
                 ) {
                     Text(
                         text = stringResource(id = R.string.intro_start_title),

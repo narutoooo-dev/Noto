@@ -3,11 +3,12 @@ package com.noto.app.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.Fragment
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
@@ -15,12 +16,12 @@ import com.noto.app.util.navController
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Fragment.Screen(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    color: Color = LocalContentColor.current,
     onNavigationIconClick: (() -> Unit)? = { navController?.navigateUp() },
     actions: @Composable RowScope.() -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -47,6 +48,7 @@ fun Fragment.Screen(
                     onNavigationIconClick = onNavigationIconClick,
                     actions = actions,
                     subtitle = subtitle,
+                    color = color,
                 )
             },
             snackbarHost = snackbarHost

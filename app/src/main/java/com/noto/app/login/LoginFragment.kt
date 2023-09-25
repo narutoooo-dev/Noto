@@ -66,7 +66,7 @@ class LoginFragment : Fragment() {
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally,
-//                    color = color
+                    color = color,
                 ) {
                     Text(
                         text = stringResource(id = R.string.welcome_back),

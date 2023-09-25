@@ -70,7 +70,7 @@ class GetStartedFragment : Fragment() {
 
                 Screen(
                     title = "",
-//                    color = pageColor,
+                    color = pageColor,
                     onNavigationIconClick = { navController?.navigateUp() },
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
