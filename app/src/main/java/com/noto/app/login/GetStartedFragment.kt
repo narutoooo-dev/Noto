@@ -8,13 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,8 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -100,7 +101,9 @@ class GetStartedFragment : Fragment() {
                         }
                     }
 
-                    BottomActions(pagerState, pageColor)
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
+
+                    BottomNavigation(pagerState, pageColor)
                 }
             }
         }
@@ -183,7 +186,6 @@ private fun NotificationPermissionPage(
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         Column(verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
             PageTitle(text = stringResource(id = R.string.intro_notifications_title), color)
-
             PageDescription(text = stringResource(id = R.string.intro_notifications_description))
         }
 
@@ -265,54 +267,61 @@ private fun PageDescription(text: String, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BottomActions(
+private fun BottomNavigation(
     pagerState: PagerState,
     pageColor: Color,
+    modifier: Modifier = Modifier,
 ) {
-    val previousAlpha by animateFloatAsState(targetValue = if (pagerState.currentPage != 0) 1F else 0F)
-    val nextAlpha by animateFloatAsState(targetValue = if (pagerState.currentPage != Page.Count - 1) 1F else 0F)
     val coroutineScope = rememberCoroutineScope()
+    val progress = remember(pagerState.currentPage) { (pagerState.currentPage.plus(1).toFloat() / Page.Count) }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(NotoTheme.dimensions.medium),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilledIconButton(
-            painter = painterResource(id = R.drawable.ic_round_previous_page_24),
-            contentDescription = stringResource(id = R.string.previous),
-            onClick = {
-                if (pagerState.currentPage != 0) {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+        AnimatedVisibility(visible = pagerState.currentPage != 0) {
+            FilledIconButton(
+                painter = painterResource(id = R.drawable.ic_round_previous_page_24),
+                contentDescription = stringResource(id = R.string.previous),
+                onClick = {
+                    if (pagerState.currentPage != 0) {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        }
                     }
-                }
-            },
-            modifier = Modifier.alpha(previousAlpha),
-            enabled = pagerState.currentPage != 0,
-        )
+                },
+                enabled = pagerState.currentPage != 0,
+            )
+        }
 
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            selectedColor = pageColor,
-        )
+        Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
 
-        FilledIconButton(
-            painterResource(id = R.drawable.ic_round_next_page_24),
-            contentDescription = stringResource(id = R.string.next),
-            onClick = {
-                if (pagerState.currentPage != Page.Count - 1) {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+        AnimatedVisibility(visible = pagerState.currentPage != Page.Count.minus(1)) {
+            LinearProgressIndicator(
+                progress = progress,
+                color = pageColor,
+                trackColor = MaterialTheme.colorScheme.surface,
+                strokeCap = StrokeCap.Round,
+            )
+        }
+
+        Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
+        AnimatedVisibility(visible = pagerState.currentPage != Page.Count.minus(1)) {
+            FilledIconButton(
+                painter = painterResource(id = R.drawable.ic_round_next_page_24),
+                contentDescription = stringResource(id = R.string.next),
+                onClick = {
+                    if (pagerState.currentPage != Page.Count - 1) {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
                     }
-                }
-            },
-            modifier = Modifier.alpha(nextAlpha),
-            enabled = pagerState.currentPage != Page.Count - 1,
-            containerColor = pageColor,
-            contentColor = Color.White,
-        )
+                },
+                enabled = pagerState.currentPage != Page.Count - 1,
+                containerColor = pageColor,
+                contentColor = Color.White,
+            )
+        }
     }
 }
 
