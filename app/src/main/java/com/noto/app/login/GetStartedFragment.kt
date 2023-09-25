@@ -64,8 +64,8 @@ class GetStartedFragment : Fragment() {
         ComposeView(context).apply {
             isTransitionGroup = true
             setContent {
-                val pagerState = rememberPagerState(initialPage = Page.Initial.index) { Page.Count }
-                val page = remember(pagerState.currentPage) { Page.ofIndex(pagerState.currentPage) }
+                val pagerState = rememberPagerState(initialPage = Page.Initial.ordinal) { Page.Count }
+                val page = remember(pagerState.currentPage) { Page.ofOrdinal(pagerState.currentPage) }
                 val pageColor by animateColorAsState(targetValue = page.color)
 
                 Screen(
@@ -79,21 +79,17 @@ class GetStartedFragment : Fragment() {
                         state = pagerState,
                         userScrollEnabled = true,
                         verticalAlignment = Alignment.Top,
-                    ) { page ->
-                        when (page) {
-                            Page.Start.index -> StartPage(pageColor)
-                            Page.AdFree.index -> AdFreePage(pageColor)
-                            Page.Design.index -> DesignPage(pageColor)
-                            Page.Organization.index -> OrganizationPage(pageColor)
-                            Page.Reminders.index -> RemindersPage(pageColor)
-                            Page.ReadingMode.index -> ReadingModePage(pageColor)
-                            Page.Vault.index -> VaultPage(pageColor)
-                            Page.Notification.index -> NotificationPermissionPage(
-                                pageColor,
-                                onClick = ::requestNotificationsPermissionIfRequired
-                            )
-
-                            Page.Account.index -> AccountPage(
+                    ) { pageOrdinal ->
+                        when (Page.ofOrdinal(pageOrdinal)) {
+                            Page.Start -> StartPage(pageColor)
+                            Page.AdFree -> AdFreePage(pageColor)
+                            Page.Design -> DesignPage(pageColor)
+                            Page.Organization -> OrganizationPage(pageColor)
+                            Page.Reminders -> RemindersPage(pageColor)
+                            Page.ReadingMode -> ReadingModePage(pageColor)
+                            Page.Vault -> VaultPage(pageColor)
+                            Page.Notification -> NotificationPermissionPage(color = pageColor, onClick = ::requestNotificationsPermissionIfRequired)
+                            Page.Account -> AccountPage(
                                 pageColor,
                                 onRegister = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToRegisterFragment()) },
                                 onSkip = { viewModel.skipRegistration() }
@@ -325,21 +321,21 @@ private fun BottomNavigation(
     }
 }
 
-private enum class Page(val index: Int, val notoColor: NotoColor) {
-    Start(0, NotoColor.Blue),
-    AdFree(1, NotoColor.Pink),
-    Design(2, NotoColor.Purple),
-    Organization(3, NotoColor.Red),
-    Reminders(4, NotoColor.Yellow),
-    ReadingMode(5, NotoColor.Orange),
-    Vault(6, NotoColor.Green),
-    Notification(7, NotoColor.Brown),
-    Account(8, NotoColor.Indigo);
+private enum class Page(val notoColor: NotoColor) {
+    Start(NotoColor.Blue),
+    AdFree(NotoColor.Pink),
+    Design(NotoColor.Purple),
+    Organization(NotoColor.Red),
+    Reminders(NotoColor.Yellow),
+    ReadingMode(NotoColor.Orange),
+    Vault(NotoColor.Green),
+    Notification(NotoColor.Brown),
+    Account(NotoColor.Indigo);
 
     companion object {
         val Initial = Start
         val Count = entries.count()
-        fun ofIndex(index: Int) = Page.values().first { it.index == index }
+        fun ofOrdinal(ordinal: Int) = entries.first { it.ordinal == ordinal }
     }
 }
 
