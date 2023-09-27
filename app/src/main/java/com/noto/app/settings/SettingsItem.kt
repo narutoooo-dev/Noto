@@ -1,7 +1,10 @@
 package com.noto.app.settings
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -37,12 +40,13 @@ fun SettingsItem(
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
     painter: Painter? = null,
     painterColor: Color = Color.Unspecified,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentScale: ContentScale = ContentScale.Fit,
     description: String? = null,
     descriptionMaxLines: Int = Int.MAX_VALUE,
     equalWeights: Boolean = true,
 ) {
-    Surface(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small) {
+    Surface(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small, color = backgroundColor) {
         Row(modifier.padding(NotoTheme.dimensions.medium), horizontalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium)) {
             SettingsItemContent(title, titleColor, type, painter, painterColor, contentScale, description, descriptionMaxLines, equalWeights)
         }
@@ -58,19 +62,19 @@ fun SettingsItem(
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
     painter: Painter? = null,
     painterColor: Color = Color.Unspecified,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentScale: ContentScale = ContentScale.Fit,
     description: String? = null,
     descriptionMaxLines: Int = Int.MAX_VALUE,
     equalWeights: Boolean = true,
 ) {
-    Surface(onClick, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small) {
+    Surface(onClick, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small, color = backgroundColor) {
         Row(modifier.padding(NotoTheme.dimensions.medium), horizontalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium)) {
             SettingsItemContent(title, titleColor, type, painter, painterColor, contentScale, description, descriptionMaxLines, equalWeights)
         }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun RowScope.SettingsItemContent(
     title: String,
