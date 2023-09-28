@@ -16,12 +16,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.noto.app.R
 import com.noto.app.theme.NotoTheme
 
 const val ElevationAnimationDuration = 150
 private val ActionsEndPadding = 12.dp
+private const val TitleMaxLines = 1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +45,7 @@ fun NotoTopAppbar(
     TopAppBar(
         title = {
             Column {
-                Text(text = title)
+                Text(text = title, maxLines = TitleMaxLines, overflow = TextOverflow.Ellipsis)
                 if (subtitle != null) {
                     Text(
                         text = subtitle,
