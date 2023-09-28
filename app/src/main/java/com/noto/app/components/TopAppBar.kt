@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import com.noto.app.R
 import com.noto.app.theme.NotoTheme
 
 const val ElevationAnimationDuration = 150
+private val ActionsEndPadding = 12.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +54,7 @@ fun NotoTopAppbar(
             }
         },
         modifier = modifier
+            .padding(end = ActionsEndPadding)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
