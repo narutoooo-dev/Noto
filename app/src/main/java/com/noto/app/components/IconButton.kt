@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -21,15 +22,15 @@ fun FilledIconButton(
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
-        onClick,
-        modifier,
-        enabled,
-        MaterialTheme.shapes.small,
-        containerColor,
-        contentColor,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        shape = MaterialTheme.shapes.small,
+        color = containerColor,
+        contentColor = contentColor,
     ) {
-        Box(modifier = Modifier.padding(NotoTheme.dimensions.medium)) {
-            Icon(painter, contentDescription)
+        Box(modifier = Modifier.padding(NotoTheme.dimensions.medium), contentAlignment = Alignment.Center) {
+            Icon(painter = painter, contentDescription = contentDescription)
         }
     }
 }
