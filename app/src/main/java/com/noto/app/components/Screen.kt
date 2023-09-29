@@ -1,5 +1,6 @@
 package com.noto.app.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,12 +25,13 @@ fun Fragment.Screen(
     color: Color = LocalContentColor.current,
     onNavigationIconClick: (() -> Unit)? = { navController?.navigateUp() },
     actions: @Composable RowScope.() -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(NotoTheme.dimensions.medium),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+    scrollState: ScrollState = rememberScrollState(),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val scrollState = rememberScrollState()
     val viewModel by viewModel<SettingsViewModel>()
     val theme by viewModel.theme.collectAsState()
     val scope = rememberCoroutineScope()
@@ -51,7 +53,8 @@ fun Fragment.Screen(
                     color = color,
                 )
             },
-            snackbarHost = snackbarHost
+            snackbarHost = snackbarHost,
+            bottomBar = bottomBar,
         ) { contentPadding ->
             Column(
                 modifier = modifier
