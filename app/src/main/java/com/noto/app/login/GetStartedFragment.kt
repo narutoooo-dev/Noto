@@ -1,54 +1,46 @@
 package com.noto.app.login
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.*
 import com.noto.app.domain.model.NotoColor
+import com.noto.app.domain.model.UserStatus
+import com.noto.app.settings.SettingsItem
+import com.noto.app.settings.SettingsItemType
+import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.theme.toColor
-import com.noto.app.util.navController
-import com.noto.app.util.navigateSafely
-import com.noto.app.util.setupMixedTransitions
-import kotlinx.coroutines.launch
+import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
-private val IndicatorWidth = 10.dp
 
 class GetStartedFragment : Fragment() {
 
-    val viewModel by viewModel<LoginViewModel>()
+    private val viewModel by viewModel<LoginViewModel>()
 
     private val notificationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
 
@@ -65,129 +57,190 @@ class GetStartedFragment : Fragment() {
             isTransitionGroup = true
             setContent {
                 val pagerState = rememberPagerState(initialPage = Page.Initial.ordinal) { Page.Count }
-                val page = remember(pagerState.currentPage) { Page.ofOrdinal(pagerState.currentPage) }
-                val pageColor by animateColorAsState(targetValue = page.color)
+                val currentPage by remember { derivedStateOf { Page.ofOrdinal(pagerState.currentPage) } }
+                val currentPageColor by animateColorAsState(targetValue = currentPage.color)
+                var currentPageScrollState by remember { mutableStateOf(ScrollState(initial = 0)) }
 
-                Screen(
-                    title = "",
-                    color = pageColor,
+                IntroScreen(
+                    pagerState = pagerState,
+                    color = currentPageColor,
                     onNavigationIconClick = { navController?.navigateUp() },
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    HorizontalPager(
-                        modifier = Modifier.weight(1F),
-                        state = pagerState,
-                        userScrollEnabled = true,
-                        verticalAlignment = Alignment.Top,
-                    ) { pageOrdinal ->
-                        when (Page.ofOrdinal(pageOrdinal)) {
-                            Page.Start -> StartPage(pageColor)
-                            Page.AdFree -> AdFreePage(pageColor)
-                            Page.Design -> DesignPage(pageColor)
-                            Page.Organization -> OrganizationPage(pageColor)
-                            Page.Reminders -> RemindersPage(pageColor)
-                            Page.ReadingMode -> ReadingModePage(pageColor)
-                            Page.Vault -> VaultPage(pageColor)
-                            Page.Notification -> NotificationPermissionPage(color = pageColor, onClick = ::requestNotificationsPermissionIfRequired)
-                            Page.Account -> AccountPage(
-                                pageColor,
-                                onRegister = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToRegisterFragment()) },
-                                onSkip = { viewModel.skipRegistration() }
-                            )
-                        }
-                    }
+                    scrollState = currentPageScrollState,
+                    bottomAppBarContent = bottomAppBarContent(page = currentPage, color = currentPageColor),
+                ) { pageOrdinal ->
+                    val page = remember(pageOrdinal) { Page.ofOrdinal(pageOrdinal) }
+                    val scrollState = rememberScrollState()
+                    val scrollStateValue by remember { derivedStateOf { scrollState.value } }
 
-                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
+                    PageItem(
+                        page = page,
+                        modifier = Modifier
+                            .verticalScroll(scrollState)
+                            .animatePageAlpha(pagerState, pageOrdinal),
+                    )
 
-                    BottomNavigation(pagerState, pageColor)
+                    LaunchedEffect(key1 = scrollStateValue) { currentPageScrollState = scrollState }
                 }
             }
         }
     }
 
-    private fun requestNotificationsPermissionIfRequired() {
+    private fun bottomAppBarContent(page: Page, color: Color): @Composable (() -> Unit)? {
+        return when (page) {
+            Page.OpenSource -> {
+                {
+                    BottomAppBarSourceCodeContent(color = color)
+                }
+            }
+
+            Page.Reminders -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    {
+                        BottomAppBarRemindersContent(color = color)
+                    }
+                } else {
+                    null
+                }
+            }
+
+            Page.Vault -> {
+                {
+                    BottomAppBarVaultContent(color = color)
+                }
+            }
+
+            Page.Cloud -> {
+                {
+                    BottomAppBarAccountContent(color = color)
+                }
+            }
+
+            Page.Setup -> {
+                {
+                    BottomAppBarSetupContent(color = color)
+                }
+            }
+
+            else -> null
+        }
+    }
+
+    @Composable
+    private fun BottomAppBarRemindersContent(color: Color) {
         context?.let { context ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val notificationPermissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                 if (notificationPermissionStatus == PackageManager.PERMISSION_DENIED) {
-                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    Button(
+                        text = stringResource(id = R.string.grant_permission),
+                        onClick = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = color,
+                        contentColor = Color.White,
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_round_check_24),
+                            contentDescription = stringResource(id = R.string.permission_is_granted),
+                            tint = color,
+                        )
+                        Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
+                        Text(
+                            text = stringResource(id = R.string.permission_is_granted),
+                            color = color,
+                        )
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-private fun StartPage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_start_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_start_page_description))
-    }
-}
-
-@Composable
-private fun AdFreePage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_ad_free_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_ad_free_description))
-    }
-}
-
-@Composable
-private fun DesignPage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_design_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_design_description))
-    }
-}
-
-@Composable
-private fun VaultPage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_vault_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_vault_description))
-    }
-}
-
-@Composable
-private fun ReadingModePage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_reading_mode_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_reading_mode_description))
-    }
-}
-
-@Composable
-private fun RemindersPage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_reminders_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_reminders_description))
-    }
-}
-
-@Composable
-private fun OrganizationPage(color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-        PageTitle(text = stringResource(id = R.string.intro_organization_title), color)
-        PageDescription(text = stringResource(id = R.string.intro_organization_description))
-    }
-}
-
-@Composable
-private fun NotificationPermissionPage(
-    color: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-        Column(verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.extraLarge)) {
-            PageTitle(text = stringResource(id = R.string.intro_notifications_title), color)
-            PageDescription(text = stringResource(id = R.string.intro_notifications_description))
+    @Composable
+    private fun BottomAppBarVaultContent(color: Color) {
+        val vaultPasscode by viewModel.vaultPasscode.collectAsState()
+        if (vaultPasscode == null) {
+            Button(
+                text = stringResource(id = R.string.enable_vault),
+                onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToVaultPasscodeDialogFragment()) },
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = color,
+                contentColor = Color.White,
+            )
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_round_check_24),
+                    contentDescription = stringResource(id = R.string.vault_is_enabled),
+                    tint = color,
+                )
+                Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
+                Text(
+                    text = stringResource(id = R.string.vault_is_enabled),
+                    color = color
+                )
+            }
         }
+    }
 
+    @Composable
+    private fun BottomAppBarAccountContent(color: Color) {
+        val userStatus by viewModel.userStatus.collectAsState()
+        if (userStatus != UserStatus.LoggedIn) {
+            Button(
+                text = stringResource(id = R.string.register_for_free),
+                onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToRegisterFragment()) },
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = color,
+                contentColor = Color.White,
+            )
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_round_check_24),
+                    contentDescription = stringResource(id = R.string.account_is_created),
+                    tint = color,
+                )
+                Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
+                Text(
+                    text = stringResource(id = R.string.account_is_created),
+                    color = color
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun BottomAppBarSetupContent(color: Color) {
         Button(
-            text = stringResource(id = R.string.grant_permission),
-            onClick = onClick,
+            text = stringResource(id = R.string.intro_finish),
+            onClick = { viewModel.finish() },
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = color,
+            contentColor = Color.White,
+        )
+    }
+
+    @Composable
+    private fun BottomAppBarSourceCodeContent(color: Color) {
+        Button(
+            text = stringResource(id = R.string.source_code),
+            onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.Noto.GithubUrl))
+                startActivity(intent)
+            },
             modifier = Modifier.fillMaxWidth(),
             containerColor = color,
             contentColor = Color.White,
@@ -196,141 +249,201 @@ private fun NotificationPermissionPage(
 }
 
 @Composable
-private fun AccountPage(
-    color: Color,
-    onRegister: () -> Unit,
-    onSkip: () -> Unit,
+private fun Fragment.PageItem(
+    page: Page,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxSize(), Arrangement.SpaceBetween) {
-        Column(verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium)) {
-            PageTitle(text = stringResource(id = R.string.account), color)
-            PageDescription(text = stringResource(id = R.string.intro_account_description))
-            PageDescription(text = stringResource(id = R.string.intro_private_and_secure_description))
-        }
-
-
-        Column(verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium)) {
-            Button(
-                text = stringResource(id = R.string.register_for_free),
-                onClick = onRegister,
-                modifier = Modifier.fillMaxWidth(),
-                containerColor = color,
-                contentColor = Color.White,
-            )
-
-            OutlinedButton(
-                text = stringResource(id = R.string.skip_for_now),
-                onClick = onSkip,
-                modifier = Modifier.fillMaxWidth(),
-                contentColor = color,
-                borderColor = color,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SettingsPage() {
-    // After registration/skipping.
-}
-
-@Composable
-private fun PageTitle(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text,
-        modifier,
-        color = color,
-        fontWeight = FontWeight.Bold,
-        style = MaterialTheme.typography.headlineLarge,
-    )
-}
-
-@Composable
-private fun PageDescription(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text,
-        modifier,
-        color = MaterialTheme.colorScheme.secondary,
-        fontWeight = FontWeight.SemiBold,
-        style = MaterialTheme.typography.titleMedium
-    )
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun BottomNavigation(
-    pagerState: PagerState,
-    pageColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val progress = remember(pagerState.currentPage) { (pagerState.currentPage.plus(1).toFloat() / Page.Count) }
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(NotoTheme.dimensions.medium),
+        verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        AnimatedVisibility(visible = pagerState.currentPage != 0) {
-            FilledIconButton(
-                painter = painterResource(id = R.drawable.ic_round_previous_page_24),
-                contentDescription = stringResource(id = R.string.previous),
-                onClick = {
-                    if (pagerState.currentPage != 0) {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                        }
-                    }
-                },
-                enabled = pagerState.currentPage != 0,
-            )
-        }
+        IntroPageImage(painter = painterResource(id = page.imageDrawableId), contentDescription = stringResource(id = page.titleStringId))
+        Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
+        IntroPageTitle(text = stringResource(id = page.titleStringId))
+        IntroPageDescription(text = stringResource(id = page.descriptionStringId))
+        PageContent(page = page)
+    }
+}
 
-        Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
+@Composable
+private fun Fragment.PageContent(page: Page, modifier: Modifier = Modifier) {
+    Group(modifier) {
+        when (page) {
+            Page.Setup -> {
+                val settingsViewModel by viewModel<SettingsViewModel>()
+                val theme by settingsViewModel.theme.collectAsState()
+                val themeId = remember(theme) { theme.toStringResourceId() }
+                val themeText = stringResource(id = themeId)
+                val language = remember { AppCompatDelegate.getApplicationLocales().toLanguages().first() }
+                val languageId = remember(language) { language.toStringResourceId() }
+                val languageText = stringResource(id = languageId)
+                val rememberScrollingPositionEnabled by settingsViewModel.isRememberScrollingPosition.collectAsState()
+                val notesCountEnabled by settingsViewModel.isShowNotesCount.collectAsState()
+                val quickExit by settingsViewModel.quickExit.collectAsState()
+                SettingsItem(
+                    title = stringResource(id = R.string.theme),
+                    type = SettingsItemType.Text(themeText),
+                    onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToThemeDialogFragment()) },
+                    painter = painterResource(id = R.drawable.ic_round_theme_24),
+                )
 
-        AnimatedVisibility(visible = pagerState.currentPage != Page.Count.minus(1)) {
-            LinearProgressIndicator(
-                progress = progress,
-                color = pageColor,
-                trackColor = MaterialTheme.colorScheme.surface,
-                strokeCap = StrokeCap.Round,
-            )
-        }
+                SettingsItem(
+                    title = stringResource(id = R.string.language),
+                    type = SettingsItemType.Text(languageText),
+                    onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToLanguageDialogFragment()) },
+                    painter = painterResource(id = R.drawable.ic_round_language_24),
+                )
 
-        Spacer(modifier = Modifier.width(NotoTheme.dimensions.medium))
-        AnimatedVisibility(visible = pagerState.currentPage != Page.Count.minus(1)) {
-            FilledIconButton(
-                painter = painterResource(id = R.drawable.ic_round_next_page_24),
-                contentDescription = stringResource(id = R.string.next),
-                onClick = {
-                    if (pagerState.currentPage != Page.Count - 1) {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        }
-                    }
-                },
-                enabled = pagerState.currentPage != Page.Count - 1,
-                containerColor = pageColor,
-                contentColor = Color.White,
-            )
+                SettingsItem(
+                    title = stringResource(id = R.string.show_notes_count),
+                    type = SettingsItemType.Switch(notesCountEnabled),
+                    onClick = { settingsViewModel.toggleShowNotesCount() },
+                    description = stringResource(id = R.string.show_notes_count_description),
+                    painter = painterResource(id = R.drawable.ic_round_tag_24),
+                )
+
+                SettingsItem(
+                    title = stringResource(id = R.string.remember_scrolling_position),
+                    type = SettingsItemType.Switch(rememberScrollingPositionEnabled),
+                    onClick = { settingsViewModel.toggleRememberScrollingPosition() },
+                    description = stringResource(id = R.string.remember_scrolling_position_description),
+                    painter = EmptyPainter,
+                )
+
+                SettingsItem(
+                    title = stringResource(id = R.string.quick_exit),
+                    type = SettingsItemType.Switch(quickExit),
+                    onClick = { settingsViewModel.toggleQuickExit() },
+                    description = stringResource(id = R.string.quick_exit_description),
+                    painter = painterResource(id = R.drawable.ic_round_quick_exit_24),
+                )
+            }
+
+            else -> {
+                page.extrasStringIds.forEach { extraStringId ->
+                    SettingsItem(
+                        title = stringResource(id = extraStringId),
+                        type = SettingsItemType.None,
+                        painter = painterResource(id = R.drawable.ic_round_check_24),
+                    )
+                }
+            }
         }
     }
 }
 
-private enum class Page(val notoColor: NotoColor) {
-    Start(NotoColor.Blue),
-    AdFree(NotoColor.Pink),
-    Design(NotoColor.Purple),
-    Organization(NotoColor.Red),
-    Reminders(NotoColor.Yellow),
-    ReadingMode(NotoColor.Orange),
-    Vault(NotoColor.Green),
-    Notification(NotoColor.Brown),
-    Account(NotoColor.Indigo);
+private enum class Page(
+    val titleStringId: Int,
+    val descriptionStringId: Int,
+    val imageDrawableId: Int,
+    val notoColor: NotoColor,
+    val extrasStringIds: List<Int> = emptyList(),
+) {
+    Start(
+        R.string.intro_discover_features_title,
+        R.string.intro_discover_features_description,
+        R.drawable.illustration_features,
+        NotoColor.Teal,
+    ),
+    AdFree(
+        R.string.intro_ad_free_title,
+        R.string.intro_ad_free_description,
+        R.drawable.illustration_ads,
+        NotoColor.Pink,
+    ),
+    OpenSource(
+        R.string.intro_open_source_title,
+        R.string.intro_open_source_description,
+        R.drawable.illustration_open_source,
+        NotoColor.Green,
+    ),
+    Organization(
+        R.string.intro_organization_title,
+        R.string.intro_organization_description,
+        R.drawable.illustration_organization,
+        NotoColor.Blue,
+        listOf(
+            R.string.intro_labels,
+            R.string.intro_archiving,
+            R.string.intro_colorful_folders,
+            R.string.intro_label_filtering,
+            R.string.intro_pinning,
+            R.string.intro_grouping,
+            R.string.intro_sorting,
+            R.string.intro_manual_ordering,
+            R.string.intro_layouts,
+            R.string.intro_actions,
+        ),
+    ),
+    MultiSelection(
+        R.string.intro_multi_selection_title,
+        R.string.intro_multi_selection_description,
+        R.drawable.illustration_multi_selection,
+        NotoColor.Yellow,
+    ),
+    Search(
+        R.string.intro_search_title,
+        R.string.intro_search_description,
+        R.drawable.illustration_search,
+        NotoColor.BlueGray,
+    ),
+    ReadingMode(
+        R.string.intro_reading_mode_title,
+        R.string.intro_reading_mode_description,
+        R.drawable.illustration_reading_mode,
+        NotoColor.Orange,
+    ),
+    UndoRedo(
+        R.string.intro_undo_redo_title,
+        R.string.intro_undo_redo_description,
+        R.drawable.illustration_undo_redo,
+        NotoColor.Cyan,
+    ),
+    Reminders(
+        R.string.intro_reminders_title,
+        R.string.intro_reminders_description,
+        R.drawable.illustration_reminders,
+        NotoColor.Red,
+    ),
+    Vault(
+        R.string.intro_vault_title,
+        R.string.intro_vault_description,
+        R.drawable.illustration_vault,
+        NotoColor.Brown,
+    ),
+    Other(
+        R.string.intro_other_title,
+        R.string.intro_other_description,
+        R.drawable.illustration_other,
+        NotoColor.DeepGreen,
+        listOf(
+            R.string.intro_widgets,
+            R.string.intro_auto_save,
+            R.string.intro_quick_note,
+            R.string.intro_custom_app_icons,
+            R.string.intro_nested_folders,
+            R.string.intro_shortcuts,
+            R.string.intro_design,
+            R.string.intro_private_secure,
+            R.string.intro_telegram_community,
+            R.string.intro_auto_backup,
+        ),
+    ),
+    Cloud(
+        R.string.intro_cloud_title,
+        R.string.intro_cloud_description,
+        R.drawable.illustration_cloud,
+        NotoColor.Indigo,
+    ),
+    Setup(
+        R.string.intro_setup,
+        R.string.intro_setup_description,
+        R.drawable.illustration_setup,
+        NotoColor.Teal,
+    );
 
     companion object {
         val Initial = Start
@@ -338,7 +451,6 @@ private enum class Page(val notoColor: NotoColor) {
         fun ofOrdinal(ordinal: Int) = entries.first { it.ordinal == ordinal }
     }
 }
-
 
 private val Page.color: Color
     @Composable

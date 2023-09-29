@@ -598,30 +598,78 @@
     <string name="register">Register</string>
     <string name="creating_account">Creating an account…</string>
     <string name="register_for_free">Register for Free</string>
-    <string name="intro_account_description">Creating an account would let you back up your notes to the cloud and encrypt all of your data with Client-Side Encryption.</string>
+    <string name="account_is_created">Account has been created.</string>
     <string name="get_started">Get started</string>
-    <string name="intro_start_title">Welcome to Noto!</string>
+
+    <string name="intro_finish">Finish</string>
+    <string name="intro_auto_save">Auto Save</string>
+    <string name="intro_widgets">Widgets</string>
+    <string name="intro_custom_app_icons">Custom app icons</string>
+    <string name="intro_nested_folders">Nested folders</string>
+    <string name="intro_shortcuts">Shortcuts</string>
+    <string name="intro_design">Minimal and modern design</string>
+    <string name="intro_private_secure">Private and secure</string>
+    <string name="intro_auto_backup">Auto local backup</string>
+    <string name="intro_archiving">Folders and notes archive</string>
+    <string name="intro_colorful_folders">Colorful folders</string>
+    <string name="intro_label_filtering">Inclusive/Exclusive/Strict label filtering</string>
+    <string name="intro_labels">Labels</string>
+    <string name="intro_pinning">Pinning folders and notes</string>
+    <string name="intro_grouping">Grouping notes</string>
+    <string name="intro_sorting">Sorting folders and notes</string>
+    <string name="intro_manual_ordering">Manual ordering</string>
+    <string name="intro_layouts">List/Grid layouts</string>
+    <string name="intro_actions">Copy/Move/Duplicate/Merge actions</string>
+    <string name="intro_quick_note" translatable="false">@string/quick_note</string>
+    <string name="intro_telegram_community" translatable="false">@string/telegram_community</string>
+
+    <string name="start_title">Welcome to Noto!</string>
+    <string name="start_page_description">Noto is where you can jot down your thoughts, ideas, and more.\n\nYou can start by logging in, or by discovering features Noto provides.</string>
+
+    <string name="intro_discover_features_title">Let\'s Discover Features Noto Provides</string>
+    <string name="intro_discover_features_description">Noto is packed with several features that make note-taking intuitive, easy to use, and straight forward, while keeping the UI minimal, modern and clutter-free.</string>
+
     <string name="intro_ad_free_title">Ad-Free</string>
-    <string name="intro_ad_free_description">Noto doesn\'t have any ads, forever!</string>
-    <string name="intro_private_and_secure_title">Private &amp; Secure</string>
-    <string name="intro_private_and_secure_description">Noto respects your privacy. Regardless of using an account or not, your data remains yours.</string>
-    <string name="intro_start_page_description">Noto is where you can jot down your thoughts, ideas, and more… Let\'s explore some of its features.</string>
-    <string name="intro_notifications_title">Notifications</string>
-    <string name="intro_notifications_description">Utilize the app fully by enabling notifications for reminders.</string>
-    <string name="grant_permission">Grant permission</string>
-    <string name="intro_design_title">Minimal &amp; modern design</string>
-    <string name="intro_design_description">Noto comes with a very simplistic UI, which makes it very easy to use.</string>
-    <string name="intro_vault_title">Lock &amp; hide your notes</string>
-    <string name="intro_vault_description">Noto provides a vault for your folders, which hides your notes behind a passcode or a biometric authentication.</string>
+    <string name="intro_ad_free_description">Let\'s be honest, we all hate ads.\n\nWell, Noto doesn\'t have any! Enjoy the full experience without ads, and free of cost.</string>
+
+    <string name="intro_open_source_title">Open Source</string>
+    <string name="intro_open_source_description">Noto is completely built on open-source software, and tools. Furthermore, You can view and inspect the code anytime on GitHub.</string>
+
+    <string name="intro_organization_title">Many Organization Tools</string>
+    <string name="intro_organization_description">Manage your notes the way you want, however you want. Noto comes with a versatile amount of ways to help you better display and utilize your notes and folders to make them perfectly match you needs, including:</string>
+
+    <string name="intro_multi_selection_title">Multi-Selection</string>
+    <string name="intro_multi_selection_description">Performing actions on notes shouldn\'t be time consuming. With multi-selection, handling notes has never been easier with ways to batch modify almost anything for all notes in just a click of a button.</string>
+
+    <string name="intro_search_title">Global Search + Find-In Note</string>
+    <string name="intro_search_description">Noto ships with a comprehensive search functionality. You have the ability to search notes globally across all folders, locally inside each folder, or only inside a specific note. Finding what you\'re looking for is as easy as typing a few characters.\n\nAnd, with Continuous Search, your results are passed from one screen to another.</string>
+
     <string name="intro_reading_mode_title">Reading Mode</string>
-    <string name="intro_reading_mode_description">Want to read your notes without interruptions? That\'s where Reading Mode comes in. From Do Not Disturb, to keeping the screen always on. Reading Mode got you covered.</string>
-    <string name="intro_organization_title">Organize your notes the way you want, how you want.</string>
-    <string name="intro_organization_description">That\'s right. Noto comes with a set of features that helps you organizing that best fits your needs. Labels, sorting, grouping, and countless others.</string>
+    <string name="intro_reading_mode_description">Notes aren\'t meant to be written only, they\'re meant for reading too. With Reading Mode, Noto takes the experience even further by providing an immersive mode, keeping the screen turned on at a customizable brightness level, and cutting all the distractions with Do Not Disturb Mode.</string>
+
+    <string name="intro_undo_redo_title">Undo/Redo + History View</string>
+    <string name="intro_undo_redo_description">Making typos while writing notes isn\'t uncommon. With Undo/Redo functionality, you can revert back easily. And, even better, you can fully view all the text changes happened inside the note since the moment you opened it by using Undo/Redo History.</string>
+
     <string name="intro_reminders_title">Reminders</string>
-    <string name="intro_reminders_description">You can set up reminders at any time for any note.</string>
+    <string name="intro_reminders_description">You can attach reminders for your notes, and you will get notified about them in time.</string>
+
+    <string name="intro_vault_title">The Vault</string>
+    <string name="intro_vault_description">Noto provides a vault for your folders, which locks your notes behind a passcode or a biometric authentication if you enable it.\n\nYou can also set a timeout to close the vault after a period of time.</string>
+
+    <string name="intro_other_title">There\'s More!</string>
+    <string name="intro_other_description">There are even more small features that enhance the experience, and make it joyful. And, in each new version of Noto, it unlocks even more capabilities. So, stay tuned as always!</string>
+
+    <string name="intro_cloud_title">Cloud + E2EE</string>
+    <string name="intro_cloud_description">Noto respects your privacy. Regardless of using an account or not, your data remains yours. That\'s why Noto can operate fully offline.\n\nHowever, by creating an account, you\'d be able to backup your notes to the cloud, and use them across many devices as you\'d like while also having them end-to-end encrypted.\n\nCurrently, Noto uses <a href="https://supabase.com/">Supabase</a> as the open-source cloud hosting provider.</string>
+
+    <string name="intro_setup">Setup</string>
+    <string name="intro_setup_description">Customize the app however you\'d like.</string>
+
+    <string name="grant_permission">Grant permission</string>
+    <string name="permission_is_granted">Notification permission has been granted.</string>
     <string name="welcome_back">Welcome back! &#128075;</string>
     <string name="forgot_password">Forgot password?</string>
-    <string name="skip_for_now">Skip for now</string>
+    <string name="skip">Skip</string>
     <string name="login">Login</string>
     <string name="invalid_name">Name is invalid.</string>
     <string name="invalid_email">Email is invalid.</string>

@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.Button
-import com.noto.app.components.ProgressIndicator
+import com.noto.app.components.ScreenCircularProgressIndicator
 import com.noto.app.components.Screen
 import com.noto.app.fold
 import com.noto.app.settings.SettingsItem
@@ -70,7 +70,7 @@ class AccountSettingsFragment : Fragment() {
                 ) {
                     userState.fold(
                         onEmpty = {},
-                        onLoading = { ProgressIndicator() },
+                        onLoading = { ScreenCircularProgressIndicator() },
                         onSuccess = { user ->
                             SettingsSection {
                                 SettingsItem(

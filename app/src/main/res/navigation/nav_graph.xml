@@ -796,6 +796,15 @@
         <action
             android:id="@+id/action_getStartedFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_getStartedFragment_to_themeDialogFragment"
+            app:destination="@id/themeDialogFragment" />
+        <action
+            android:id="@+id/action_getStartedFragment_to_languageDialogFragment"
+            app:destination="@id/languageDialogFragment" />
+        <action
+            android:id="@+id/action_getStartedFragment_to_vaultPasscodeDialogFragment"
+            app:destination="@id/vaultPasscodeDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
