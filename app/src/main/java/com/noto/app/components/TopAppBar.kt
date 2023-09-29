@@ -42,6 +42,7 @@ fun NotoTopAppbar(
         targetValue = if (isScrolling) NotoTheme.dimensions.extraSmall else 0.dp,
         animationSpec = tween(ElevationAnimationDuration)
     )
+    // Todo: Migrate to use BasicTopAppBar here.
     TopAppBar(
         title = {
             Column {
@@ -55,6 +56,51 @@ fun NotoTopAppbar(
                 }
             }
         },
+        modifier = modifier
+            .padding(end = ActionsEndPadding)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .shadow(elevation),
+        navigationIcon = {
+            if (onNavigationIconClick != null) {
+                IconButton(onClick = onNavigationIconClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_round_back_24),
+                        contentDescription = stringResource(id = R.string.back),
+                    )
+                }
+            }
+        },
+        actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = color,
+            navigationIconContentColor = color,
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BasicTopAppBar(
+    onClick: () -> Unit,
+    isScrolling: Boolean,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
+    onNavigationIconClick: (() -> Unit)? = null,
+    title: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val elevation by animateDpAsState(
+        targetValue = if (isScrolling) NotoTheme.dimensions.extraSmall else 0.dp,
+        animationSpec = tween(ElevationAnimationDuration)
+    )
+    TopAppBar(
+        title = title,
         modifier = modifier
             .padding(end = ActionsEndPadding)
             .clickable(
