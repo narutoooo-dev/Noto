@@ -65,7 +65,7 @@ fun TextField(
         else
             MaterialTheme.colorScheme.onSurface
     )
-    val textStyle = MaterialTheme.typography.labelLarge.copy(textColor)
+    val textStyle = MaterialTheme.typography.bodyMedium.copy(textColor)
     val backgroundColor by animateColorAsState(
         targetValue = if (status.isError)
             MaterialTheme.colorScheme.errorContainer
@@ -98,6 +98,7 @@ fun TextField(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.small)
         ) {
+            Text(text = placeholder, style = MaterialTheme.typography.bodyLarge)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
