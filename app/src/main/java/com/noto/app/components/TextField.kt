@@ -196,7 +196,7 @@ private fun ColumnScope.TextFieldStatus(status: TextFieldStatus, modifier: Modif
                 Text(
                     text = status.error,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onErrorContainer
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         }
