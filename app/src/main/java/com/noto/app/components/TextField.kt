@@ -1,8 +1,6 @@
 package com.noto.app.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,13 +24,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.noto.app.R
 import com.noto.app.theme.NotoTheme
 
 sealed interface TextFieldStatus {
-    object Empty : TextFieldStatus
+    data object Empty : TextFieldStatus
 
     @JvmInline
     value class Info(val message: String) : TextFieldStatus
@@ -59,26 +55,7 @@ fun TextField(
     onDone: KeyboardActionScope.() -> Unit = { defaultKeyboardAction(keyboardOptions.imeAction) },
 ) {
     var isPlaceholderVisible by rememberSaveable(value) { mutableStateOf(value.isEmpty()) }
-    val textColor by animateColorAsState(
-        targetValue = if (status.isError)
-            MaterialTheme.colorScheme.onErrorContainer
-        else
-            MaterialTheme.colorScheme.onSurface
-    )
-    val textStyle = MaterialTheme.typography.bodyMedium.copy(textColor)
-    val backgroundColor by animateColorAsState(
-        targetValue = if (status.isError)
-            MaterialTheme.colorScheme.errorContainer
-        else
-            MaterialTheme.colorScheme.surface
-    )
-    val borderWidth by animateDpAsState(targetValue = if (status.isError) 1.dp else Dp.Hairline)
-    val borderColor by animateColorAsState(
-        targetValue = if (status.isError)
-            MaterialTheme.colorScheme.error
-        else
-            MaterialTheme.colorScheme.secondary
-    )
+    val textStyle = MaterialTheme.typography.bodyMedium
     BasicTextField(
         value = value,
         onValueChange = {
@@ -102,8 +79,7 @@ fun TextField(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .border(borderWidth, borderColor, MaterialTheme.shapes.small)
-                    .background(backgroundColor, MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
                     .padding(NotoTheme.dimensions.medium),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
