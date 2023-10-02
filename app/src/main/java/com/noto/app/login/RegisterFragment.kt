@@ -5,9 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,28 +17,30 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.*
 import com.noto.app.data.model.remote.ResponseException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.Constants
-import com.noto.app.util.navController
-import com.noto.app.util.navigateSafely
-import com.noto.app.util.setupMixedTransitions
+import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterFragment : Fragment() {
 
     private val viewModel by viewModel<LoginViewModel>()
 
+    @OptIn(ExperimentalTextApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,7 +63,10 @@ class RegisterFragment : Fragment() {
                 val snackbarHostState = remember { SnackbarHostState() }
                 val focusManager = LocalFocusManager.current
                 val isPasswordVisible = rememberSaveable { mutableStateOf(false) }
-                val passwordRequirementsInteractionSource = remember { MutableInteractionSource() }
+                val accountAgreementAnnotatedString = remember { context.getText(R.string.account_agreement).toSpannable().toAnnotatedString() }
+                val passwordRequirementsAnnotatedString =
+                    remember { context.getText(R.string.password_requirements).toSpannable().toAnnotatedString() }
+                val uriHandler = LocalUriHandler.current
 
                 Screen(
                     title = stringResource(id = R.string.register),
@@ -217,19 +221,17 @@ class RegisterFragment : Fragment() {
 
                         Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
-                        Text(
-                            text = stringResource(id = R.string.password_requirements),
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .clickable(interactionSource = passwordRequirementsInteractionSource, indication = null) {
-                                    navController?.navigateSafely(
-                                        RegisterFragmentDirections.actionRegisterFragmentToPasswordRequirementsDialogFragment(
-                                            password
-                                        )
+                        ClickableText(
+                            text = passwordRequirementsAnnotatedString,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.labelLarge.copy(textDecoration = TextDecoration.Underline, textAlign = TextAlign.End),
+                            onClick = {
+                                navController?.navigateSafely(
+                                    RegisterFragmentDirections.actionRegisterFragmentToPasswordRequirementsDialogFragment(
+                                        password
                                     )
-                                },
-                            style = MaterialTheme.typography.labelLarge,
-                            textDecoration = TextDecoration.Underline,
+                                )
+                            }
                         )
 
                         Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
@@ -243,6 +245,18 @@ class RegisterFragment : Fragment() {
                             modifier = Modifier.fillMaxWidth(),
                             contentColor = Color.White,
                         )
+
+                        Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
+
+                        ClickableText(
+                            text = accountAgreementAnnotatedString,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.labelLarge.copy(textAlign = TextAlign.Center),
+                        ) { offset ->
+                            accountAgreementAnnotatedString.getUrlAnnotations(offset, offset).firstOrNull()?.let {
+                                uriHandler.openUri(it.item.url)
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))

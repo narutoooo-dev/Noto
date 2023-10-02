@@ -2,14 +2,12 @@ package com.noto.app.util
 
 import android.graphics.Typeface
 import android.text.Spannable
-import android.text.style.CharacterStyle
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
-import android.text.style.URLSpan
-import android.text.style.UnderlineSpan
+import android.text.style.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -32,6 +30,8 @@ private data class CopierContext(
 private enum class SpanCopier {
     URL {
         override val spanClass = URLSpan::class.java
+
+        @OptIn(ExperimentalTextApi::class)
         override fun copySpan(
             span: Any,
             start: Int,
@@ -40,14 +40,13 @@ private enum class SpanCopier {
             context: CopierContext,
         ) {
             val urlSpan = span as URLSpan
-            destination.addStringAnnotation(
-                tag = name,
-                annotation = urlSpan.url,
+            destination.addUrlAnnotation(
+                urlAnnotation = UrlAnnotation(urlSpan.url),
                 start = start,
                 end = end,
             )
             destination.addStyle(
-                style = SpanStyle(color = context.primaryColor, textDecoration = TextDecoration.Underline),
+                style = SpanStyle(color = context.primaryColor, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold),
                 start = start,
                 end = end,
             )
