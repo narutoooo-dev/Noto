@@ -67,12 +67,10 @@ class StartFragment : Fragment() {
                                 modifier = Modifier.fillMaxWidth(),
                             )
 
-                            Button(
+                            OutlinedButton(
                                 text = stringResource(id = R.string.login),
                                 onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToLoginFragment()) },
                                 modifier = Modifier.fillMaxWidth(),
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
