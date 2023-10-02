@@ -2,13 +2,7 @@ package com.noto.app.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +35,7 @@ fun OutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     borderColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -51,7 +45,7 @@ fun OutlinedButton(
         colors = ButtonDefaults.outlinedButtonColors(contentColor = contentColor),
         border = BorderStroke(ButtonDefaults.outlinedButtonBorder.width, borderColor),
     ) {
-        Text(text, style = MaterialTheme.typography.titleSmall)
+        Text(text, style = MaterialTheme.typography.titleMedium)
     }
 }
 
