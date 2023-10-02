@@ -50,7 +50,10 @@ class LoginViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     val userStatus = settingsRepository.userStatus
-        .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.NotLoggedIn)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.New)
+
+    private val mutableIsNotificationPermissionGranted = MutableStateFlow<Boolean?>(null)
+    val isNotificationPermissionGranted get() = mutableIsNotificationPermissionGranted.asStateFlow()
 
     fun registerUser(name: String, email: String, password: String) = viewModelScope.launch {
         mutableState.value = UiState.Loading
@@ -66,7 +69,7 @@ class LoginViewModel(
     }
 
     fun finish() = viewModelScope.launch {
-        settingsRepository.updateUserStatus(UserStatus.None)
+        if (userStatus.value == UserStatus.New) settingsRepository.updateUserStatus(UserStatus.NotLoggedIn)
     }
 
     fun setName(name: String) {
@@ -99,5 +102,9 @@ class LoginViewModel(
 
     fun setConfirmPasswordStatus(status: TextFieldStatus) {
         mutableConfirmPasswordStatus.value = status
+    }
+
+    fun setNotificationPermissionResult(isGranted: Boolean?) {
+        mutableIsNotificationPermissionGranted.value = isGranted
     }
 }

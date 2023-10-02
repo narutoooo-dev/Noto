@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.animateColorAsState
@@ -43,7 +44,7 @@ class GetStartedFragment : Fragment() {
     private val viewModel by viewModel<LoginViewModel>()
 
     private val notificationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-
+        viewModel.setNotificationPermissionResult(isGranted)
     }
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -53,6 +54,7 @@ class GetStartedFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? = context?.let { context ->
         setupMixedTransitions()
+        activity?.onBackPressedDispatcher?.addCallback { navController?.navigateUp() }
         ComposeView(context).apply {
             isTransitionGroup = true
             setContent {
@@ -194,7 +196,7 @@ class GetStartedFragment : Fragment() {
     @Composable
     private fun BottomAppBarAccountContent(color: Color) {
         val userStatus by viewModel.userStatus.collectAsState()
-        if (userStatus != UserStatus.LoggedIn) {
+        if (userStatus == UserStatus.NotLoggedIn || userStatus == UserStatus.New) {
             Button(
                 text = stringResource(id = R.string.register_for_free),
                 onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToRegisterFragment()) },
