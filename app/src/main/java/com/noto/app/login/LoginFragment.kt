@@ -5,9 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
@@ -23,17 +22,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.*
 import com.noto.app.data.model.remote.ResponseException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.Constants
-import com.noto.app.util.navController
-import com.noto.app.util.navigateSafely
-import com.noto.app.util.setupMixedTransitions
+import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment() {
@@ -59,7 +57,7 @@ class LoginFragment : Fragment() {
                 val passwordStatus by viewModel.passwordStatus.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val focusManager = LocalFocusManager.current
-                val forgotPasswordInteractionSource = remember { MutableInteractionSource() }
+                val forgotPasswordAnnotatedString = remember { context.getText(R.string.forgot_password).toSpannable().toAnnotatedString() }
 
                 Screen(
                     title = stringResource(id = R.string.login),
@@ -109,7 +107,7 @@ class LoginFragment : Fragment() {
                             ),
                         )
 
-                        Spacer(Modifier.height(NotoTheme.dimensions.medium))
+                        Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
 
                         PasswordTextField(
                             value = password,
@@ -130,18 +128,16 @@ class LoginFragment : Fragment() {
                             }
                         )
 
-                        Spacer(Modifier.height(NotoTheme.dimensions.medium))
+                        Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
 
-                        Text(
-                            text = stringResource(id = R.string.forgot_password),
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .clickable(interactionSource = forgotPasswordInteractionSource, indication = null) {},
-                            style = MaterialTheme.typography.labelLarge,
-                            textDecoration = TextDecoration.Underline,
+                        ClickableText(
+                            text = forgotPasswordAnnotatedString,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.labelLarge.copy(textDecoration = TextDecoration.Underline, textAlign = TextAlign.End),
+                            onClick = {},
                         )
 
-                        Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
+                        Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
                         Button(
                             text = stringResource(id = R.string.login),
@@ -154,9 +150,9 @@ class LoginFragment : Fragment() {
                     }
 
                     if (!isIntro) {
-                        Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
+                        Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge * 2))
                         Column(
-                            Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {

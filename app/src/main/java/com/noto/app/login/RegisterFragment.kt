@@ -259,10 +259,10 @@ class RegisterFragment : Fragment() {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge * 2))
 
                     Column(
-                        Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
