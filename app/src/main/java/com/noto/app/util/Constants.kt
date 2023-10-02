@@ -55,7 +55,24 @@ object Constants {
 
     object Regex {
         val Email = Regex(".+@.+\\..+")
-        val Password = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#^])[A-Za-z\\d@$!%*?&#^]{8,}$")
+
+        val MinChars = Regex(".{8,}")
+        val UppercaseChars = Regex(".*?[A-Z].*?")
+        val LowercaseChars = Regex(".*?[a-z].*?")
+        val NumberChars = Regex(".*?[0-9].*?")
+        val SpecialChars = Regex(".*?[!@#\$%^&*()?-].*?")
+
+        fun matchesEmail(email: String): Boolean {
+            return email.none { it.isWhitespace() } && email.matches(Email)
+        }
+
+        fun matchesPassword(password: String): Boolean {
+            return password.matches(MinChars)
+                    && password.matches(UppercaseChars)
+                    && password.matches(LowercaseChars)
+                    && password.matches(NumberChars)
+                    && password.matches(SpecialChars)
+        }
     }
 
     object Intent {
