@@ -59,8 +59,8 @@ class ConfirmationDialogFragment : BaseDialogFragment() {
                             dismiss()
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
                     )
                 }
             }
