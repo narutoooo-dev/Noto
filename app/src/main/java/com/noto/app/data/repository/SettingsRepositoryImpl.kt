@@ -180,7 +180,7 @@ class SettingsRepositoryImpl(
 
     override val userStatus: Flow<UserStatus> = storage.data
         .map { preferences -> preferences[SettingsKeys.UserStatus] }
-        .map { if (it != null) UserStatus.valueOf(it) else UserStatus.NotLoggedIn }
+        .map { if (it != null) UserStatus.valueOf(it) else UserStatus.New }
         .flowOn(dispatcher)
 
     override fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int> = storage.data

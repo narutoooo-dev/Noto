@@ -4,32 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.*
 import com.noto.app.data.model.remote.ResponseException
-import com.noto.app.domain.model.NotoColor
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.theme.toColor
 import com.noto.app.util.Constants
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely
@@ -40,12 +40,15 @@ class LoginFragment : Fragment() {
 
     private val viewModel by viewModel<LoginViewModel>()
 
+    private val isIntro by lazy { navController?.previousBackStackEntry?.destination?.id == R.id.startFragment }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? = context?.let { context ->
         setupMixedTransitions()
+        activity?.onBackPressedDispatcher?.addCallback { navController?.navigateUp() }
         ComposeView(context).apply {
             isTransitionGroup = true
             setContent {
@@ -55,37 +58,43 @@ class LoginFragment : Fragment() {
                 val emailStatus by viewModel.emailStatus.collectAsState()
                 val passwordStatus by viewModel.passwordStatus.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
-                val invalidEmailText = stringResource(id = R.string.invalid_email)
-                val invalidPasswordText = stringResource(id = R.string.invalid_password)
-                val color = NotoColor.Teal.toColor()
-                val focusRequester = remember { FocusRequester() }
                 val focusManager = LocalFocusManager.current
+                val forgotPasswordInteractionSource = remember { MutableInteractionSource() }
 
                 Screen(
                     title = stringResource(id = R.string.login),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    color = color,
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.welcome_back),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(NotoTheme.dimensions.medium),
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-
-                    Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
-
-                    Column {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
                         TextField(
                             value = email,
-                            onValueChange = {
-                                viewModel.setEmail(it)
-                                viewModel.setEmailStatus(TextFieldStatus.Empty)
+                            onValueChange = { email ->
+                                viewModel.setEmail(email)
+                                if (email.isNotBlank()) {
+                                    val isEmailValid = Constants.Regex.matchesEmail(email)
+                                    if (isEmailValid) {
+                                        viewModel.setEmailStatus(TextFieldStatus.Empty)
+                                    } else if (emailStatus.isError) {
+                                        viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
+                                    }
+                                } else {
+                                    viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_required))
+                                }
                             },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onFocusChanged { focusState ->
+                                    if (!focusState.isFocused && email.isNotBlank()) {
+                                        val isEmailValid = Constants.Regex.matchesEmail(email)
+                                        if (!isEmailValid) viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
+                                    }
+                                },
                             placeholder = stringResource(id = R.string.email),
                             leadingIcon = {
                                 Icon(
@@ -98,23 +107,19 @@ class LoginFragment : Fragment() {
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next,
                             ),
-                            modifier = Modifier.focusRequester(focusRequester)
                         )
-
-                        DisposableEffect(focusRequester) {
-                            focusRequester.requestFocus()
-                            onDispose {
-                                focusManager.clearFocus(force = true)
-                            }
-                        }
 
                         Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
                         PasswordTextField(
                             value = password,
-                            onValueChange = {
-                                viewModel.setPassword(it)
-                                viewModel.setPasswordStatus(TextFieldStatus.Empty)
+                            onValueChange = { password ->
+                                viewModel.setPassword(password)
+                                if (password.isNotBlank()) {
+                                    viewModel.setPasswordStatus(TextFieldStatus.Empty)
+                                } else {
+                                    viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_required))
+                                }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             status = passwordStatus,
@@ -125,50 +130,44 @@ class LoginFragment : Fragment() {
                             }
                         )
 
+                        Spacer(Modifier.height(NotoTheme.dimensions.medium))
+
+                        Text(
+                            text = stringResource(id = R.string.forgot_password),
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .clickable(interactionSource = forgotPasswordInteractionSource, indication = null) {},
+                            style = MaterialTheme.typography.labelLarge,
+                            textDecoration = TextDecoration.Underline,
+                        )
+
                         Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
 
                         Button(
                             text = stringResource(id = R.string.login),
                             onClick = {
-                                val isEmailInvalid = !email.matches(Constants.Regex.Email) || email.any { it.isWhitespace() }
-                                val isPasswordInvalid = password.isBlank()
-                                if (isEmailInvalid) {
-                                    viewModel.setEmailStatus(TextFieldStatus.Error(invalidEmailText))
-                                }
-                                if (isPasswordInvalid) {
-                                    viewModel.setPasswordStatus(TextFieldStatus.Error(invalidPasswordText))
-                                }
-                                if (!isEmailInvalid && !isPasswordInvalid) {
-                                    viewModel.loginUser(email, password)
-                                }
+                                val isInputValid = checkIsInputValid(email, password)
+                                if (isInputValid) viewModel.loginUser(email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            containerColor = color,
-                            contentColor = Color.White,
-                        )
-
-                        TextButton(
-                            text = stringResource(id = R.string.forgot_password),
-                            onClick = {},
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(NotoTheme.dimensions.medium, NotoTheme.dimensions.extraSmall),
-                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
 
-                    Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
-
-                    TextButton(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.dont_have_account))
-                            withStyle(MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, color = color).toSpanStyle()) {
-                                append(' ')
-                                append(stringResource(id = R.string.register))
-                            }
-                        },
-                        onClick = { navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToRegisterFragment()) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if (!isIntro) {
+                        Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
+                        Column(
+                            Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = stringResource(id = R.string.dont_have_account))
+                            OutlinedButton(
+                                text = stringResource(id = R.string.register),
+                                onClick = { navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToRegisterFragment()) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
                 }
 
                 state.fold(
@@ -222,5 +221,20 @@ class LoginFragment : Fragment() {
                 )
             }
         }
+    }
+
+    private fun checkIsInputValid(email: String, password: String): Boolean {
+        val isEmailValid = Constants.Regex.matchesEmail(email)
+        val isPasswordValid = password.isNotBlank()
+
+        if (email.isBlank()) {
+            viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_required))
+        } else {
+            if (!isEmailValid) viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
+        }
+
+        if (!isPasswordValid) viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_required))
+
+        return isEmailValid && isPasswordValid
     }
 }

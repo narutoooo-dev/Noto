@@ -70,9 +70,6 @@ class AppViewModel(
     var currentTheme: Theme? = null
         private set
 
-    private val mutableIsNotificationPermissionGranted = MutableStateFlow<Boolean?>(null)
-    val isNotificationPermissionGranted get() = mutableIsNotificationPermissionGranted.asStateFlow()
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val quickNoteFolder = settingsRepository.quickNoteFolderId
         .flatMapConcat { folderRepository.getFolderById(it) }
@@ -117,10 +114,6 @@ class AppViewModel(
         val folderId = quickNoteFolder.first().id
         val note = Note(folderId = folderId, title = title, body = body, position = 0)
         noteRepository.createNote(note).also(::setQuickNote)
-    }
-
-    fun setNotificationPermissionResult(isGranted: Boolean?) {
-        mutableIsNotificationPermissionGranted.value = isGranted
     }
 
     fun setQuickNote(noteId: Long) = viewModelScope.launch {

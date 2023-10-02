@@ -1,16 +1,12 @@
 package com.noto.app
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import androidx.core.content.ContextCompat
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.os.bundleOf
@@ -56,10 +52,6 @@ class AppActivity : BaseActivity() {
 
     private val workManager by lazy { WorkManager.getInstance(this) }
 
-    private val notificationPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
-        viewModel.setNotificationPermissionResult(isGranted)
-    }
-
     private val currentFragment
         get() = navHostFragment.parentFragmentManager.fragments
             .firstOrNull { it != null && it.isVisible }
@@ -67,7 +59,6 @@ class AppActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (appViewModel.currentTheme == null) return
-        requestNotificationsPermissionIfRequired()
         notificationManager.createNotificationChannels(this)
         AppActivityBinding.inflate(layoutInflater).withBinding {
             setContentView(root)
@@ -89,7 +80,7 @@ class AppActivity : BaseActivity() {
         viewModel.userStatus
             .onEach { userStatus ->
                 when (userStatus) {
-                    UserStatus.None, UserStatus.LoggedIn -> {
+                    UserStatus.NotLoggedIn, UserStatus.LoggedIn -> {
                         if (intent?.action !in AppIntents) { // Default action (i.e. opening the app from the home screen.)
                             when (val interfaceId = viewModel.mainInterfaceId.value) { // Set the start destination according to user preference.
                                 in FilteredItemModel.Ids -> {
@@ -117,7 +108,8 @@ class AppActivity : BaseActivity() {
                             inflateGraphAndSetStartDestination(R.id.folderFragment, args) // Set the start destination to the General folder.
                         }
                     }
-                    UserStatus.NotLoggedIn -> inflateGraphAndSetStartDestination(R.id.startFragment)
+
+                    UserStatus.New -> inflateGraphAndSetStartDestination(R.id.startFragment)
                 }
             }
             .launchIn(lifecycleScope)
@@ -346,14 +338,5 @@ class AppActivity : BaseActivity() {
             .also { shortcuts ->
                 ShortcutManagerCompat.updateShortcuts(this, shortcuts)
             }
-    }
-
-    private fun requestNotificationsPermissionIfRequired() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val notificationPermissionStatus = ContextCompat.checkSelfPermission(this@AppActivity, Manifest.permission.POST_NOTIFICATIONS)
-            if (notificationPermissionStatus == PackageManager.PERMISSION_DENIED) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
     }
 }

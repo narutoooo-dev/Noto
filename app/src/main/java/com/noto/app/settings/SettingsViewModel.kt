@@ -30,7 +30,7 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, UiState.Loading)
 
     val userStatus = settingsRepository.userStatus
-        .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.NotLoggedIn)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.New)
 
     val theme = settingsRepository.theme
         .stateIn(viewModelScope, SharingStarted.Lazily, Theme.System)

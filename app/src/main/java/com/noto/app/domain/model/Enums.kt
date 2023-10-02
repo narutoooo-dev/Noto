@@ -60,5 +60,5 @@ enum class ScreenBrightnessLevel(val value: Float) {
 }
 
 enum class UserStatus {
-    None, LoggedIn, NotLoggedIn,
+    New, LoggedIn, NotLoggedIn,
 }

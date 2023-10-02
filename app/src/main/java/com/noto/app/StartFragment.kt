@@ -4,17 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import com.noto.app.components.Button
-import com.noto.app.components.Screen
+import com.noto.app.components.*
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely
@@ -31,26 +38,52 @@ class StartFragment : Fragment() {
         ComposeView(context).apply {
             isTransitionGroup = true
             setContent {
+                val scrollState = rememberScrollState()
+                val isFullyScrolled by remember { derivedStateOf { scrollState.value == scrollState.maxValue } }
+                val elevation by animateDpAsState(
+                    targetValue = if (!isFullyScrolled) NotoTheme.dimensions.extraSmall else 0.dp,
+                    animationSpec = tween(ElevationAnimationDuration)
+                )
+
                 Screen(
                     title = "",
-                    verticalArrangement = Arrangement.Bottom,
                     onNavigationIconClick = null,
+                    verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    scrollState = scrollState,
+                    bottomBar = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .shadow(elevation)
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(NotoTheme.dimensions.medium),
+                            verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Button(
+                                text = stringResource(id = R.string.get_started),
+                                onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToGetStartedFragment()) },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+
+                            Button(
+                                text = stringResource(id = R.string.login),
+                                onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToLoginFragment()) },
+                                modifier = Modifier.fillMaxWidth(),
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                    }
                 ) {
-                    Button(
-                        text = stringResource(id = R.string.get_started),
-                        onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToGetStartedFragment()) },
-                        modifier = Modifier.fillMaxWidth(),
+                    IntroPageImage(
+                        painter = painterResource(id = R.drawable.illustration_welcome),
+                        contentDescription = stringResource(id = R.string.start_title)
                     )
-
-                    Spacer(Modifier.height(NotoTheme.dimensions.medium))
-
-                    Button(
-                        text = stringResource(id = R.string.login),
-                        onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToLoginFragment()) },
-                        modifier = Modifier.fillMaxWidth(),
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                    )
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
+                    IntroPageTitle(text = stringResource(id = R.string.start_title))
+                    IntroPageDescription(text = stringResource(id = R.string.start_page_description))
                 }
             }
         }

@@ -47,8 +47,6 @@ class EditNameDialogFragment : BaseDialogFragment() {
                 val name by viewModel.name.collectAsState()
                 val nameStatus by viewModel.nameStatus.collectAsState()
                 val nameState by viewModel.nameState.collectAsState()
-                val invalidNameText = stringResource(id = R.string.invalid_name)
-                val loadingText = stringResource(id = R.string.updating_name)
 
                 BottomSheetDialog(title = stringResource(id = R.string.edit_name)) {
                     TextField(
@@ -79,7 +77,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
                         text = stringResource(id = R.string.update_name),
                         onClick = {
                             if (name.isBlank()) {
-                                viewModel.setNameStatus(TextFieldStatus.Error(invalidNameText))
+                                viewModel.setNameStatus(TextFieldStatus.Error(R.string.name_is_required))
                             } else {
                                 viewModel.updateName()
                             }
@@ -92,7 +90,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
                     onLoading = {
                         navController?.navigateSafely(
                             EditNameDialogFragmentDirections.actionEditNameDialogFragmentToProgressIndicatorDialogFragment(
-                                loadingText
+                                stringResource(id = R.string.updating_name)
                             )
                         )
                     },

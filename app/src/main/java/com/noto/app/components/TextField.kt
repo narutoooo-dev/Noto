@@ -31,10 +31,10 @@ sealed interface TextFieldStatus {
     data object Empty : TextFieldStatus
 
     @JvmInline
-    value class Info(val message: String) : TextFieldStatus
+    value class Info(val messageStringResourceId: Int) : TextFieldStatus
 
     @JvmInline
-    value class Error(val error: String) : TextFieldStatus
+    value class Error(val errorStringResourceId: Int) : TextFieldStatus
 
     val isError: Boolean
         get() = this is Error
@@ -162,7 +162,7 @@ private fun ColumnScope.TextFieldStatus(status: TextFieldStatus, modifier: Modif
             is TextFieldStatus.Empty -> {}
             is TextFieldStatus.Info -> {
                 Text(
-                    text = status.message,
+                    text = stringResource(id = status.messageStringResourceId),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -170,7 +170,7 @@ private fun ColumnScope.TextFieldStatus(status: TextFieldStatus, modifier: Modif
 
             is TextFieldStatus.Error -> {
                 Text(
-                    text = status.error,
+                    text = stringResource(id = status.errorStringResourceId),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.error
                 )

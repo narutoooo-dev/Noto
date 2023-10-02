@@ -19,11 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.components.BottomSheetDialog
-import com.noto.app.components.Button
-import com.noto.app.components.TextField
-import com.noto.app.components.TextFieldStatus
+import com.noto.app.components.*
 import com.noto.app.data.model.remote.ResponseException
 import com.noto.app.fold
 import com.noto.app.settings.SettingsViewModel
@@ -48,8 +44,6 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                 val email by viewModel.email.collectAsState()
                 val emailStatus by viewModel.emailStatus.collectAsState()
                 val emailState by viewModel.emailState.collectAsState()
-                val invalidEmailText = stringResource(id = R.string.invalid_email)
-                val loadingText = stringResource(id = R.string.updating_email)
 
                 BottomSheetDialog(title = stringResource(id = R.string.change_email)) {
                     TextField(
@@ -78,7 +72,7 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                         text = stringResource(id = R.string.update_email),
                         onClick = {
                             if (!email.matches(Constants.Regex.Email) || email.any { it.isWhitespace() }) {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(invalidEmailText))
+                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
                             } else {
                                 viewModel.updateEmail()
                             }
@@ -91,7 +85,7 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                     onLoading = {
                         navController?.navigateSafely(
                             ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToProgressIndicatorDialogFragment(
-                                loadingText
+                                stringResource(id = R.string.updating_email)
                             )
                         )
                     },
@@ -107,11 +101,11 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
 
                         when (exception) {
                             ResponseException.Auth.UserAlreadyRegistered -> {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(stringResource(id = R.string.user_already_registered)))
+                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_registered))
                             }
 
                             ResponseException.Auth.InvalidEmail -> {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(stringResource(id = R.string.invalid_email)))
+                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
                             }
 
                             else -> {
