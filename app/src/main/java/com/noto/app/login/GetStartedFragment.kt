@@ -198,8 +198,8 @@ class GetStartedFragment : Fragment() {
         val userStatus by viewModel.userStatus.collectAsState()
         if (userStatus == UserStatus.NotLoggedIn || userStatus == UserStatus.New) {
             Button(
-                text = stringResource(id = R.string.register_for_free),
-                onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToRegisterFragment()) },
+                text = stringResource(id = R.string.create_account),
+                onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToCreateAccountFragment()) },
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = color,
                 contentColor = Color.White,
@@ -228,7 +228,7 @@ class GetStartedFragment : Fragment() {
     private fun BottomAppBarSetupContent(color: Color) {
         Button(
             text = stringResource(id = R.string.intro_finish),
-            onClick = { viewModel.finish() },
+            onClick = { viewModel.finishIntro() },
             modifier = Modifier.fillMaxWidth(),
             containerColor = color,
             contentColor = Color.White,

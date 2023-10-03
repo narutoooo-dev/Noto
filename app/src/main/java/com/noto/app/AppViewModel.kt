@@ -140,13 +140,13 @@ class AppViewModel(
         val email = uri.getQueryParameter(Constants.Email)
         if (accessToken != null && refreshToken != null) {
             when {
-                type == Constants.SignUp -> completeUserRegistration(
+                type == Constants.SignUp -> finishCreatingAccount(
                     accessToken,
                     refreshToken,
                     onSuccess = { onResult(null) },
                     onFailure = { onResult(R.string.something_went_wrong) },
                 )
-                type == Constants.EmailChange && email != null -> completeUpdatingUserEmail(
+                type == Constants.EmailChange && email != null -> finishUpdatingEmail(
                     email,
                     accessToken,
                     refreshToken,
@@ -159,26 +159,26 @@ class AppViewModel(
         }
     }
 
-    private fun completeUserRegistration(
+    private fun finishCreatingAccount(
         accessToken: String,
         refreshToken: String,
         onSuccess: (Unit) -> Unit,
         onFailure: (Throwable) -> Unit,
     ) = viewModelScope.launch {
-        userRepository.completeUserRegistration(accessToken, refreshToken)
+        userRepository.finishCreatingAccount(accessToken, refreshToken)
             .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
             .onSuccess(onSuccess)
             .onFailure(onFailure)
     }
 
-    private fun completeUpdatingUserEmail(
+    private fun finishUpdatingEmail(
         email: String,
         accessToken: String,
         refreshToken: String,
         onSuccess: (Unit) -> Unit,
         onFailure: (Throwable) -> Unit,
     ) = viewModelScope.launch {
-        userRepository.completeUpdatingEmail(email, accessToken, refreshToken)
+        userRepository.finishUpdatingEmail(email, accessToken, refreshToken)
             .onSuccess(onSuccess)
             .onFailure(onFailure)
     }

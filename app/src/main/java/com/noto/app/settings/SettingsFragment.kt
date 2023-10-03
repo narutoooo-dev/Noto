@@ -98,7 +98,7 @@ class SettingsFragment : Fragment() {
                 type = SettingsItemType.None,
                 onClick = {
                     when (userStatus) {
-                        UserStatus.New, UserStatus.NotLoggedIn -> navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToRegisterFragment())
+                        UserStatus.New, UserStatus.NotLoggedIn -> navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToCreateAccountFragment())
                         UserStatus.LoggedIn -> navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToAccountSettingsFragment())
                     }
                 },

@@ -5,7 +5,7 @@ sealed class ResponseException : RuntimeException() {
     operator fun invoke(): Nothing = throw this
 
     sealed class Auth : ResponseException() {
-        object UserAlreadyRegistered : Auth()
+        object UserAlreadyExists : Auth()
         object InvalidEmail : Auth()
         object InvalidPassword : Auth()
         object InvalidLoginCredentials : Auth()

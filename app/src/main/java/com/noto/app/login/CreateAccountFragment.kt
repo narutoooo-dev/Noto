@@ -36,7 +36,7 @@ import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterFragment : Fragment() {
+class CreateAccountFragment : Fragment() {
 
     private val viewModel by viewModel<LoginViewModel>()
 
@@ -63,13 +63,16 @@ class RegisterFragment : Fragment() {
                 val snackbarHostState = remember { SnackbarHostState() }
                 val focusManager = LocalFocusManager.current
                 val isPasswordVisible = rememberSaveable { mutableStateOf(false) }
-                val accountAgreementAnnotatedString = remember { context.getText(R.string.account_agreement).toSpannable().toAnnotatedString() }
-                val passwordRequirementsAnnotatedString =
-                    remember { context.getText(R.string.password_requirements).toSpannable().toAnnotatedString() }
+                val accountAgreementAnnotatedString = remember {
+                    context.getText(R.string.account_agreement).toSpannable().toAnnotatedString()
+                }
+                val passwordRequirementsAnnotatedString = remember {
+                    context.getText(R.string.password_requirements).toSpannable().toAnnotatedString()
+                }
                 val uriHandler = LocalUriHandler.current
 
                 Screen(
-                    title = stringResource(id = R.string.register),
+                    title = stringResource(id = R.string.create_account),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -227,7 +230,7 @@ class RegisterFragment : Fragment() {
                             style = MaterialTheme.typography.labelLarge.copy(textDecoration = TextDecoration.Underline, textAlign = TextAlign.End),
                             onClick = {
                                 navController?.navigateSafely(
-                                    RegisterFragmentDirections.actionRegisterFragmentToPasswordRequirementsDialogFragment(
+                                    CreateAccountFragmentDirections.actionCreateAccountFragmentToPasswordRequirementsDialogFragment(
                                         password
                                     )
                                 )
@@ -237,10 +240,10 @@ class RegisterFragment : Fragment() {
                         Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
                         Button(
-                            text = stringResource(id = R.string.register),
+                            text = stringResource(id = R.string.create_account),
                             onClick = {
                                 val isInputValid = checkIsInputValid(name, email, password, confirmPassword)
-                                if (isInputValid) viewModel.registerUser(name, email, password)
+                                if (isInputValid) viewModel.createAccount(name, email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             contentColor = Color.White,
@@ -269,7 +272,7 @@ class RegisterFragment : Fragment() {
                         Text(text = stringResource(id = R.string.already_have_an_account))
                         OutlinedButton(
                             text = stringResource(id = R.string.login),
-                            onClick = { navController?.navigateSafely(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()) },
+                            onClick = { navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToLoginFragment()) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -278,7 +281,7 @@ class RegisterFragment : Fragment() {
                 state.fold(
                     onLoading = {
                         navController?.navigateSafely(
-                            RegisterFragmentDirections.actionRegisterFragmentToProgressIndicatorDialogFragment(
+                            CreateAccountFragmentDirections.actionCreateAccountFragmentToProgressIndicatorDialogFragment(
                                 stringResource(id = R.string.creating_account)
                             )
                         )
@@ -287,14 +290,14 @@ class RegisterFragment : Fragment() {
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
 
-                        navController?.navigateSafely(RegisterFragmentDirections.actionRegisterFragmentToVerifyEmailDialogFragment())
+                        navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToVerifyEmailDialogFragment())
                     },
                     onFailure = { exception ->
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
                         when (exception) {
-                            ResponseException.Auth.UserAlreadyRegistered -> {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_registered))
+                            ResponseException.Auth.UserAlreadyExists -> {
+                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_exists))
                             }
 
                             ResponseException.Auth.InvalidEmail -> {

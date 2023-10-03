@@ -55,20 +55,20 @@ class LoginViewModel(
     private val mutableIsNotificationPermissionGranted = MutableStateFlow<Boolean?>(null)
     val isNotificationPermissionGranted get() = mutableIsNotificationPermissionGranted.asStateFlow()
 
-    fun registerUser(name: String, email: String, password: String) = viewModelScope.launch {
+    fun createAccount(name: String, email: String, password: String) = viewModelScope.launch {
         mutableState.value = UiState.Loading
-        mutableState.value = userRepository.registerUser(name.trim(), email.trim().lowercase(), password.trim())
+        mutableState.value = userRepository.createAccount(name.trim(), email.trim().lowercase(), password.trim())
             .toUiState()
     }
 
-    fun loginUser(email: String, password: String) = viewModelScope.launch {
+    fun login(email: String, password: String) = viewModelScope.launch {
         mutableState.value = UiState.Loading
-        mutableState.value = userRepository.loginUser(email.trim().lowercase(), password.trim())
+        mutableState.value = userRepository.login(email.trim().lowercase(), password.trim())
             .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
             .toUiState()
     }
 
-    fun finish() = viewModelScope.launch {
+    fun finishIntro() = viewModelScope.launch {
         if (userStatus.value == UserStatus.New) settingsRepository.updateUserStatus(UserStatus.NotLoggedIn)
     }
 
@@ -107,4 +107,5 @@ class LoginViewModel(
     fun setNotificationPermissionResult(isGranted: Boolean?) {
         mutableIsNotificationPermissionGranted.value = isGranted
     }
+
 }

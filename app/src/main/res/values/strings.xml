@@ -601,9 +601,8 @@
     <string name="password_requirement_lowercase_chars">1 or more lowercase letters.</string>
     <string name="password_requirement_number_chars">1 or more numbers.</string>
     <string name="password_requirement_special_chars">1 or more special characters.</string>
-    <string name="register">Register</string>
+    <string name="create_account">Create account</string>
     <string name="creating_account">Creating an account…</string>
-    <string name="register_for_free">Register for Free</string>
     <string name="account_is_created">Account has been created.</string>
     <string name="get_started">Get started</string>
     <string name="account_agreement">By creating an account, you agree to the <a href="https://github.com/alialbaali/Noto/blob/master/TermsConditions.md">Terms &amp; Conditions</a> and <a href="https://github.com/alialbaali/Noto/blob/master/PrivacyPolicy.md">Privacy Policy</a>.</string>
@@ -687,7 +686,7 @@
     <string name="email_is_required">Email is required.</string>
     <string name="password_is_required">Password is required.</string>
     <string name="confirm_password_is_required">Confirm password is required.</string>
-    <string name="user_already_registered">User with this email is already registered.</string>
+    <string name="user_already_exists">User with this email already exists.</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="dont_have_account">Don\'t have an account?</string>
     <string name="something_went_wrong">Something went wrong.</string>
@@ -707,7 +706,7 @@
     <string name="delete_account_description">This action can\'t be undone and will delete your account and all of its data permanently.</string>
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="logging_in">Logging in…</string>
-    <string name="email_not_verified">Email is not verified. Please register again.</string>
+    <string name="email_not_verified">Email is not verified. Please try to create account again.</string>
     <string name="verify_email">Verify email</string>
     <string name="verify_email_info">Verification email has been sent to your Inbox.\n\nMake sure to check Junk and Spam folders if you can\'t find in the Inbox folder.</string>
     <string name="open_inbox">Open Inbox</string>

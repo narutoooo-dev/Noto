@@ -100,8 +100,8 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                             navController?.navigateUp()
 
                         when (exception) {
-                            ResponseException.Auth.UserAlreadyRegistered -> {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_registered))
+                            ResponseException.Auth.UserAlreadyExists -> {
+                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_exists))
                             }
 
                             ResponseException.Auth.InvalidEmail -> {

@@ -27,7 +27,7 @@ class UserRepositoryImpl(
         .catch { emit(Result.failure(it)) }
         .flowOn(dispatcher)
 
-    override suspend fun registerUser(name: String, email: String, password: String): Result<Unit> = runCatching {
+    override suspend fun createAccount(name: String, email: String, password: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
             val passwordData = passwordTransformer.hashPassword(password.toByteArray())
             val hashedPassword = passwordData.key.let(passwordTransformer::encodeToString)
@@ -39,7 +39,7 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun loginUser(email: String, password: String): Result<Unit> = runCatching {
+    override suspend fun login(email: String, password: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
             val passwordParametersResponse = remoteAuthDataSource.getPasswordParameters(email)
             val hashedPassword = passwordTransformer.verifyPassword(
@@ -56,7 +56,7 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun completeUserRegistration(accessToken: String, refreshToken: String): Result<Unit> = runCatching {
+    override suspend fun finishCreatingAccount(accessToken: String, refreshToken: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
             val id = settingsRepository.id.first()
             val name = settingsRepository.name.first()
@@ -82,7 +82,7 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun completeUpdatingEmail(
+    override suspend fun finishUpdatingEmail(
         email: String,
         accessToken: String,
         refreshToken: String,

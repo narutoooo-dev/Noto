@@ -143,7 +143,7 @@ class LoginFragment : Fragment() {
                             text = stringResource(id = R.string.login),
                             onClick = {
                                 val isInputValid = checkIsInputValid(email, password)
-                                if (isInputValid) viewModel.loginUser(email, password)
+                                if (isInputValid) viewModel.login(email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -158,8 +158,8 @@ class LoginFragment : Fragment() {
                         ) {
                             Text(text = stringResource(id = R.string.dont_have_account))
                             OutlinedButton(
-                                text = stringResource(id = R.string.register),
-                                onClick = { navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToRegisterFragment()) },
+                                text = stringResource(id = R.string.create_account),
+                                onClick = { navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToCreateAccountFragment()) },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }

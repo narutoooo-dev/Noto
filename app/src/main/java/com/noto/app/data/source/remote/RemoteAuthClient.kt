@@ -25,7 +25,7 @@ class RemoteAuthClient(private val authClient: HttpClient, private val client: H
         }.getOrElse { response ->
             val errorResponse = response.body<SignUpErrorResponse>()
             when (response.status) {
-                HttpStatusCode.BadRequest -> Auth.UserAlreadyRegistered()
+                HttpStatusCode.BadRequest -> Auth.UserAlreadyExists()
                 HttpStatusCode.UnprocessableEntity -> when {
                     errorResponse.msg.contains("email", ignoreCase = true) -> Auth.InvalidEmail()
                     errorResponse.msg.contains("password", ignoreCase = true) -> Auth.InvalidPassword()
@@ -100,8 +100,8 @@ class RemoteAuthClient(private val authClient: HttpClient, private val client: H
                 HttpStatusCode.UnprocessableEntity -> {
                     if (errorResponse.msg.contains("format"))
                         Auth.InvalidEmail()
-                    else if (errorResponse.msg.contains("registered"))
-                        Auth.UserAlreadyRegistered()
+                    else if (errorResponse.msg.contains("exists"))
+                        Auth.UserAlreadyExists()
                     else
                         unhandledError(errorResponse.msg)
                 }
