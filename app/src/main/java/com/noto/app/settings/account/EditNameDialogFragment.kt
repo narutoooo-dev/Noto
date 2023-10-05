@@ -22,7 +22,7 @@ import com.noto.app.R
 import com.noto.app.components.BaseDialogFragment
 import com.noto.app.components.BottomSheetDialog
 import com.noto.app.components.Button
-import com.noto.app.components.TextField
+import com.noto.app.components.NotoTextField
 import com.noto.app.components.TextFieldStatus
 import com.noto.app.fold
 import com.noto.app.settings.SettingsViewModel
@@ -49,7 +49,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
                 val nameState by viewModel.nameState.collectAsState()
 
                 BottomSheetDialog(title = stringResource(id = R.string.edit_name)) {
-                    TextField(
+                    NotoTextField(
                         value = name,
                         onValueChange = {
                             if (it.length <= Constants.NameMaxLength) {

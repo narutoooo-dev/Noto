@@ -94,7 +94,7 @@ class CreateAccountFragment : Fragment() {
 
                         Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
-                        TextField(
+                        NotoTextField(
                             value = name,
                             onValueChange = { name ->
                                 if (name.length <= Constants.NameMaxLength) {
@@ -123,7 +123,7 @@ class CreateAccountFragment : Fragment() {
 
                         Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
-                        TextField(
+                        NotoTextField(
                             value = email,
                             onValueChange = { email ->
                                 viewModel.setEmail(email)

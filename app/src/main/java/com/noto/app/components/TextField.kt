@@ -41,7 +41,7 @@ sealed interface TextFieldStatus {
 }
 
 @Composable
-fun TextField(
+fun NotoTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -121,7 +121,7 @@ fun PasswordTextField(
     isPasswordVisible: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) },
 ) {
     var isPasswordVisible by isPasswordVisible
-    TextField(
+    NotoTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = placeholder,

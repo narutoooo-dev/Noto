@@ -46,7 +46,7 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                 val emailState by viewModel.emailState.collectAsState()
 
                 BottomSheetDialog(title = stringResource(id = R.string.change_email)) {
-                    TextField(
+                    NotoTextField(
                         value = email,
                         onValueChange = {
                             viewModel.setEmail(it)

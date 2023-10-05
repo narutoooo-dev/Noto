@@ -70,7 +70,7 @@ class LoginFragment : Fragment() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        TextField(
+                        NotoTextField(
                             value = email,
                             onValueChange = { email ->
                                 viewModel.setEmail(email)
