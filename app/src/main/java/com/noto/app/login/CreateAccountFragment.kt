@@ -92,7 +92,7 @@ class CreateAccountFragment : Fragment() {
                             textAlign = TextAlign.Center,
                         )
 
-                        Spacer(Modifier.height(NotoTheme.dimensions.medium))
+                        Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
 
                         NotoTextField(
                             value = name,
