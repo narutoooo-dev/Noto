@@ -63,9 +63,6 @@ class CreateAccountFragment : Fragment() {
                 val snackbarHostState = remember { SnackbarHostState() }
                 val focusManager = LocalFocusManager.current
                 val isPasswordVisible = rememberSaveable { mutableStateOf(false) }
-                val accountAgreementAnnotatedString = remember {
-                    context.getText(R.string.account_agreement).toSpannable().toAnnotatedString()
-                }
                 val passwordRequirementsAnnotatedString = remember {
                     context.getText(R.string.password_requirements).toSpannable().toAnnotatedString()
                 }
@@ -77,11 +74,26 @@ class CreateAccountFragment : Fragment() {
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    val primaryColor = MaterialTheme.colorScheme.primary
+                    val accountAgreementAnnotatedString = remember {
+                        context.getText(R.string.account_agreement).toSpannable().toAnnotatedString(primaryColor)
+                    }
+
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+                        Text(
+                            text = stringResource(id = R.string.create_account_description),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Center,
+                        )
+
+                        Spacer(Modifier.height(NotoTheme.dimensions.medium))
+
                         TextField(
                             value = name,
                             onValueChange = { name ->
@@ -254,7 +266,10 @@ class CreateAccountFragment : Fragment() {
                         ClickableText(
                             text = accountAgreementAnnotatedString,
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.labelLarge.copy(textAlign = TextAlign.Center),
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                color = MaterialTheme.colorScheme.secondary,
+                                textAlign = TextAlign.Center,
+                            ),
                         ) { offset ->
                             accountAgreementAnnotatedString.getUrlAnnotations(offset, offset).firstOrNull()?.let {
                                 uriHandler.openUri(it.item.url)

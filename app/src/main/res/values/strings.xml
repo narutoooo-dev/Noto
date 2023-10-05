@@ -606,6 +606,7 @@
     <string name="account_is_created">Account has been created.</string>
     <string name="get_started">Get started</string>
     <string name="account_agreement">By creating an account, you agree to the <a href="https://github.com/alialbaali/Noto/blob/master/TermsConditions.md">Terms &amp; Conditions</a> and <a href="https://github.com/alialbaali/Noto/blob/master/PrivacyPolicy.md">Privacy Policy</a>.</string>
+    <string name="create_account_description">Backup your notes to the cloud, and use them across many devices as you\'d like while also having them end-to-end encrypted.</string>
 
     <string name="intro_finish">Finish</string>
     <string name="intro_auto_save">Auto Save</string>
