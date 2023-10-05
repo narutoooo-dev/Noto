@@ -162,7 +162,7 @@ class CreateAccountFragment : Fragment() {
 
                         Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
-                        PasswordTextField(
+                        NotoPasswordTextField(
                             value = password,
                             onValueChange = { password ->
                                 viewModel.setPassword(password)
@@ -199,7 +199,7 @@ class CreateAccountFragment : Fragment() {
 
                         Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
-                        PasswordTextField(
+                        NotoPasswordTextField(
                             value = confirmPassword,
                             onValueChange = { confirmPassword ->
                                 viewModel.setConfirmPassword(confirmPassword)

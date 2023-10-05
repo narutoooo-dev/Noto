@@ -1,20 +1,19 @@
 package com.noto.app.components
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
@@ -24,8 +23,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.noto.app.R
-import com.noto.app.theme.NotoTheme
+
+private val ErrorTextFieldBorderWidth = 1.dp
 
 sealed interface TextFieldStatus {
     data object Empty : TextFieldStatus
@@ -40,6 +41,7 @@ sealed interface TextFieldStatus {
         get() = this is Error
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotoTextField(
     value: String,
@@ -47,69 +49,72 @@ fun NotoTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    trailingIcon: (@Composable () -> Unit)? = null,
-    leadingIcon: (@Composable () -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     status: TextFieldStatus = TextFieldStatus.Empty,
     onDone: KeyboardActionScope.() -> Unit = { defaultKeyboardAction(keyboardOptions.imeAction) },
 ) {
-    var isPlaceholderVisible by rememberSaveable(value) { mutableStateOf(value.isEmpty()) }
-    val textStyle = MaterialTheme.typography.bodyMedium
+    val interactionSource = remember { MutableInteractionSource() }
+    val supportingText: @Composable (() -> Unit)? = when (status) {
+        is TextFieldStatus.Empty -> {
+            null
+        }
+
+        is TextFieldStatus.Info -> @Composable {
+            { InfoTextFieldStatus(status = status) }
+        }
+
+        is TextFieldStatus.Error -> @Composable {
+            { ErrorTextFieldStatus(status = status) }
+        }
+    }
+
+    val borderColor by animateColorAsState(
+        targetValue = if (status is TextFieldStatus.Error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface,
+        label = "TextFieldBorderColor",
+    )
+
     BasicTextField(
         value = value,
-        onValueChange = {
-            onValueChange(it)
-            isPlaceholderVisible = it.isEmpty()
-        },
-        modifier = modifier,
+        onValueChange = onValueChange,
+        modifier = modifier.animateContentSize(),
         enabled = enabled,
-        textStyle = textStyle,
+        textStyle = MaterialTheme.typography.bodyLarge,
         singleLine = true,
         visualTransformation = visualTransformation,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
         keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions(onDone)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.small)
-        ) {
-            Text(text = placeholder, style = MaterialTheme.typography.bodyLarge)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
-                    .padding(NotoTheme.dimensions.medium),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leadingIcon?.let { leadingIcon ->
-                    leadingIcon()
-                    Spacer(Modifier.width(NotoTheme.dimensions.medium))
-                }
+        keyboardActions = KeyboardActions(onDone),
+        interactionSource = interactionSource,
+    ) { innerTextField ->
+        TextFieldDefaults.DecorationBox(
+            value = value,
+            innerTextField = innerTextField,
+            enabled = enabled,
+            singleLine = true,
+            visualTransformation = visualTransformation,
+            interactionSource = interactionSource,
+            label = { Text(text = placeholder) },
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
+            shape = MaterialTheme.shapes.small,
+            supportingText = supportingText,
+            container = {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    this@Row.AnimatedVisibility(visible = isPlaceholderVisible) {
-                        Text(text = placeholder, style = textStyle)
-                    }
-                    it()
-                }
-                trailingIcon?.let { trailingIcon ->
-                    Spacer(Modifier.width(NotoTheme.dimensions.medium))
-                    trailingIcon()
-                }
+                        .clip(MaterialTheme.shapes.small)
+                        .border(ErrorTextFieldBorderWidth, borderColor, MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
+                )
             }
-            TextFieldStatus(status)
-        }
+        )
     }
 }
 
 @Composable
-fun PasswordTextField(
+fun NotoPasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -156,25 +161,23 @@ val KeyboardOptions.Companion.Password
     )
 
 @Composable
-private fun ColumnScope.TextFieldStatus(status: TextFieldStatus, modifier: Modifier = Modifier) {
-    AnimatedVisibility(visible = status != TextFieldStatus.Empty, modifier) {
-        when (status) {
-            is TextFieldStatus.Empty -> {}
-            is TextFieldStatus.Info -> {
-                Text(
-                    text = stringResource(id = status.messageStringResourceId),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-            }
+private fun InfoTextFieldStatus(status: TextFieldStatus.Info) {
+    Crossfade(targetState = status, label = "InfoTextFieldStatus") { status ->
+        Text(
+            text = stringResource(id = status.messageStringResourceId),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+    }
+}
 
-            is TextFieldStatus.Error -> {
-                Text(
-                    text = stringResource(id = status.errorStringResourceId),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
+@Composable
+private fun ErrorTextFieldStatus(status: TextFieldStatus.Error) {
+    Crossfade(targetState = status, label = "ErrorTextFieldStatus") { status ->
+        Text(
+            text = stringResource(id = status.errorStringResourceId),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.error,
+        )
     }
 }

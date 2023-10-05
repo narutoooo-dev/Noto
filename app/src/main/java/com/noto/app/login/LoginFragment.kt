@@ -109,7 +109,7 @@ class LoginFragment : Fragment() {
 
                         Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
 
-                        PasswordTextField(
+                        NotoPasswordTextField(
                             value = password,
                             onValueChange = { password ->
                                 viewModel.setPassword(password)
