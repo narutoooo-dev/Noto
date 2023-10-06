@@ -60,6 +60,7 @@ fun Fragment.Screen(
                 modifier = modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
+                    .height(IntrinsicSize.Max)
                     .padding(NotoTheme.dimensions.medium)
                     .padding(contentPadding),
                 verticalArrangement = verticalArrangement,
