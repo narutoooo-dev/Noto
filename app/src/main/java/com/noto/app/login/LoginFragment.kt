@@ -66,10 +66,22 @@ class LoginFragment : Fragment() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+                        Text(
+                            text = stringResource(id = R.string.login_description),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Center,
+                        )
+
+                        Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
+
+                        Spacer(modifier = Modifier.weight(1F))
+
                         NotoTextField(
                             value = email,
                             onValueChange = { email ->
@@ -147,6 +159,8 @@ class LoginFragment : Fragment() {
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )
+
+                        Spacer(modifier = Modifier.weight(1F))
                     }
 
                     if (!isIntro) {
