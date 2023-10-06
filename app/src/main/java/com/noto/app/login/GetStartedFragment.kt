@@ -264,7 +264,7 @@ private fun Fragment.PageItem(
     ) {
         IntroPageImage(painter = painterResource(id = page.imageDrawableId), contentDescription = stringResource(id = page.titleStringId))
         Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
-        IntroPageTitle(text = stringResource(id = page.titleStringId))
+        IntroPageTitle(text = stringResource(id = page.titleStringId), color = page.color)
         IntroPageDescription(text = stringResource(id = page.descriptionStringId))
         PageContent(page = page)
     }
