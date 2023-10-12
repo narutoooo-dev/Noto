@@ -109,7 +109,7 @@ class AppActivity : BaseActivity() {
                         }
                     }
 
-                    UserStatus.New -> inflateGraphAndSetStartDestination(R.id.startFragment)
+                    UserStatus.New -> inflateGraphAndSetStartDestination(R.id.createAccountFragment)
                 }
             }
             .launchIn(lifecycleScope)
@@ -194,11 +194,13 @@ class AppActivity : BaseActivity() {
     }
 
     private fun handleActionViewIntent(intent: Intent) {
+        if (navController.currentDestination?.id == R.id.verifyEmailDialogFragment) navController.navigateUp()
+        if (navController.currentDestination?.id == R.id.changeEmailDialogFragment) navController.navigateUp()
+        navController.navigateSafely(NavGraphDirections.actionGlobalProgressIndicatorDialogFragment(stringResource(R.string.verifying_email)))
         viewModel.handleIntentUri(
             uri = intent.data ?: Uri.EMPTY,
             onResult = { stringId ->
-                if (navController.currentDestination?.id == R.id.verifyEmailDialogFragment) navController.navigateUp()
-                if (navController.currentDestination?.id == R.id.changeEmailDialogFragment) navController.navigateUp()
+                if (navController.currentDestination?.id == R.id.progressIndicatorDialogFragment) navController.navigateUp()
                 if (stringId != null) currentFragment?.view?.snackbar(stringResource(stringId))
             },
         )

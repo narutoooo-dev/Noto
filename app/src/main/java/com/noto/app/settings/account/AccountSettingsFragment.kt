@@ -50,12 +50,12 @@ class AccountSettingsFragment : Fragment() {
         }
 
         navController?.currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<Long>(Constants.LogOut)
-            ?.observe(viewLifecycleOwner) { id -> logOut() }
+            ?.getLiveData<Int>(Constants.LogOut)
+            ?.observe(viewLifecycleOwner) { logOut() }
 
         navController?.currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<Long>(Constants.DeleteAccount)
-            ?.observe(viewLifecycleOwner) { id -> deleteUser() }
+            ?.getLiveData<Int>(Constants.DeleteAccount)
+            ?.observe(viewLifecycleOwner) { deleteUser() }
 
         setupMixedTransitions()
         ComposeView(context).apply {

@@ -76,7 +76,7 @@ val appModule = module {
 
     viewModel { NoteListWidgetConfigViewModel(it.get(), get(), get(), get(), get(), get()) }
 
-    viewModel { NotePagerViewModel(get(), get(),get(), it[0], it[1], it[2], it[3]) }
+    viewModel { NotePagerViewModel(get(), get(), get(), it[0], it[1], it[2], it[3]) }
 
     viewModel { FilteredViewModel(get(), get(), get(), get(), get(), it.get()) }
 
@@ -170,7 +170,7 @@ private fun DefaultHttpClient(block: HttpClientConfig<CIOEngineConfig>.() -> Uni
         contentType(ContentType.Application.Json)
     }
     install(ContentNegotiation) {
-        json(NotoDefaultJson)
+        json(RemoteJson)
     }
     if (BuildConfig.DEBUG) {
         Logging {

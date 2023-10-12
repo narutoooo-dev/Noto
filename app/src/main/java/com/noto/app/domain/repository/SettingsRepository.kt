@@ -74,8 +74,6 @@ interface SettingsRepository {
 
     val email: Flow<String>
 
-    val passwordParameters: Flow<String>
-
     val userStatus: Flow<UserStatus>
 
     fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int>
@@ -180,11 +178,7 @@ interface SettingsRepository {
 
     suspend fun updateEmail(email: String)
 
-    suspend fun updatePasswordParameters(parameters: String)
-
     suspend fun updateUserStatus(userStatus: UserStatus)
-
-    suspend fun clearPasswordParameters()
 
     suspend fun clearSettings()
 

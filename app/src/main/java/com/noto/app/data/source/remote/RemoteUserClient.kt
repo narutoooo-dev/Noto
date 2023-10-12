@@ -6,9 +6,12 @@ import com.noto.app.domain.source.remote.RemoteUserDataSource
 import com.noto.app.util.Constants
 import com.noto.app.util.getOrElse
 import com.noto.app.util.unhandledError
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.setBody
 
 class RemoteUserClient(private val client: HttpClient) : RemoteUserDataSource {
 
@@ -19,21 +22,6 @@ class RemoteUserClient(private val client: HttpClient) : RemoteUserDataSource {
             val errorResponse = response.body<RestErrorResponse>()
             unhandledError(errorResponse.message)
         }.first()
-    }
-
-    override suspend fun createUser(id: String, name: String, passwordParameters: String) {
-        return client.post("/rest/v1/users") {
-            setBody(
-                mapOf(
-                    Constants.Id to id,
-                    Constants.Name to name,
-                    Constants.PasswordParameters to passwordParameters,
-                )
-            )
-        }.getOrElse { response ->
-            val errorResponse = response.body<RestErrorResponse>()
-            unhandledError(errorResponse.message)
-        }
     }
 
     override suspend fun updateName(id: String, name: String) {

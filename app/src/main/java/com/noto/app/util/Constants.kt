@@ -50,6 +50,7 @@ object Constants {
     const val ApiKey = "apikey"
     const val LogOut = "log_out"
     const val DeleteAccount = "delete_account"
+    const val RawUserMetadata = "data"
 
     const val NameMaxLength = 32
 

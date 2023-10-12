@@ -174,10 +174,6 @@ class SettingsRepositoryImpl(
         .mapNotNull { preferences -> preferences[SettingsKeys.Email] }
         .flowOn(dispatcher)
 
-    override val passwordParameters: Flow<String> = storage.data
-        .mapNotNull { preferences -> preferences[SettingsKeys.PasswordParameters] }
-        .flowOn(dispatcher)
-
     override val userStatus: Flow<UserStatus> = storage.data
         .map { preferences -> preferences[SettingsKeys.UserStatus] }
         .map { if (it != null) UserStatus.valueOf(it) else UserStatus.New }
@@ -530,23 +526,9 @@ class SettingsRepositoryImpl(
         }
     }
 
-    override suspend fun updatePasswordParameters(parameters: String) {
-        withContext(dispatcher) {
-            storage.edit { preferences -> preferences[SettingsKeys.PasswordParameters] = parameters }
-        }
-    }
-
     override suspend fun updateUserStatus(userStatus: UserStatus) {
         withContext(dispatcher) {
             storage.edit { preferences -> preferences[SettingsKeys.UserStatus] = userStatus.toString() }
-        }
-    }
-
-    override suspend fun clearPasswordParameters() {
-        withContext(dispatcher) {
-            storage.edit { preferences ->
-                preferences.remove(SettingsKeys.PasswordParameters)
-            }
         }
     }
 

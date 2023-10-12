@@ -254,8 +254,9 @@ class CreateAccountFragment : Fragment() {
                         Button(
                             text = stringResource(id = R.string.create_account),
                             onClick = {
-                                val isInputValid = checkIsInputValid(name, email, password, confirmPassword)
-                                if (isInputValid) viewModel.createAccount(name, email, password)
+//                                val isInputValid = checkIsInputValid(name, email, password, confirmPassword)
+//                                if (isInputValid)
+                                    viewModel.createAccount(name, email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             contentColor = Color.White,

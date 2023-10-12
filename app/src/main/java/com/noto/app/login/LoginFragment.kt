@@ -154,8 +154,9 @@ class LoginFragment : Fragment() {
                         Button(
                             text = stringResource(id = R.string.login),
                             onClick = {
-                                val isInputValid = checkIsInputValid(email, password)
-                                if (isInputValid) viewModel.login(email, password)
+//                                val isInputValid = checkIsInputValid(email, password)
+//                                if (isInputValid)
+                                viewModel.login(email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -204,10 +205,7 @@ class LoginFragment : Fragment() {
                             }
 
                             ResponseException.Auth.EmailNotVerified -> {
-                                val message = stringResource(id = R.string.email_not_verified)
-                                LaunchedEffect(key1 = exception) {
-                                    snackbarHostState.showSnackbar(message = message)
-                                }
+                                navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToVerifyEmailDialogFragment())
                             }
 
                             else -> {
