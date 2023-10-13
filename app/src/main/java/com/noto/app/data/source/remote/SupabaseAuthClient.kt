@@ -133,7 +133,9 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
     }
 
     override suspend fun getPasswordParameters(email: String): PasswordParametersResponse {
-        return tryCatching {
+        return tryCatching(
+            onException = { NotoException.Auth.InvalidCredentials() }
+        ) {
             val parameters = mapOf(SupabaseConstants.Email to email)
             client.postgrest.rpc(SupabaseConstants.RPCs.GetPasswordParameters, parameters)
                 .decodeAs<PasswordParametersResponse>()
