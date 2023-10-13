@@ -69,6 +69,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next,
                         ),
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))

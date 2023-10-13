@@ -64,6 +64,7 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Done,
                         ),
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))

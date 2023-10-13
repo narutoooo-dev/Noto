@@ -104,6 +104,12 @@ class SettingsViewModel(
     private val mutableEmailState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val emailState get() = mutableEmailState.asStateFlow()
 
+    init {
+        settingsRepository.name
+            .onEach(::setName)
+            .launchIn(viewModelScope)
+    }
+
     fun toggleShowNotesCount() = viewModelScope.launch {
         settingsRepository.updateIsShowNotesCount(!isShowNotesCount.value)
     }
