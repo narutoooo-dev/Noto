@@ -64,10 +64,6 @@ interface SettingsRepository {
 
     val previewAutoScroll: Flow<Boolean>
 
-    val accessToken: Flow<String?>
-
-    val refreshToken: Flow<String?>
-
     val id: Flow<String>
 
     val name: Flow<String>
@@ -167,10 +163,6 @@ interface SettingsRepository {
     suspend fun updateContinuousSearch(isEnabled: Boolean)
 
     suspend fun updatePreviewAutoScroll(isEnabled: Boolean)
-
-    suspend fun updateAccessToken(accessToken: String)
-
-    suspend fun updateRefreshToken(refreshToken: String)
 
     suspend fun updateId(id: String)
 

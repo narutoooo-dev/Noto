@@ -1,7 +1,7 @@
 package com.noto.app.data.repository
 
 import com.noto.app.crypto.PasswordTransformer
-import com.noto.app.data.model.remote.ResponseException
+import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.User
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
@@ -30,9 +30,9 @@ class UserRepositoryImpl(
 
     override suspend fun createAccount(name: String, email: String, password: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
-            val isEmailExist = remoteAuthDataSource.isEmailExist(email).isExist
+            val isEmailExist = remoteAuthDataSource.isEmailExist(email)
             if (isEmailExist) {
-                ResponseException.Auth.UserAlreadyExists()
+                NotoException.Auth.UserAlreadyExists()
             } else {
                 val passwordData = passwordTransformer.hashPassword(password.toByteArray())
                 val encodedPassword = passwordData.key.let(passwordTransformer::encodeToString)
@@ -46,25 +46,21 @@ class UserRepositoryImpl(
             val passwordParametersResponse = remoteAuthDataSource.getPasswordParameters(email)
             val hashedPassword = passwordTransformer.verifyPassword(password.toByteArray(), passwordParametersResponse.passwordParameters)
             val encodedPassword = passwordTransformer.encodeToString(hashedPassword)
-            val authResponse = remoteAuthDataSource.login(email, encodedPassword)
-            finishCreatingAccount(authResponse.accessToken, authResponse.refreshToken).getOrThrow()
+            remoteAuthDataSource.login(email, encodedPassword)
         }
     }.recoverCatching { exception ->
         withContext(dispatcher) {
-            if (exception is ResponseException.Auth.EmailNotVerified) remoteAuthDataSource.verifyEmail(email)
+            if (exception is NotoException.Auth.EmailNotVerified) remoteAuthDataSource.verifyEmail(email)
             throw exception
         }
     }
 
-    override suspend fun finishCreatingAccount(accessToken: String, refreshToken: String): Result<Unit> = runCatching {
+    override suspend fun finishCreatingAccount(id: String, email: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
-            settingsRepository.updateAccessToken(accessToken)
-            settingsRepository.updateRefreshToken(refreshToken)
-            val authUser = remoteAuthDataSource.get()
+            settingsRepository.updateId(id)
+            settingsRepository.updateEmail(email)
             val user = remoteUserDataSource.getUser()
-            settingsRepository.updateId(user.id)
             settingsRepository.updateName(user.name)
-            settingsRepository.updateEmail(authUser.email)
         }
     }
 
@@ -82,11 +78,7 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun finishUpdatingEmail(
-        email: String,
-        accessToken: String,
-        refreshToken: String,
-    ): Result<Unit> = runCatching {
+    override suspend fun finishUpdatingEmail(email: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
             settingsRepository.updateEmail(email)
         }

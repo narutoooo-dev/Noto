@@ -28,12 +28,9 @@ object SettingsKeys {
     val QuickExit = booleanPreferencesKey("QuickExit")
     val ContinuousSearch = booleanPreferencesKey("ContinuousSearch")
     val PreviewAutoScroll = booleanPreferencesKey("PreviewAutoScroll")
-    val AccessToken = stringPreferencesKey("AccessToken")
-    val RefreshToken = stringPreferencesKey("RefreshToken")
     val Id = stringPreferencesKey("Id")
     val Name = stringPreferencesKey("Name")
     val Email = stringPreferencesKey("Email")
-    val PasswordParameters = stringPreferencesKey("PasswordParameters")
     val UserStatus = stringPreferencesKey("UserStatus")
 
     fun FilteredItemModel(model: FilteredItemModel) = intPreferencesKey("Filtered_Item_Model_${model.id}")

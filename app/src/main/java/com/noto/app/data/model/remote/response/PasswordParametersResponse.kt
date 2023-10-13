@@ -1,4 +1,4 @@
-package com.noto.app.data.model.remote
+package com.noto.app.data.model.remote.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

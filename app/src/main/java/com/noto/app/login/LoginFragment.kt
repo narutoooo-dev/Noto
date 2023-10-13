@@ -28,7 +28,7 @@ import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.*
-import com.noto.app.data.model.remote.ResponseException
+import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
@@ -154,9 +154,8 @@ class LoginFragment : Fragment() {
                         Button(
                             text = stringResource(id = R.string.login),
                             onClick = {
-//                                val isInputValid = checkIsInputValid(email, password)
-//                                if (isInputValid)
-                                viewModel.login(email, password)
+                                val isInputValid = checkIsInputValid(email, password)
+                                if (isInputValid) viewModel.login(email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -197,14 +196,14 @@ class LoginFragment : Fragment() {
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
                         when (exception) {
-                            ResponseException.Auth.InvalidLoginCredentials -> {
+                            NotoException.Auth.InvalidCredentials -> {
                                 val message = stringResource(id = R.string.invalid_credentials)
                                 LaunchedEffect(key1 = exception) {
                                     snackbarHostState.showSnackbar(message = message)
                                 }
                             }
 
-                            ResponseException.Auth.EmailNotVerified -> {
+                            NotoException.Auth.EmailNotVerified -> {
                                 navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToVerifyEmailDialogFragment())
                             }
 

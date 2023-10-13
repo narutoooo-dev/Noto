@@ -10,8 +10,11 @@ import com.noto.app.crypto.PasswordTransformer
 import com.noto.app.crypto.PasswordTransformerImpl
 import com.noto.app.data.database.NotoDatabase
 import com.noto.app.data.repository.*
-import com.noto.app.data.source.remote.RemoteAuthClient
-import com.noto.app.data.source.remote.RemoteUserClient
+import com.noto.app.data.source.remote.SupabaseAuthClient
+import com.noto.app.data.source.remote.SupabaseConstants
+import com.noto.app.data.source.remote.SupabaseDeepLinksHandler
+import com.noto.app.data.source.remote.SupabaseUserClient
+import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
 import com.noto.app.domain.source.LocalFolderDataSource
 import com.noto.app.domain.source.LocalLabelDataSource
@@ -29,34 +32,23 @@ import com.noto.app.note.NoteViewModel
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.widget.FolderListWidgetConfigViewModel
 import com.noto.app.widget.NoteListWidgetConfigViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.CIOEngineConfig
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.annotations.SupabaseInternal
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.GoTrue
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.client.request.header
-import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.flow.firstOrNull
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 
 private const val DataStoreName = "Noto Data Store"
 private val Context.dataStore by preferencesDataStore(name = DataStoreName)
-private val AuthClientQualifier = qualifier("AuthClient")
-private val ClientQualifier = qualifier("Client")
 
 val appModule = module {
 
@@ -66,7 +58,7 @@ val appModule = module {
 
     viewModel { NoteViewModel(get(), get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
-    viewModel { AppViewModel(get(), get(), get(), get()) }
+    viewModel { AppViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get()) }
 
@@ -114,69 +106,37 @@ val localDataSourceModule = module {
 
 }
 
+@OptIn(SupabaseInternal::class)
 val remoteDataSourceModule = module {
 
-    single(AuthClientQualifier) { DefaultHttpClient() }
-
-    single(ClientQualifier) {
-        val settingsRepository by inject<SettingsRepository>()
-        val authDataSource by inject<RemoteAuthDataSource>()
-        DefaultHttpClient {
-            Auth {
-                bearer {
-                    sendWithoutRequest { true }
-                    loadTokens {
-                        val accessToken = settingsRepository.accessToken.firstOrNull()
-                        val refreshToken = settingsRepository.refreshToken.firstOrNull()
-                        if (accessToken != null && refreshToken != null)
-                            BearerTokens(accessToken, refreshToken)
-                        else
-                            null
-                    }
-                    refreshTokens {
-                        val refreshToken = settingsRepository.refreshToken.firstOrNull()
-                        if (refreshToken != null) {
-                            val response = authDataSource.refreshToken(refreshToken)
-                            settingsRepository.updateAccessToken(response.accessToken)
-                            settingsRepository.updateRefreshToken(response.refreshToken)
-                            BearerTokens(response.accessToken, response.refreshToken)
-                        } else {
-                            null
-                        }
+    single<SupabaseClient> {
+        createSupabaseClient(SupabaseConstants.URLs.SupabaseUrl, BuildConfig.SupabaseApiKey) {
+            defaultSerializer = KotlinXSerializer(RemoteJson)
+            httpConfig {
+                if (BuildConfig.DEBUG) {
+                    Logging {
+                        level = LogLevel.ALL
+                        logger = Logger.SIMPLE
                     }
                 }
             }
+            install(GoTrue) {
+                scheme = URLProtocol.HTTPS.name
+                host = SupabaseConstants.URLs.NotoHost
+            }
+            install(Postgrest)
         }
     }
 
-    single<RemoteAuthDataSource> { RemoteAuthClient(get(AuthClientQualifier), get(ClientQualifier)) }
+    single<RemoteAuthDataSource> { SupabaseAuthClient(get()) }
 
-    single<RemoteUserDataSource> { RemoteUserClient(get(ClientQualifier)) }
+    single<RemoteUserDataSource> { SupabaseUserClient(get()) }
+
+    single<DeepLinksHandler> { SupabaseDeepLinksHandler(get()) }
 }
 
 val cryptoModule = module {
 
     single<PasswordTransformer> { PasswordTransformerImpl() }
 
-}
-
-private fun DefaultHttpClient(block: HttpClientConfig<CIOEngineConfig>.() -> Unit = {}) = HttpClient(CIO) {
-    defaultRequest {
-        url {
-            protocol = URLProtocol.HTTPS
-            host = "bcehffsgkofhyjoktqpe.supabase.co"
-        }
-        header(Constants.ApiKey, BuildConfig.SupabaseApiKey)
-        contentType(ContentType.Application.Json)
-    }
-    install(ContentNegotiation) {
-        json(RemoteJson)
-    }
-    if (BuildConfig.DEBUG) {
-        Logging {
-            level = LogLevel.ALL
-            logger = Logger.SIMPLE
-        }
-    }
-    block()
 }

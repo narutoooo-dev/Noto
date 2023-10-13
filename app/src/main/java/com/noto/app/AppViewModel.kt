@@ -1,6 +1,6 @@
 package com.noto.app
 
-import android.net.Uri
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.domain.model.*
@@ -9,7 +9,6 @@ import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
 import com.noto.app.util.AllFoldersId
-import com.noto.app.util.Constants
 import com.noto.app.util.firstLineOrEmpty
 import com.noto.app.util.isGeneral
 import com.noto.app.util.takeAfterFirstLineOrEmpty
@@ -28,6 +27,7 @@ class AppViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val settingsRepository: SettingsRepository,
+    private val deepLinksHandler: DeepLinksHandler,
 ) : ViewModel() {
 
     val userStatus = settingsRepository.userStatus
@@ -120,77 +120,22 @@ class AppViewModel(
         mutableQuickNote.value = noteRepository.getNoteById(noteId).first()
     }
 
-    fun handleIntentUri(
-        uri: Uri,
-        onResult: (Int?) -> Unit,
-    ) {
-        if (uri.host == Constants.Host) {
-            if (Constants.VerifyPath in uri.pathSegments) handleEmailVerification(uri, onResult)
-        }
-    }
-
-    private fun handleEmailVerification(
-        uri: Uri,
-        onResult: (Int?) -> Unit,
-    ) {
-        val fragmentParameters = uri.fragment?.asUrlParameters() ?: emptyMap()
-        val accessToken = fragmentParameters[Constants.AccessToken]
-        val refreshToken = fragmentParameters[Constants.RefreshToken]
-        val type = fragmentParameters[Constants.Type]
-        val email = uri.getQueryParameter(Constants.Email)
-        if (accessToken != null && refreshToken != null) {
-            when {
-                type == Constants.SignUp -> finishCreatingAccount(
-                    accessToken,
-                    refreshToken,
-                    onSuccess = { onResult(null) },
-                    onFailure = { onResult(R.string.something_went_wrong) },
-                )
-                type == Constants.EmailChange && email != null -> finishUpdatingEmail(
-                    email,
-                    accessToken,
-                    refreshToken,
-                    onSuccess = { onResult(R.string.email_is_updated) },
-                    onFailure = { onResult(R.string.something_went_wrong) }
-                )
+    fun handleDeepLinks(intent: Intent) = runCatching {
+        deepLinksHandler.handleDeepLinks(
+            intent = intent,
+            onFinishCreatingAccount = { id, email ->
+                viewModelScope.launch {
+                    userRepository.finishCreatingAccount(id, email)
+                        .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
+                        .getOrThrow()
+                }
+            },
+            onFinishUpdatingEmail = { email ->
+                viewModelScope.launch {
+                    userRepository.finishUpdatingEmail(email).getOrThrow()
+                }
             }
-        } else {
-            onResult(R.string.something_went_wrong)
-        }
-    }
-
-    private fun finishCreatingAccount(
-        accessToken: String,
-        refreshToken: String,
-        onSuccess: (Unit) -> Unit,
-        onFailure: (Throwable) -> Unit,
-    ) = viewModelScope.launch {
-        userRepository.finishCreatingAccount(accessToken, refreshToken)
-            .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
-            .onSuccess(onSuccess)
-            .onFailure(onFailure)
-    }
-
-    private fun finishUpdatingEmail(
-        email: String,
-        accessToken: String,
-        refreshToken: String,
-        onSuccess: (Unit) -> Unit,
-        onFailure: (Throwable) -> Unit,
-    ) = viewModelScope.launch {
-        userRepository.finishUpdatingEmail(email, accessToken, refreshToken)
-            .onSuccess(onSuccess)
-            .onFailure(onFailure)
-    }
-
-    private fun String.asUrlParameters(): Map<String, String> {
-        val parameterDelimiter = '&'
-        val keyValueDelimiter = '='
-        return split(parameterDelimiter).associate { parameter ->
-            val key = parameter.substringBefore(keyValueDelimiter)
-            val value = parameter.substringAfter(keyValueDelimiter)
-            key to value
-        }
+        )
     }
 
 }

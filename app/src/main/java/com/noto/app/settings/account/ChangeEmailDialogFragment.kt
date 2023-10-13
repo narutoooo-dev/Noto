@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.noto.app.R
 import com.noto.app.components.*
-import com.noto.app.data.model.remote.ResponseException
+import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
@@ -100,11 +100,11 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                             navController?.navigateUp()
 
                         when (exception) {
-                            ResponseException.Auth.UserAlreadyExists -> {
+                            NotoException.Auth.UserAlreadyExists -> {
                                 viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_exists))
                             }
 
-                            ResponseException.Auth.InvalidEmail -> {
+                            NotoException.Auth.InvalidEmail -> {
                                 viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
                             }
 

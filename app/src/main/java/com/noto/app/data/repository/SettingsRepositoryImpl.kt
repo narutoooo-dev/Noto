@@ -154,14 +154,6 @@ class SettingsRepositoryImpl(
         .map { it ?: true }
         .flowOn(dispatcher)
 
-    override val accessToken: Flow<String?> = storage.data
-        .map { preferences -> preferences[SettingsKeys.AccessToken] }
-        .flowOn(dispatcher)
-
-    override val refreshToken: Flow<String?> = storage.data
-        .map { preferences -> preferences[SettingsKeys.RefreshToken] }
-        .flowOn(dispatcher)
-
     override val id: Flow<String> = storage.data
         .mapNotNull { preferences -> preferences[SettingsKeys.Id] }
         .flowOn(dispatcher)
@@ -493,18 +485,6 @@ class SettingsRepositoryImpl(
     override suspend fun updatePreviewAutoScroll(isEnabled: Boolean) {
         withContext(dispatcher) {
             storage.edit { preferences -> preferences[SettingsKeys.PreviewAutoScroll] = isEnabled }
-        }
-    }
-
-    override suspend fun updateAccessToken(accessToken: String) {
-        withContext(dispatcher) {
-            storage.edit { preferences -> preferences[SettingsKeys.AccessToken] = accessToken }
-        }
-    }
-
-    override suspend fun updateRefreshToken(refreshToken: String) {
-        withContext(dispatcher) {
-            storage.edit { preferences -> preferences[SettingsKeys.RefreshToken] = refreshToken }
         }
     }
 

@@ -30,7 +30,7 @@ import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.*
-import com.noto.app.data.model.remote.ResponseException
+import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
@@ -254,9 +254,8 @@ class CreateAccountFragment : Fragment() {
                         Button(
                             text = stringResource(id = R.string.create_account),
                             onClick = {
-//                                val isInputValid = checkIsInputValid(name, email, password, confirmPassword)
-//                                if (isInputValid)
-                                    viewModel.createAccount(name, email, password)
+                                val isInputValid = checkIsInputValid(name, email, password, confirmPassword)
+                                if (isInputValid) viewModel.createAccount(name, email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             contentColor = Color.White,
@@ -312,20 +311,20 @@ class CreateAccountFragment : Fragment() {
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
                         when (exception) {
-                            ResponseException.Auth.UserAlreadyExists -> {
+                            NotoException.Auth.UserAlreadyExists -> {
                                 viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_exists))
                             }
 
-                            ResponseException.Auth.InvalidEmail -> {
+                            NotoException.Auth.InvalidEmail -> {
                                 viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
                             }
 
-                            ResponseException.Auth.InvalidPassword -> {
+                            NotoException.Auth.InvalidPassword -> {
                                 viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_invalid_requirements))
                             }
 
-                            is ResponseException.Auth.TooManyRequests -> {
-                                val message = stringResource(id = R.string.try_again_in, exception.seconds)
+                            is NotoException.TryAgainLater -> {
+                                val message = stringResource(id = R.string.try_again_in)
                                 LaunchedEffect(key1 = exception) {
                                     snackbarHostState.showSnackbar(message = message)
                                 }

@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
@@ -194,16 +193,13 @@ class AppActivity : BaseActivity() {
     }
 
     private fun handleActionViewIntent(intent: Intent) {
-        if (navController.currentDestination?.id == R.id.verifyEmailDialogFragment) navController.navigateUp()
-        if (navController.currentDestination?.id == R.id.changeEmailDialogFragment) navController.navigateUp()
+        when (navController.currentDestination?.id) {
+            R.id.verifyEmailDialogFragment, R.id.changeEmailDialogFragment -> navController.navigateUp()
+        }
         navController.navigateSafely(NavGraphDirections.actionGlobalProgressIndicatorDialogFragment(stringResource(R.string.verifying_email)))
-        viewModel.handleIntentUri(
-            uri = intent.data ?: Uri.EMPTY,
-            onResult = { stringId ->
-                if (navController.currentDestination?.id == R.id.progressIndicatorDialogFragment) navController.navigateUp()
-                if (stringId != null) currentFragment?.view?.snackbar(stringResource(stringId))
-            },
-        )
+        viewModel.handleDeepLinks(intent)
+            .onSuccess { if (navController.currentDestination?.id == R.id.progressIndicatorDialogFragment) navController.navigateUp() }
+            .onFailure { currentFragment?.view?.snackbar(it.message ?: stringResource(R.string.something_went_wrong)) }
     }
 
     private fun showSelectFolderDialog(content: String?) {
