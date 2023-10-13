@@ -607,7 +607,7 @@
     <string name="get_started">Get started</string>
     <string name="account_agreement">By creating an account, you agree to the <a href="https://github.com/alialbaali/Noto/blob/master/TermsConditions.md">Terms &amp; Conditions</a> and <a href="https://github.com/alialbaali/Noto/blob/master/PrivacyPolicy.md">Privacy Policy</a>.</string>
     <string name="create_account_description">Backup your notes to the cloud, and use them across many devices as you\'d like while also having them end-to-end encrypted.</string>
-    <string name="login_description">Login to access all your notes.</string>
+    <string name="log_in_description">Log in to access all your notes.</string>
 
     <string name="intro_finish">Finish</string>
     <string name="intro_auto_save">Auto Save</string>
@@ -678,7 +678,7 @@
     <string name="welcome_back">Welcome back! &#128075;</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="skip">Skip</string>
-    <string name="login">Login</string>
+    <string name="log_in">Log in</string>
     <string name="tos">I agree to Terms of Service.</string>
     <string name="email_is_invalid">Email is invalid.</string>
     <string name="password_is_invalid">Password is invalid.</string>
@@ -697,10 +697,10 @@
     <string name="updating_name">Updating name…</string>
     <string name="edit_name">Edit name</string>
     <string name="name_is_updated">Name has been updated.</string>
-    <string name="logout">Log Out</string>
+    <string name="log_out">Log out</string>
     <string name="loggin_out">Logging Out…</string>
-    <string name="logout_confirmation">Are you sure you want to log out?</string>
-    <string name="logout_description">Logging out will remove all the data stored locally.</string>
+    <string name="log_out_confirmation">Are you sure you want to log out?</string>
+    <string name="log_out_description">Logging out will remove all the data stored locally.</string>
     <string name="account">Account</string>
     <string name="delete_account">Delete Account</string>
     <string name="deleting_account">Deleting Account…</string>

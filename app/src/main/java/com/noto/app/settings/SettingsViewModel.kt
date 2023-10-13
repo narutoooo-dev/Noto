@@ -270,7 +270,7 @@ class SettingsViewModel(
     }
 
     fun logOutUser() = viewModelScope.launch {
-        userRepository.logOutUser()
+        userRepository.logOut()
         folderRepository.clearFolders()
         noteRepository.clearNotes()
         labelRepository.clearLabels()
@@ -280,6 +280,6 @@ class SettingsViewModel(
 
     fun deleteUser() = viewModelScope.launch {
         logOutUser().join()
-        userRepository.deleteUser()
+        userRepository.delete()
     }
 }

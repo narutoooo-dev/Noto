@@ -68,7 +68,7 @@ class StartFragment : Fragment() {
                             )
 
                             OutlinedButton(
-                                text = stringResource(id = R.string.login),
+                                text = stringResource(id = R.string.log_in),
                                 onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToLoginFragment()) },
                                 modifier = Modifier.fillMaxWidth(),
                             )

@@ -41,12 +41,12 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun login(email: String, password: String): Result<Unit> = runCatching {
+    override suspend fun logIn(email: String, password: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
             val passwordParametersResponse = remoteAuthDataSource.getPasswordParameters(email)
             val hashedPassword = passwordTransformer.verifyPassword(password.toByteArray(), passwordParametersResponse.passwordParameters)
             val encodedPassword = passwordTransformer.encodeToString(hashedPassword)
-            remoteAuthDataSource.login(email, encodedPassword)
+            remoteAuthDataSource.logIn(email, encodedPassword)
         }
     }.recoverCatching { exception ->
         withContext(dispatcher) {
@@ -84,13 +84,13 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun logOutUser(): Result<Unit> = runCatching {
+    override suspend fun logOut(): Result<Unit> = runCatching {
         withContext(dispatcher) {
             remoteAuthDataSource.logOut()
         }
     }
 
-    override suspend fun deleteUser(): Result<Unit> = runCatching {
+    override suspend fun delete(): Result<Unit> = runCatching {
         withContext(dispatcher) {
             remoteAuthDataSource.delete()
         }

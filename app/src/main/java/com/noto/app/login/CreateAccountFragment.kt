@@ -286,7 +286,7 @@ class CreateAccountFragment : Fragment() {
                     ) {
                         Text(text = stringResource(id = R.string.already_have_an_account))
                         OutlinedButton(
-                            text = stringResource(id = R.string.login),
+                            text = stringResource(id = R.string.log_in),
                             onClick = { navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToLoginFragment()) },
                             modifier = Modifier.fillMaxWidth()
                         )

@@ -9,7 +9,7 @@ interface UserRepository {
 
     suspend fun createAccount(name: String, email: String, password: String): Result<Unit>
 
-    suspend fun login(email: String, password: String): Result<Unit>
+    suspend fun logIn(email: String, password: String): Result<Unit>
 
     suspend fun finishCreatingAccount(id: String, email: String): Result<Unit>
 
@@ -19,8 +19,8 @@ interface UserRepository {
 
     suspend fun finishUpdatingEmail(email: String): Result<Unit>
 
-    suspend fun logOutUser(): Result<Unit>
+    suspend fun logOut(): Result<Unit>
 
-    suspend fun deleteUser(): Result<Unit>
+    suspend fun delete(): Result<Unit>
 
 }

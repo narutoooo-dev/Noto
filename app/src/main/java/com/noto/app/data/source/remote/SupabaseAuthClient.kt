@@ -53,7 +53,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
         }
     }
 
-    override suspend fun login(email: String, password: String) {
+    override suspend fun logIn(email: String, password: String) {
         tryCatching(
             onException = { exception ->
                 when (exception) {

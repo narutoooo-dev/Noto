@@ -60,7 +60,7 @@ class LoginFragment : Fragment() {
                 val forgotPasswordAnnotatedString = remember { context.getText(R.string.forgot_password).toSpannable().toAnnotatedString() }
 
                 Screen(
-                    title = stringResource(id = R.string.login),
+                    title = stringResource(id = R.string.log_in),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -71,7 +71,7 @@ class LoginFragment : Fragment() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = stringResource(id = R.string.login_description),
+                            text = stringResource(id = R.string.log_in_description),
                             modifier = Modifier.fillMaxWidth(),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.secondary,
@@ -152,10 +152,10 @@ class LoginFragment : Fragment() {
                         Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
                         Button(
-                            text = stringResource(id = R.string.login),
+                            text = stringResource(id = R.string.log_in),
                             onClick = {
                                 val isInputValid = checkIsInputValid(email, password)
-                                if (isInputValid) viewModel.login(email, password)
+                                if (isInputValid) viewModel.logIn(email, password)
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )

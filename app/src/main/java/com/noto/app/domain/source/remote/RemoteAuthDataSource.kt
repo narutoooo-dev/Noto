@@ -7,7 +7,7 @@ interface RemoteAuthDataSource {
 
     suspend fun signUp(name: String, email: String, password: String, passwordParameters: String): String
 
-    suspend fun login(email: String, password: String)
+    suspend fun logIn(email: String, password: String)
 
     suspend fun verifyEmail(email: String)
 

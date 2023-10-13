@@ -20,19 +20,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.Button
-import com.noto.app.components.ScreenCircularProgressIndicator
 import com.noto.app.components.Screen
+import com.noto.app.components.ScreenCircularProgressIndicator
 import com.noto.app.fold
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.warning
-import com.noto.app.util.Constants
-import com.noto.app.util.navController
-import com.noto.app.util.navigateSafely
-import com.noto.app.util.setupMixedTransitions
-import com.noto.app.util.stringResource
+import com.noto.app.util.*
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -86,9 +82,9 @@ class AccountSettingsFragment : Fragment() {
                             }
 
                             SettingsSection {
-                                val confirmationText = stringResource(id = R.string.logout_confirmation)
-                                val descriptionText = stringResource(id = R.string.logout_description)
-                                val logOutText = stringResource(id = R.string.logout)
+                                val confirmationText = stringResource(id = R.string.log_out_confirmation)
+                                val descriptionText = stringResource(id = R.string.log_out_description)
+                                val logOutText = stringResource(id = R.string.log_out)
                                 SettingsItem(
                                     title = logOutText,
                                     type = SettingsItemType.None,

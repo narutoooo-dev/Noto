@@ -108,7 +108,7 @@ class AppActivity : BaseActivity() {
                         }
                     }
 
-                    UserStatus.New -> inflateGraphAndSetStartDestination(R.id.createAccountFragment)
+                    UserStatus.New -> inflateGraphAndSetStartDestination(R.id.startFragment)
                 }
             }
             .launchIn(lifecycleScope)
