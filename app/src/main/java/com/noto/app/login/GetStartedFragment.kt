@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.noto.app.AppViewModel
 import com.noto.app.R
 import com.noto.app.components.*
 import com.noto.app.domain.model.NotoColor
@@ -41,7 +42,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class GetStartedFragment : Fragment() {
 
-    private val viewModel by viewModel<LoginViewModel>()
+    private val viewModel by viewModel<AppViewModel>()
 
     private val notificationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         viewModel.setNotificationPermissionResult(isGranted)
@@ -195,7 +196,7 @@ class GetStartedFragment : Fragment() {
 
     @Composable
     private fun BottomAppBarAccountContent(color: Color) {
-        val userStatus by viewModel.userStatus.collectAsState()
+        val userStatus by viewModel.userStatus.collectAsState(UserStatus.New)
         if (userStatus == UserStatus.NotLoggedIn || userStatus == UserStatus.New) {
             Button(
                 text = stringResource(id = R.string.create_account),

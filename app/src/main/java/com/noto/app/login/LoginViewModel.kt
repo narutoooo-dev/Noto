@@ -9,9 +9,7 @@ import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
 import com.noto.app.toUiState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -46,15 +44,6 @@ class LoginViewModel(
     private val mutableConfirmPasswordStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
     val confirmPasswordStatus get() = mutableConfirmPasswordStatus.asStateFlow()
 
-    val vaultPasscode = settingsRepository.vaultPasscode
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    val userStatus = settingsRepository.userStatus
-        .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.New)
-
-    private val mutableIsNotificationPermissionGranted = MutableStateFlow<Boolean?>(null)
-    val isNotificationPermissionGranted get() = mutableIsNotificationPermissionGranted.asStateFlow()
-
     fun createAccount(name: String, email: String, password: String) = viewModelScope.launch {
         mutableState.value = UiState.Loading
         mutableState.value = userRepository.createAccount(name, email, password)
@@ -66,10 +55,6 @@ class LoginViewModel(
         mutableState.value = userRepository.logIn(email, password)
             .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
             .toUiState()
-    }
-
-    fun finishIntro() = viewModelScope.launch {
-        if (userStatus.value == UserStatus.New) settingsRepository.updateUserStatus(UserStatus.NotLoggedIn)
     }
 
     fun setName(name: String) {
@@ -102,10 +87,6 @@ class LoginViewModel(
 
     fun setConfirmPasswordStatus(status: TextFieldStatus) {
         mutableConfirmPasswordStatus.value = status
-    }
-
-    fun setNotificationPermissionResult(isGranted: Boolean?) {
-        mutableIsNotificationPermissionGranted.value = isGranted
     }
 
 }
