@@ -34,8 +34,10 @@ import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.Screen
 import com.noto.app.components.TelegramBanner
+import com.noto.app.domain.model.NotoColor
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.theme.NotoTheme
+import com.noto.app.theme.toColor
 import com.noto.app.util.Constants
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely
@@ -103,6 +105,7 @@ class SettingsFragment : Fragment() {
                     }
                 },
                 painter = painterResource(id = R.drawable.ic_round_account_24),
+                painterColor = NotoColor.Indigo.toColor(),
             )
 
             SettingsItem(
@@ -112,6 +115,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToGeneralSettingsFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_settings_24),
+                painterColor = NotoColor.Teal.toColor(),
             )
 
             SettingsItem(
@@ -121,6 +125,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToReadingModeSettingsFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_reading_mode_24),
+                painterColor = NotoColor.Orange.toColor(),
             )
 
             SettingsItem(
@@ -134,6 +139,7 @@ class SettingsFragment : Fragment() {
                     }
                 },
                 painter = painterResource(id = R.drawable.ic_round_shield_24),
+                painterColor = NotoColor.Brown.toColor(),
             )
         }
     }
@@ -161,6 +167,7 @@ class SettingsFragment : Fragment() {
                     startActivity(chooser)
                 },
                 painter = painterResource(id = R.drawable.ic_round_share_24),
+                painterColor = NotoColor.Blue.toColor(),
             )
 
             SettingsItem(
@@ -172,6 +179,7 @@ class SettingsFragment : Fragment() {
                     startActivity(chooser)
                 },
                 painter = painterResource(id = R.drawable.ic_round_rate_review_24),
+                painterColor = NotoColor.Green.toColor(),
             )
         }
     }
@@ -186,6 +194,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToWhatsNewFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_updates_24),
+                painterColor = NotoColor.Yellow.toColor(),
             )
 
             SettingsItem(
@@ -195,6 +204,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToReportIssueDialogFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_report_problem_24),
+                painterColor = NotoColor.Red.toColor(),
             )
 
             SettingsItem(
@@ -204,6 +214,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToAboutSettingsFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_info_24),
+                painterColor = NotoColor.Black.toColor()
             )
         }
     }
@@ -218,6 +229,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToExportImportDialogFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_import_export_24),
+                painterColor = NotoColor.BlueGray.toColor(),
             )
         }
     }
