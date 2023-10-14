@@ -55,6 +55,11 @@ class AppActivity : BaseActivity() {
         get() = navHostFragment.parentFragmentManager.fragments
             .firstOrNull { it != null && it.isVisible }
 
+    private val isVerifyEmailDialogFragment get() = navController.currentDestination?.id == R.id.verifyEmailDialogFragment
+    private val isChangeEmailDialogFragment get() = navController.currentDestination?.id == R.id.changeEmailDialogFragment
+    private val isProgressIndicatorDialogFragment get() = navController.currentDestination?.id == R.id.progressIndicatorDialogFragment
+    private val isAccountSettingsFragment get() = navController.currentDestination?.id == R.id.accountSettingsFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (appViewModel.currentTheme == null) return
@@ -193,13 +198,19 @@ class AppActivity : BaseActivity() {
     }
 
     private fun handleActionViewIntent(intent: Intent) {
-        when (navController.currentDestination?.id) {
-            R.id.verifyEmailDialogFragment, R.id.changeEmailDialogFragment -> navController.navigateUp()
-        }
+        if (isVerifyEmailDialogFragment) navController.navigateUp()
+        if (isChangeEmailDialogFragment) navController.navigateUp()
         navController.navigateSafely(NavGraphDirections.actionGlobalProgressIndicatorDialogFragment(stringResource(R.string.verifying_email)))
-        viewModel.handleDeepLinks(intent)
-            .onSuccess { if (navController.currentDestination?.id == R.id.progressIndicatorDialogFragment) navController.navigateUp() }
-            .onFailure { currentFragment?.view?.snackbar(it.message ?: stringResource(R.string.something_went_wrong)) }
+        viewModel.handleDeepLinks(
+            intent = intent,
+            onSuccess = {
+                if (isProgressIndicatorDialogFragment) navController.navigateUp()
+                if (isAccountSettingsFragment) currentFragment?.view?.snackbar(stringResource(R.string.email_is_updated))
+            },
+            onFailure = { exception ->
+                currentFragment?.view?.snackbar(exception.message ?: stringResource(R.string.something_went_wrong))
+            }
+        )
     }
 
     private fun showSelectFolderDialog(content: String?) {

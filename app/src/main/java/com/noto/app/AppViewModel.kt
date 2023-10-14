@@ -120,22 +120,21 @@ class AppViewModel(
         mutableQuickNote.value = noteRepository.getNoteById(noteId).first()
     }
 
-    fun handleDeepLinks(intent: Intent) = runCatching {
+    fun handleDeepLinks(intent: Intent, onSuccess: (Unit) -> Unit, onFailure: (Throwable) -> Unit) {
         deepLinksHandler.handleDeepLinks(
             intent = intent,
             onFinishCreatingAccount = { id, email ->
                 viewModelScope.launch {
-                    userRepository.finishCreatingAccount(id, email)
-                        .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
-                        .getOrThrow()
+                    userRepository.finishCreatingAccount(id, email).onSuccess(onSuccess).onFailure(onFailure)
+                    settingsRepository.updateUserStatus(UserStatus.LoggedIn)
                 }
             },
             onFinishUpdatingEmail = { email ->
                 viewModelScope.launch {
-                    userRepository.finishUpdatingEmail(email).getOrThrow()
+                    userRepository.finishUpdatingEmail(email).onSuccess(onSuccess).onFailure(onFailure)
                 }
             }
-        )
+        ).onFailure(onFailure)
     }
 
 }

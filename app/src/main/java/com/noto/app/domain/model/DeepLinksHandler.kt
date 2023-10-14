@@ -8,6 +8,6 @@ interface DeepLinksHandler {
         intent: Intent,
         onFinishCreatingAccount: (id: String, email: String) -> Unit,
         onFinishUpdatingEmail: (email: String) -> Unit,
-    )
+    ): Result<Unit>
 
 }
