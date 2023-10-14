@@ -347,7 +347,7 @@ private enum class Page(
         R.string.intro_discover_features_title,
         R.string.intro_discover_features_description,
         R.drawable.illustration_features,
-        NotoColor.Teal,
+        NotoColor.General,
     ),
     AdFree(
         R.string.intro_ad_free_title,
@@ -395,7 +395,7 @@ private enum class Page(
         R.string.intro_reading_mode_title,
         R.string.intro_reading_mode_description,
         R.drawable.illustration_reading_mode,
-        NotoColor.Orange,
+        NotoColor.ReadingMode,
     ),
     UndoRedo(
         R.string.intro_undo_redo_title,
@@ -413,7 +413,7 @@ private enum class Page(
         R.string.intro_vault_title,
         R.string.intro_vault_description,
         R.drawable.illustration_vault,
-        NotoColor.Brown,
+        NotoColor.Vault,
     ),
     Other(
         R.string.intro_other_title,
@@ -437,13 +437,13 @@ private enum class Page(
         R.string.intro_cloud_title,
         R.string.intro_cloud_description,
         R.drawable.illustration_cloud,
-        NotoColor.Indigo,
+        NotoColor.Account,
     ),
     Setup(
         R.string.intro_setup,
         R.string.intro_setup_description,
         R.drawable.illustration_setup,
-        NotoColor.Teal,
+        NotoColor.General,
     );
 
     companion object {

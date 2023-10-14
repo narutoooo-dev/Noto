@@ -4,7 +4,14 @@ enum class NotoColor {
     Gray, Blue, Pink, Cyan, Purple, Red,
     Yellow, Orange, Green, Brown, BlueGray, Teal,
     Indigo, DeepPurple, DeepOrange, DeepGreen,
-    LightBlue, LightGreen, LightRed, LightPink, Black,
+    LightBlue, LightGreen, LightRed, LightPink, Black;
+
+    companion object {
+        val Account = Indigo
+        val General = Teal
+        val ReadingMode = Orange
+        val Vault = Brown
+    }
 }
 
 enum class Icon {

@@ -105,7 +105,7 @@ class SettingsFragment : Fragment() {
                     }
                 },
                 painter = painterResource(id = R.drawable.ic_round_account_24),
-                painterColor = NotoColor.Indigo.toColor(),
+                painterColor = NotoColor.Account.toColor(),
             )
 
             SettingsItem(
@@ -115,7 +115,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToGeneralSettingsFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_settings_24),
-                painterColor = NotoColor.Teal.toColor(),
+                painterColor = NotoColor.General.toColor(),
             )
 
             SettingsItem(
@@ -125,7 +125,7 @@ class SettingsFragment : Fragment() {
                     navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToReadingModeSettingsFragment())
                 },
                 painter = painterResource(id = R.drawable.ic_round_reading_mode_24),
-                painterColor = NotoColor.Orange.toColor(),
+                painterColor = NotoColor.ReadingMode.toColor(),
             )
 
             SettingsItem(
@@ -139,7 +139,7 @@ class SettingsFragment : Fragment() {
                     }
                 },
                 painter = painterResource(id = R.drawable.ic_round_shield_24),
-                painterColor = NotoColor.Brown.toColor(),
+                painterColor = NotoColor.Vault.toColor(),
             )
         }
     }
