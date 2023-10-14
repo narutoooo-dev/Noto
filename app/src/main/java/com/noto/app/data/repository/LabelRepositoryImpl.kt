@@ -2,7 +2,7 @@ package com.noto.app.data.repository
 
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.repository.LabelRepository
-import com.noto.app.domain.source.LocalLabelDataSource
+import com.noto.app.domain.source.local.LocalLabelDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

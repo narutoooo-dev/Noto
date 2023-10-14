@@ -1,7 +1,7 @@
 package com.noto.app.data.fake
 
 import com.noto.app.domain.model.Note
-import com.noto.app.domain.source.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first

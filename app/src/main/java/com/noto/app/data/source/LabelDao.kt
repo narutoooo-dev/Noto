@@ -2,7 +2,7 @@ package com.noto.app.data.source
 
 import androidx.room.*
 import com.noto.app.domain.model.Label
-import com.noto.app.domain.source.LocalLabelDataSource
+import com.noto.app.domain.source.local.LocalLabelDataSource
 import kotlinx.coroutines.flow.Flow
 
 @Dao

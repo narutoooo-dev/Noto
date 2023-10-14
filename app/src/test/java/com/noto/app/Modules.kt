@@ -4,8 +4,8 @@ import com.noto.app.data.repository.FolderRepositoryImpl
 import com.noto.app.data.repository.NoteRepositoryImpl
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
-import com.noto.app.domain.source.LocalFolderDataSource
-import com.noto.app.domain.source.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.data.fake.FakeLocalFolderDataSource
 import com.noto.app.data.fake.FakeLocalNoteDataSource
 import kotlinx.coroutines.Dispatchers

@@ -16,10 +16,10 @@ import com.noto.app.data.source.remote.SupabaseDeepLinksHandler
 import com.noto.app.data.source.remote.SupabaseUserClient
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
-import com.noto.app.domain.source.LocalFolderDataSource
-import com.noto.app.domain.source.LocalLabelDataSource
-import com.noto.app.domain.source.LocalNoteDataSource
-import com.noto.app.domain.source.LocalNoteLabelDataSource
+import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalLabelDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.domain.source.remote.RemoteAuthDataSource
 import com.noto.app.domain.source.remote.RemoteUserDataSource
 import com.noto.app.filtered.FilteredViewModel

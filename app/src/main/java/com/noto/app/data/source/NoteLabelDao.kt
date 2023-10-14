@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.noto.app.domain.model.NoteLabel
-import com.noto.app.domain.source.LocalNoteLabelDataSource
+import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import kotlinx.coroutines.flow.Flow
 
 @Dao

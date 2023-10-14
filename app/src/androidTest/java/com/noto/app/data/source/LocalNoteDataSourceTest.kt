@@ -6,8 +6,8 @@ import androidx.test.filters.SmallTest
 import com.noto.app.util.localDataSourceModule
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Note
-import com.noto.app.domain.source.LocalFolderDataSource
-import com.noto.app.domain.source.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.inMemoryDatabaseModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

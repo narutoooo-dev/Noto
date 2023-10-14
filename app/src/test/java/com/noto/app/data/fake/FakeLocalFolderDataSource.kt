@@ -1,7 +1,7 @@
 package com.noto.app.data.fake
 
 import com.noto.app.domain.model.Folder
-import com.noto.app.domain.source.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalFolderDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

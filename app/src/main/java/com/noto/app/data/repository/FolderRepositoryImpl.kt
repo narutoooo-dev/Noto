@@ -2,7 +2,7 @@ package com.noto.app.data.repository
 
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.repository.FolderRepository
-import com.noto.app.domain.source.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalFolderDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

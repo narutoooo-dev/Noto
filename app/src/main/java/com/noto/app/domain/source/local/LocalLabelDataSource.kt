@@ -1,4 +1,4 @@
-package com.noto.app.domain.source
+package com.noto.app.domain.source.local
 
 import com.noto.app.domain.model.Label
 import kotlinx.coroutines.flow.Flow

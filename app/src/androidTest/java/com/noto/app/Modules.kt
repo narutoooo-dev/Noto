@@ -2,8 +2,8 @@ package com.noto.app
 
 import androidx.room.Room
 import com.noto.app.data.database.NotoDatabase
-import com.noto.app.domain.source.LocalFolderDataSource
-import com.noto.app.domain.source.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
