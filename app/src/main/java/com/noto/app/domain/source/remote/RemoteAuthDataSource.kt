@@ -1,7 +1,7 @@
 package com.noto.app.domain.source.remote
 
-import com.noto.app.data.model.remote.response.PasswordParametersResponse
 import com.noto.app.data.model.remote.RemoteAuthUser
+import com.noto.app.data.model.remote.response.PasswordParametersResponse
 
 interface RemoteAuthDataSource {
 
@@ -16,6 +16,8 @@ interface RemoteAuthDataSource {
     suspend fun updateEmail(email: String)
 
     suspend fun get(): RemoteAuthUser
+
+    suspend fun retrieve(): RemoteAuthUser
 
     suspend fun logOut()
 

@@ -12,6 +12,7 @@ import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.gotrue.user.UserInfo
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.serialization.json.buildJsonObject
@@ -108,15 +109,13 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
 
     override suspend fun get(): RemoteAuthUser {
         return tryCatching {
-            with(client.gotrue.retrieveUserForCurrentSession(updateSession = true)) {
-                RemoteAuthUser(
-                    id,
-                    email.toString(),
-                    confirmationSentAt.toString(),
-                    createdAt.toString(),
-                    updatedAt.toString(),
-                )
-            }
+            client.gotrue.currentUserOrNull()!!.toRemoteAuthUser()
+        }
+    }
+
+    override suspend fun retrieve(): RemoteAuthUser {
+        return tryCatching {
+            client.gotrue.retrieveUserForCurrentSession(updateSession = true).toRemoteAuthUser()
         }
     }
 
@@ -140,6 +139,16 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
             client.postgrest.rpc(SupabaseConstants.RPCs.GetPasswordParameters, parameters)
                 .decodeAs<PasswordParametersResponse>()
         }
+    }
+
+    private fun UserInfo.toRemoteAuthUser(): RemoteAuthUser {
+        return RemoteAuthUser(
+            id,
+            email.toString(),
+            confirmationSentAt.toString(),
+            createdAt.toString(),
+            updatedAt.toString(),
+        )
     }
 
 }

@@ -47,8 +47,8 @@ class UserRepositoryImpl(
             val hashedPassword = passwordTransformer.verifyPassword(password.toByteArray(), passwordParametersResponse.passwordParameters)
             val encodedPassword = passwordTransformer.encodeToString(hashedPassword)
             remoteAuthDataSource.logIn(email, encodedPassword)
-            finishCreatingAccount("", email)
-            Unit
+            val remoteAuthUser = remoteAuthDataSource.get()
+            finishCreatingAccount(remoteAuthUser.id, remoteAuthUser.email).getOrThrow()
         }
     }.recoverCatching { exception ->
         withContext(dispatcher) {
