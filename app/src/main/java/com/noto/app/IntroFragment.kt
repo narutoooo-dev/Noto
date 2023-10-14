@@ -38,7 +38,7 @@ import com.noto.app.theme.toColor
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class GetStartedFragment : Fragment() {
+class IntroFragment : Fragment() {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -167,7 +167,7 @@ class GetStartedFragment : Fragment() {
         if (vaultPasscode == null) {
             Button(
                 text = stringResource(id = R.string.enable_vault),
-                onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToVaultPasscodeDialogFragment()) },
+                onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToVaultPasscodeDialogFragment()) },
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = color,
                 contentColor = Color.White,
@@ -198,7 +198,7 @@ class GetStartedFragment : Fragment() {
         if (userStatus == UserStatus.NotLoggedIn || userStatus == UserStatus.New) {
             Button(
                 text = stringResource(id = R.string.create_account),
-                onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToCreateAccountFragment()) },
+                onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToCreateAccountFragment()) },
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = color,
                 contentColor = Color.White,
@@ -287,14 +287,14 @@ private fun Fragment.PageContent(page: Page, modifier: Modifier = Modifier) {
                 SettingsItem(
                     title = stringResource(id = R.string.theme),
                     type = SettingsItemType.Text(themeText),
-                    onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToThemeDialogFragment()) },
+                    onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToThemeDialogFragment()) },
                     painter = painterResource(id = R.drawable.ic_round_theme_24),
                 )
 
                 SettingsItem(
                     title = stringResource(id = R.string.language),
                     type = SettingsItemType.Text(languageText),
-                    onClick = { navController?.navigateSafely(GetStartedFragmentDirections.actionGetStartedFragmentToLanguageDialogFragment()) },
+                    onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToLanguageDialogFragment()) },
                     painter = painterResource(id = R.drawable.ic_round_language_24),
                 )
 

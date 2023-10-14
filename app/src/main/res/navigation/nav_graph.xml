@@ -790,20 +790,20 @@
         android:id="@+id/action_global_mainVaultFragment"
         app:destination="@id/mainVaultFragment" />
     <fragment
-        android:id="@+id/getStartedFragment"
-        android:name="com.noto.app.login.GetStartedFragment"
-        android:label="GetStartedFragment">
+        android:id="@+id/introFragment"
+        android:name="com.noto.app.IntroFragment"
+        android:label="IntroFragment">
         <action
-            android:id="@+id/action_getStartedFragment_to_themeDialogFragment"
+            android:id="@+id/action_introFragment_to_themeDialogFragment"
             app:destination="@id/themeDialogFragment" />
         <action
-            android:id="@+id/action_getStartedFragment_to_languageDialogFragment"
+            android:id="@+id/action_introFragment_to_languageDialogFragment"
             app:destination="@id/languageDialogFragment" />
         <action
-            android:id="@+id/action_getStartedFragment_to_vaultPasscodeDialogFragment"
+            android:id="@+id/action_introFragment_to_vaultPasscodeDialogFragment"
             app:destination="@id/vaultPasscodeDialogFragment" />
         <action
-            android:id="@+id/action_getStartedFragment_to_createAccountFragment"
+            android:id="@+id/action_introFragment_to_createAccountFragment"
             app:destination="@id/createAccountFragment" />
     </fragment>
     <fragment
@@ -831,8 +831,8 @@
         android:name="com.noto.app.StartFragment"
         android:label="StartFragment">
         <action
-            android:id="@+id/action_startFragment_to_getStartedFragment"
-            app:destination="@id/getStartedFragment" />
+            android:id="@+id/action_startFragment_to_introFragment"
+            app:destination="@id/introFragment" />
         <action
             android:id="@+id/action_startFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -887,7 +887,7 @@
     <fragment
         android:id="@+id/createAccountFragment"
         android:name="com.noto.app.login.CreateAccountFragment"
-        android:label="CreateAccountFragment" >
+        android:label="CreateAccountFragment">
         <action
             android:id="@+id/action_createAccountFragment_to_progressIndicatorDialogFragment"
             app:destination="@id/progressIndicatorDialogFragment" />

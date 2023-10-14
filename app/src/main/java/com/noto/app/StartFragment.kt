@@ -63,7 +63,7 @@ class StartFragment : Fragment() {
                         ) {
                             Button(
                                 text = stringResource(id = R.string.get_started),
-                                onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToGetStartedFragment()) },
+                                onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToIntroFragment()) },
                                 modifier = Modifier.fillMaxWidth(),
                             )
 
