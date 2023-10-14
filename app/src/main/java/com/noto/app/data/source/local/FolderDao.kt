@@ -1,4 +1,4 @@
-package com.noto.app.data.source
+package com.noto.app.data.source.local
 
 import androidx.room.*
 import com.noto.app.domain.model.Folder

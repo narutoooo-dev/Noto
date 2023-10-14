@@ -1,4 +1,4 @@
-package com.noto.app.data.source
+package com.noto.app.data.source.local
 
 import androidx.room.Dao
 import androidx.room.Insert

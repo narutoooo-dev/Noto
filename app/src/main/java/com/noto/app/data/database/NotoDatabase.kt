@@ -2,10 +2,10 @@ package com.noto.app.data.database
 
 import android.content.Context
 import androidx.room.*
-import com.noto.app.data.source.FolderDao
-import com.noto.app.data.source.LabelDao
-import com.noto.app.data.source.NoteDao
-import com.noto.app.data.source.NoteLabelDao
+import com.noto.app.data.source.local.FolderDao
+import com.noto.app.data.source.local.LabelDao
+import com.noto.app.data.source.local.NoteDao
+import com.noto.app.data.source.local.NoteLabelDao
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.model.Note
