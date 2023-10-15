@@ -2,31 +2,16 @@ package com.noto.app.data.database
 
 import android.content.Context
 import androidx.room.*
-import com.noto.app.data.source.local.FolderDao
-import com.noto.app.data.source.local.LabelDao
-import com.noto.app.data.source.local.NoteDao
-import com.noto.app.data.source.local.NoteLabelDao
-import com.noto.app.domain.model.Folder
-import com.noto.app.domain.model.Label
-import com.noto.app.domain.model.Note
-import com.noto.app.domain.model.NoteLabel
+import com.noto.app.data.model.local.LocalFolder
+import com.noto.app.data.model.local.LocalLabel
+import com.noto.app.data.model.local.LocalNote
+import com.noto.app.data.model.local.LocalNoteLabel
+import com.noto.app.data.source.local.*
 
 private const val NOTO_DATABASE = "Noto Database"
 
-@TypeConverters(
-    NotoColorConverter::class,
-    InstantConverter::class,
-    LayoutConvertor::class,
-    SortingTypeConverter::class,
-    SortingOrderConverter::class,
-    GroupingConvertor::class,
-    NewNoteCursorPositionConvertor::class,
-    GroupingOrderConverter::class,
-    FilteringTypeConverter::class,
-    OpenNotesInConverter::class,
-)
 @Database(
-    entities = [Folder::class, Note::class, Label::class, NoteLabel::class],
+    entities = [LocalFolder::class, LocalNote::class, LocalLabel::class, LocalNoteLabel::class],
     version = 32,
     autoMigrations = [
         AutoMigration(from = 6, to = 7),
@@ -67,13 +52,13 @@ private const val NOTO_DATABASE = "Noto Database"
 )
 abstract class NotoDatabase : RoomDatabase() {
 
-    abstract val noteDao: NoteDao
+    abstract val noteDao: LocalNoteDao
 
-    abstract val folderDao: FolderDao
+    abstract val folderDao: LocalFolderDao
 
-    abstract val labelDao: LabelDao
+    abstract val labelDao: LocalLabelDao
 
-    abstract val noteLabelDao: NoteLabelDao
+    abstract val noteLabelDao: LocalNoteLabelDao
 
     companion object {
 
