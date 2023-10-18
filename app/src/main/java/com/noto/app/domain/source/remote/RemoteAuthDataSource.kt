@@ -2,8 +2,11 @@ package com.noto.app.domain.source.remote
 
 import com.noto.app.data.model.remote.RemoteAuthUser
 import com.noto.app.data.model.remote.response.PasswordParametersResponse
+import kotlinx.coroutines.flow.Flow
 
 interface RemoteAuthDataSource {
+
+    val isUserLoggedIn: Flow<Boolean>
 
     suspend fun signUp(name: String, email: String, password: String, passwordParameters: String): String
 

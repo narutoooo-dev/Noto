@@ -10,15 +10,24 @@ import com.noto.app.domain.source.remote.RemoteAuthDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.OtpType
+import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.gotrue.user.UserInfo
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSource {
+
+    override val isUserLoggedIn: Flow<Boolean>
+        get() = client.gotrue.sessionStatus
+            .filter { it is SessionStatus.Authenticated || it is SessionStatus.NotAuthenticated }
+            .map { it is SessionStatus.Authenticated }
 
     override suspend fun signUp(name: String, email: String, password: String, passwordParameters: String): String {
         return tryCatching(
