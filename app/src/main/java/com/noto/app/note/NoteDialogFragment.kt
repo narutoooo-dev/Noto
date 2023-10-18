@@ -295,15 +295,15 @@ class NoteDialogFragment : BaseDialogFragment() {
                     ?.observe(viewLifecycleOwner) {
                         val stringId = R.plurals.note_is_deleted
                         val drawableId = R.drawable.ic_round_delete_24
-                        parentView?.snackbar(
-                            context.quantityStringResource(stringId, DefaultQuantity, DefaultQuantity),
-                            drawableId,
-                            anchorViewId,
-                            folderColor
-                        )
-                        navController?.popBackStack(args.destination, false)
-                        if (viewModel.note.value.reminderDate != null) alarmManager?.cancelAlarm(context, viewModel.note.value.id)
                         viewModel.deleteNote().invokeOnCompletion {
+                            parentView?.snackbar(
+                                context.quantityStringResource(stringId, DefaultQuantity, DefaultQuantity),
+                                drawableId,
+                                anchorViewId,
+                                folderColor
+                            )
+                            if (viewModel.note.value.reminderDate != null) alarmManager?.cancelAlarm(context, viewModel.note.value.id)
+                            navController?.popBackStack(args.destination, false)
                             context.updateAllWidgetsData()
                             context.updateNoteListWidgets()
                             dismiss()
