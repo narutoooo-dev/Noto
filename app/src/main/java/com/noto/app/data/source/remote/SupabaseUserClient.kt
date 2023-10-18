@@ -17,7 +17,7 @@ class SupabaseUserClient(private val client: SupabaseClient) : RemoteUserDataSou
     override suspend fun updateName(id: String, name: String) {
         tryCatching {
             client.postgrest[SupabaseConstants.Tables.Users].update(
-                update = { this[SupabaseConstants.Name] = name },
+                update = { RemoteUser::name setTo name },
                 filter = { RemoteUser::id eq id }
             )
         }
