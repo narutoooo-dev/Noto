@@ -9,32 +9,38 @@ import kotlinx.coroutines.flow.Flow
 interface LocalFolderDao : LocalFolderDataSource {
 
     @Query("SELECT * FROM folders")
-    override fun getAllFolders(): Flow<List<LocalFolder>>
+    override fun getAllLocalFolders(): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE is_vaulted = 0")
-    override fun getAllUnvaultedFolders(): Flow<List<LocalFolder>>
+    override fun getAllUnvaultedLocalFolders(): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE is_archived = 0 AND is_vaulted = 0")
-    override fun getFolders(): Flow<List<LocalFolder>>
+    override fun getLocalFolders(): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE is_archived = 1 AND is_vaulted = 0")
-    override fun getArchivedFolders(): Flow<List<LocalFolder>>
+    override fun getArchivedLocalFolders(): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE is_vaulted = 1 AND is_archived = 0")
-    override fun getVaultedFolders(): Flow<List<LocalFolder>>
+    override fun getVaultedLocalFolders(): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE id = :folderId")
-    override fun getFolderById(folderId: Long): Flow<LocalFolder>
+    override fun getLocalFolderById(folderId: Long): Flow<LocalFolder>
+
+    @Query("SELECT * FROM folders WHERE remote_id = :remoteFolderId")
+    override fun getLocalFolderByRemoteId(remoteFolderId: String): Flow<LocalFolder?>
 
     @Insert
-    override suspend fun createFolder(folder: LocalFolder): Long
+    override suspend fun createLocalFolder(folder: LocalFolder): Long
 
     @Update
-    override suspend fun updateFolder(folder: LocalFolder)
+    override suspend fun updateLocalFolder(folder: LocalFolder)
+
+    @Query("UPDATE folders SET remote_id = :remoteId WHERE id = :id")
+    override suspend fun updateLocalFolderRemoteIdById(id: Long, remoteId: String)
 
     @Delete
-    override suspend fun deleteFolder(folder: LocalFolder)
+    override suspend fun deleteLocalFolder(folder: LocalFolder)
 
     @Query("DELETE FROM folders")
-    override suspend fun clearFolders()
+    override suspend fun clearLocalFolders()
 }

@@ -5,23 +5,28 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalFolderDataSource {
 
-    fun getAllFolders(): Flow<List<LocalFolder>>
+    fun getAllLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getAllUnvaultedFolders(): Flow<List<LocalFolder>>
+    fun getAllUnvaultedLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getFolders(): Flow<List<LocalFolder>>
+    fun getLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getArchivedFolders(): Flow<List<LocalFolder>>
+    fun getArchivedLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getVaultedFolders(): Flow<List<LocalFolder>>
+    fun getVaultedLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getFolderById(folderId: Long): Flow<LocalFolder>
+    fun getLocalFolderById(folderId: Long): Flow<LocalFolder>
 
-    suspend fun createFolder(folder: LocalFolder): Long
+    fun getLocalFolderByRemoteId(remoteFolderId: String): Flow<LocalFolder?>
 
-    suspend fun updateFolder(folder: LocalFolder)
+    suspend fun createLocalFolder(folder: LocalFolder): Long
 
-    suspend fun deleteFolder(folder: LocalFolder)
+    suspend fun updateLocalFolder(folder: LocalFolder)
 
-    suspend fun clearFolders()
+    suspend fun updateLocalFolderRemoteIdById(id: Long, remoteId: String)
+
+    suspend fun deleteLocalFolder(folder: LocalFolder)
+
+    suspend fun clearLocalFolders()
+
 }
