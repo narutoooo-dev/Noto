@@ -9,7 +9,6 @@ val NotoDefaultJson = Json {
     isLenient = true
     allowStructuredMapKeys = true
     coerceInputValues = true
-    encodeDefaults = true
     ignoreUnknownKeys = true
     explicitNulls = false
     prettyPrint = true
@@ -17,4 +16,5 @@ val NotoDefaultJson = Json {
 
 val RemoteJson = Json(NotoDefaultJson) {
     namingStrategy = JsonNamingStrategy.SnakeCase
+    encodeDefaults = false
 }
