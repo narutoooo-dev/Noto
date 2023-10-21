@@ -1,11 +1,7 @@
 package com.noto.app
 
 import android.app.Application
-import com.noto.app.util.appModule
-import com.noto.app.util.cryptoModule
-import com.noto.app.util.localDataSourceModule
-import com.noto.app.util.remoteDataSourceModule
-import com.noto.app.util.repositoryModule
+import com.noto.app.util.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -28,6 +24,7 @@ class NotoApplication : Application() {
                 localDataSourceModule,
                 remoteDataSourceModule,
                 cryptoModule,
+                remoteServiceModule,
             )
         }
     }

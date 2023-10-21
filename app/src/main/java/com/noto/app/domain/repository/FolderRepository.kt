@@ -17,11 +17,13 @@ interface FolderRepository {
 
     fun getFolderById(folderId: Long): Flow<Folder>
 
-    suspend fun createFolder(folder: Folder, overridePosition: Boolean = true): Long
+    suspend fun createGeneralFolder(): Result<Unit>
 
-    suspend fun updateFolder(folder: Folder)
+    suspend fun createFolder(folder: Folder, overridePosition: Boolean = true): Result<Long>
 
-    suspend fun deleteFolder(folder: Folder)
+    suspend fun updateFolder(folder: Folder): Result<Unit>
+
+    suspend fun deleteFolder(folder: Folder): Result<Unit>
 
     suspend fun clearFolders()
 }

@@ -153,7 +153,7 @@ class SettingsViewModel(
                 } else {
                     val parentFolder = folders.firstOrNull { it.id == folder.parentId }
                     val parentId = folderIds.getOrDefault(parentFolder?.id ?: 0L, 0L).takeUnless { it == 0L }
-                    val newFolderId = folderRepository.createFolder(folder.copy(id = 0, parentId = parentId), overridePosition = false)
+                    val newFolderId = folderRepository.createFolder(folder.copy(id = 0, parentId = parentId), overridePosition = false).getOrThrow()
                     folderIds[folder.id] = newFolderId
                 }
             }

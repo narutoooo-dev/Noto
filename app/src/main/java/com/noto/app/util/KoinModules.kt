@@ -10,17 +10,17 @@ import com.noto.app.crypto.PasswordTransformer
 import com.noto.app.crypto.PasswordTransformerImpl
 import com.noto.app.data.database.NotoDatabase
 import com.noto.app.data.repository.*
-import com.noto.app.data.source.remote.SupabaseAuthClient
-import com.noto.app.data.source.remote.SupabaseConstants
-import com.noto.app.data.source.remote.SupabaseDeepLinksHandler
-import com.noto.app.data.source.remote.SupabaseUserClient
+import com.noto.app.data.service.AndroidRemoteFolderService
+import com.noto.app.data.source.remote.*
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
+import com.noto.app.domain.service.RemoteFolderService
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.domain.source.remote.RemoteAuthDataSource
+import com.noto.app.domain.source.remote.RemoteFolderDataSource
 import com.noto.app.domain.source.remote.RemoteUserDataSource
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
@@ -43,12 +43,16 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 
 private const val DataStoreName = "Noto Data Store"
 private val Context.dataStore by preferencesDataStore(name = DataStoreName)
+val CoroutineDispatcherQualifier = qualifier("CoroutineDispatcher")
 
 val appModule = module {
 
@@ -78,7 +82,7 @@ val appModule = module {
 
 val repositoryModule = module {
 
-    single<FolderRepository> { FolderRepositoryImpl(get()) }
+    single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
     single<NoteRepository> { NoteRepositoryImpl(get()) }
 
@@ -89,6 +93,8 @@ val repositoryModule = module {
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 
     single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get()) }
+
+    single<CoroutineDispatcher>(CoroutineDispatcherQualifier) { Dispatchers.IO }
 
 }
 
@@ -133,10 +139,19 @@ val remoteDataSourceModule = module {
     single<RemoteUserDataSource> { SupabaseUserClient(get()) }
 
     single<DeepLinksHandler> { SupabaseDeepLinksHandler(get()) }
+
+    single<RemoteFolderDataSource> { SupabaseFolderClient(get()) }
+
 }
 
 val cryptoModule = module {
 
     single<PasswordTransformer> { PasswordTransformerImpl() }
+
+}
+
+val remoteServiceModule = module {
+
+    single<RemoteFolderService> { AndroidRemoteFolderService(androidContext().applicationContext) }
 
 }

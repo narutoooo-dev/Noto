@@ -101,9 +101,16 @@ class AppViewModel(
     }
 
     private fun createGeneralFolder() = viewModelScope.launch {
-        folderRepository.getFolders()
-            .firstOrNull()
-            ?.also { folders -> if (folders.none { it.isGeneral }) folderRepository.createFolder(Folder.GeneralFolder()) }
+        combine(
+            userStatus
+                .map { it != UserStatus.New }
+                .distinctUntilChanged(),
+            folderRepository.getFolders()
+                .map { it.firstOrNull { folder -> folder.isGeneral } == null }
+                .distinctUntilChanged()
+        ) { isIntroFinished, isGeneralFolderNotCreated ->
+            if (isIntroFinished && isGeneralFolderNotCreated) folderRepository.createGeneralFolder()
+        }.launchIn(viewModelScope)
     }
 
     fun setShouldNavigateToMainFragment(value: Boolean) {

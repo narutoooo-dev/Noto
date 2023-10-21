@@ -261,7 +261,7 @@ class FolderViewModel(
         )
 
         if (folderId == 0L)
-            folderRepository.createFolder(folder).also(onCreateFolder)
+            folderRepository.createFolder(folder).onSuccess(onCreateFolder)
         else
             folderRepository.updateFolder(folder)
     }

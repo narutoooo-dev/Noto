@@ -12,13 +12,18 @@ sealed class NotoException(message: String?) : RuntimeException(message) {
         data object InvalidPassword : Auth()
     }
 
+    sealed class Entity : NotoException(message = null) {
+        data object InvalidLocalItem : Entity()
+        data object MissingRemoteId: Entity()
+    }
+
     data object TryAgainLater : NotoException(message = null)
 
     class Unknown(message: String?) : NotoException(message)
 
 }
 
-inline fun <T : Any> tryCatching(noinline onException: ((Throwable) -> Nothing)? = null, block: () -> T): T {
+inline fun <T> tryCatching(noinline onException: ((Throwable) -> Nothing)? = null, block: () -> T): T {
     return try {
         block()
     } catch (exception: Throwable) {
