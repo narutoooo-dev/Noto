@@ -21,8 +21,8 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     override val user: Flow<Result<User>> = combine(
-        settingsRepository.name,
-        settingsRepository.email,
+        settingsRepository.name.filterNotNull(),
+        settingsRepository.email.filterNotNull(),
     ) { name, email -> User(name, email) }
         .map { Result.success(it) }
         .catch { emit(Result.failure(it)) }
@@ -68,7 +68,7 @@ class UserRepositoryImpl(
 
     override suspend fun updateName(name: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
-            val id = settingsRepository.id.first()
+            val id = settingsRepository.id.filterNotNull().first()
             remoteUserDataSource.updateName(id, name)
             settingsRepository.updateName(name)
         }

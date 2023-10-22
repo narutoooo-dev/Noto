@@ -54,11 +54,11 @@ interface SettingsRepository {
 
     val previewAutoScroll: Flow<Boolean>
 
-    val id: Flow<String>
+    val id: Flow<String?>
 
-    val name: Flow<String>
+    val name: Flow<String?>
 
-    val email: Flow<String>
+    val email: Flow<String?>
 
     val userStatus: Flow<UserStatus>
 

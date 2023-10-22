@@ -106,6 +106,7 @@ class SettingsViewModel(
 
     init {
         settingsRepository.name
+            .filterNotNull()
             .onEach(::setName)
             .launchIn(viewModelScope)
     }
