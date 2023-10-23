@@ -18,3 +18,13 @@ val RemoteJson = Json(NotoDefaultJson) {
     namingStrategy = JsonNamingStrategy.SnakeCase
     encodeDefaults = false
 }
+
+val ExportImportDataJson = Json {
+    isLenient = true
+    allowStructuredMapKeys = true
+    coerceInputValues = true
+    ignoreUnknownKeys = true
+    explicitNulls = false
+    prettyPrint = true
+    encodeDefaults = true
+}
