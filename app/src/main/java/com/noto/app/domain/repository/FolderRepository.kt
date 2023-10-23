@@ -19,7 +19,7 @@ interface FolderRepository {
 
     suspend fun createGeneralFolder(): Result<Unit>
 
-    suspend fun createFolder(folder: Folder, overridePosition: Boolean = true): Result<Long>
+    suspend fun createFolder(folder: Folder): Result<Long>
 
     suspend fun updateFolder(folder: Folder): Result<Unit>
 

@@ -28,8 +28,8 @@ class LabelRepositoryImpl(
         .map { it.toDomainLabel() }
         .flowOn(dispatcher)
 
-    override suspend fun createLabel(label: Label, overridePosition: Boolean) = withContext(dispatcher) {
-        val position = if (overridePosition) getLabelPosition(label.folderId) else label.position
+    override suspend fun createLabel(label: Label) = withContext(dispatcher) {
+        val position = getLabelPosition(label.folderId)
         dataSource.createLabel(label.copy(position = position).toLocalLabel())
     }
 

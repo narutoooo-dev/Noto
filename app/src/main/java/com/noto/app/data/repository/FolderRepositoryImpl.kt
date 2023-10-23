@@ -65,9 +65,9 @@ class FolderRepositoryImpl(
         }
     }
 
-    override suspend fun createFolder(folder: Folder, overridePosition: Boolean): Result<Long> = runCatching {
+    override suspend fun createFolder(folder: Folder): Result<Long> = runCatching {
         withContext(coroutineDispatcher) {
-            val position = if (overridePosition) getFolderPosition() else folder.position
+            val position = getFolderPosition()
             val positionedFolder = folder.copy(position = position)
             val localFolder = positionedFolder.toLocalFolder()
             val localFolderId = localFolderDataSource.createLocalFolder(localFolder)
