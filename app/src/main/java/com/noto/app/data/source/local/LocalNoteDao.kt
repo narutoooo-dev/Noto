@@ -9,16 +9,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocalNoteDao : LocalNoteDataSource {
 
-    @Query("SELECT * FROM notes ORDER BY id DESC")
+    @Query("SELECT * FROM notes")
     override fun getAllNotes(): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes WHERE is_archived = 0 ORDER BY id DESC")
+    @Query("SELECT * FROM notes WHERE is_archived = 0")
     override fun getAllMainNotes(): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_archived = 0 ORDER BY id DESC")
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_archived = 0")
     override fun getNotesByFolderId(folderId: Long): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_archived = 1 ORDER BY id DESC")
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_archived = 1")
     override fun getArchivedNotesByFolderId(folderId: Long): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE id = :noteId")
