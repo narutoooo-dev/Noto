@@ -19,6 +19,14 @@ sealed class NotoException(message: String?) : RuntimeException(message) {
 
     data object TryAgainLater : NotoException(message = null)
 
+    sealed class ExportImport: NotoException(message = null) {
+        data object ExportFailed: ExportImport()
+        data object ImportFailed: ExportImport()
+        data object FileCreationFailed: ExportImport()
+        data object NoFolderSelected: ExportImport()
+        data object NoFileSelected: ExportImport()
+    }
+
     class Unknown(message: String?) : NotoException(message)
 
 }

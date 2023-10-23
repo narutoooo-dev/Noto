@@ -1,6 +1,9 @@
 package com.noto.app.settings
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
@@ -8,6 +11,8 @@ import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.*
 import com.noto.app.toUiState
 import com.noto.app.util.hash
+import com.noto.app.util.readText
+import com.noto.app.util.writeText
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -18,7 +23,8 @@ class SettingsViewModel(
     private val labelRepository: LabelRepository,
     private val noteLabelRepository: NoteLabelRepository,
     private val settingsRepository: SettingsRepository,
-) : ViewModel() {
+    private val application: Application,
+) : AndroidViewModel(application) {
 
     val userState = userRepository.user
         .map { it.toUiState() }
@@ -99,11 +105,24 @@ class SettingsViewModel(
     private val mutableEmailState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val emailState get() = mutableEmailState.asStateFlow()
 
+    private val mutableExportState = MutableStateFlow<UiState<Uri>>(UiState.Empty)
+    val exportState get() = mutableExportState.asStateFlow()
+
+    private val mutableImportState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
+    val importState get() = mutableImportState.asStateFlow()
+
     init {
         settingsRepository.name
             .filterNotNull()
             .onEach(::setName)
             .launchIn(viewModelScope)
+    }
+
+    companion object {
+        private const val FileName = "Noto.json"
+        private const val JsonFileType = "application/json"
+        private const val OctetStreamFileType = "application/octet-stream"
+        val FileTypes = arrayOf(JsonFileType, OctetStreamFileType)
     }
 
     fun toggleShowNotesCount() = viewModelScope.launch {
@@ -126,12 +145,41 @@ class SettingsViewModel(
         settingsRepository.updateScreenBrightnessLevel(level)
     }
 
-    suspend fun exportJson(): String {
-        return settingsRepository.exportNotoData()
+    fun exportData(uri: Uri?) = viewModelScope.launch {
+        mutableExportState.value = UiState.Loading
+        if (uri != null) {
+            val documentFile = DocumentFile.fromTreeUri(application, uri)?.createFile(JsonFileType, FileName)
+            if (documentFile != null) {
+                val outputStream = application.contentResolver?.openOutputStream(documentFile.uri)
+                if (outputStream != null) {
+                    val data = settingsRepository.exportNotoData()
+                    outputStream.writeText(data)
+                    mutableExportState.value = UiState.Success(documentFile.uri)
+                } else {
+                    mutableExportState.value = UiState.Failure(NotoException.ExportImport.ExportFailed)
+                }
+            } else {
+                mutableExportState.value = UiState.Failure(NotoException.ExportImport.FileCreationFailed)
+            }
+        } else {
+            mutableExportState.value = UiState.Failure(NotoException.ExportImport.NoFolderSelected)
+        }
     }
 
-    suspend fun importJson(data: String) {
-        settingsRepository.importNotoData(data)
+    fun importData(uri: Uri?) = viewModelScope.launch {
+        mutableImportState.value = UiState.Loading
+        if (uri != null) {
+            val inputStream = application.contentResolver?.openInputStream(uri)
+            if (inputStream != null) {
+                val data = inputStream.readText()
+                settingsRepository.importNotoData(data)
+                mutableImportState.value = UiState.Success(Unit)
+            } else {
+                mutableImportState.value = UiState.Failure(NotoException.ExportImport.ImportFailed)
+            }
+        } else {
+            mutableImportState.value = UiState.Failure(NotoException.ExportImport.NoFileSelected)
+        }
     }
 
     fun setVaultPasscode(passcode: String) = viewModelScope.launch {

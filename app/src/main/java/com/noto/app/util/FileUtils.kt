@@ -5,14 +5,14 @@ import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
 
-suspend fun writeTextToOutputStream(outputStream: OutputStream, text: String) = withContext(Dispatchers.IO) {
-    outputStream.use { outputStream ->
+suspend fun OutputStream.writeText(text: String) = withContext(Dispatchers.IO) {
+    use { outputStream ->
         outputStream.write(text.toByteArray())
     }
 }
 
-suspend fun readTextFromInputStream(inputStream: InputStream): String = withContext(Dispatchers.IO) {
-    inputStream.reader().use { inputStreamReader ->
+suspend fun InputStream.readText(): String = withContext(Dispatchers.IO) {
+    reader().use { inputStreamReader ->
         inputStreamReader.readText()
     }
 }
