@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
 
-    val config: Flow<SettingsConfig>
-
     val theme: Flow<Theme>
 
     val font: Flow<Font>
@@ -86,8 +84,6 @@ interface SettingsRepository {
 
     fun getWidgetFilteringType(widgetId: Int): Flow<FilteringType>
 
-    suspend fun updateConfig(config: SettingsConfig)
-
     suspend fun updateTheme(theme: Theme)
 
     suspend fun updateFont(font: Font)
@@ -163,6 +159,10 @@ interface SettingsRepository {
     suspend fun updateEmail(email: String)
 
     suspend fun updateUserStatus(userStatus: UserStatus)
+
+    suspend fun exportNotoData(): String
+
+    suspend fun importNotoData(data: String)
 
     suspend fun clearSettings()
 

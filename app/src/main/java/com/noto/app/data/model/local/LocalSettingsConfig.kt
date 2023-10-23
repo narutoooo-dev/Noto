@@ -1,10 +1,11 @@
-package com.noto.app.domain.model
+package com.noto.app.data.model.local
 
+import com.noto.app.domain.model.*
 import com.noto.app.util.AllFoldersId
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SettingsConfig(
+data class LocalSettingsConfig(
     val theme: Theme = Theme.System,
     val font: Font = Font.Nunito,
     val language: Language = Language.System,

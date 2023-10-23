@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(
     tableName = "notes",
     foreignKeys = [ForeignKey(

@@ -3,7 +3,9 @@ package com.noto.app.data.model.local
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(tableName = "folders")
 data class LocalFolder(
 

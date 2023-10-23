@@ -3,8 +3,14 @@ package com.noto.app.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.noto.app.data.model.local.LocalNotoData
+import com.noto.app.data.model.local.LocalSettingsConfig
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalLabelDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.filtered.FilteredItemModel
 import com.noto.app.util.AllFoldersId
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,37 +19,18 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class SettingsRepositoryImpl(
     private val storage: DataStore<Preferences>,
+    private val localFolderDataSource: LocalFolderDataSource,
+    private val localNoteDataSource: LocalNoteDataSource,
+    private val localLabelDataSource: LocalLabelDataSource,
+    private val localNoteLabelDataSource: LocalNoteLabelDataSource,
+    private val jsonConverter: Json,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : SettingsRepository {
-
-    override val config: Flow<SettingsConfig> = storage.data.map {
-        SettingsConfig(
-            theme.first(),
-            font.first(),
-            language.first(),
-            icon.first(),
-            vaultPasscode.first(),
-            vaultTimeout.first(),
-            scheduledVaultTimeout.first(),
-            isVaultOpen.first(),
-            isBioAuthEnabled.first(),
-            lastVersion.first(),
-            sortingType.first(),
-            sortingOrder.first(),
-            isShowNotesCount.first(),
-            isDoNotDisturb.first(),
-            isScreenOn.first(),
-            mainInterfaceId.first(),
-            isRememberScrollingPosition.first(),
-            getFilteredNotesScrollingPosition(FilteredItemModel.All).first(),
-            getFilteredNotesScrollingPosition(FilteredItemModel.Recent).first(),
-            getFilteredNotesScrollingPosition(FilteredItemModel.Scheduled).first(),
-            getFilteredNotesScrollingPosition(FilteredItemModel.Archived).first(),
-        )
-    }.flowOn(coroutineDispatcher)
 
     override val theme: Flow<Theme> = storage[SettingsKeys.Theme, Theme.System]
 
@@ -53,7 +40,7 @@ class SettingsRepositoryImpl(
 
     override val icon: Flow<Icon> = storage[SettingsKeys.Icon, Icon.Futuristic]
 
-    override val vaultPasscode: Flow<String?> = storage[SettingsKeys.VaultPasscode, null]
+    override val vaultPasscode: Flow<String?> = storage.getNullable(SettingsKeys.VaultPasscode, null)
 
     override val vaultTimeout: Flow<VaultTimeout> = storage[SettingsKeys.VaultTimeout, VaultTimeout.Immediately]
 
@@ -62,9 +49,9 @@ class SettingsRepositoryImpl(
         .map { if (it != null) VaultTimeout.valueOf(it) else null }
         .flowOn(coroutineDispatcher)
 
-    override val isVaultOpen: Flow<Boolean> = storage[SettingsKeys.IsVaultOpen, null].map { it.toBoolean() }
+    override val isVaultOpen: Flow<Boolean> = storage.getNullable(SettingsKeys.IsVaultOpen, null).map { it.toBoolean() }
 
-    override val isBioAuthEnabled: Flow<Boolean> = storage[SettingsKeys.IsBioAuthEnabled, null].map { it.toBoolean() }
+    override val isBioAuthEnabled: Flow<Boolean> = storage.getNullable(SettingsKeys.IsBioAuthEnabled, null).map { it.toBoolean() }
 
     override val isDoNotDisturb: Flow<Boolean> = storage[SettingsKeys.IsDoNotDisturb, false]
 
@@ -78,7 +65,7 @@ class SettingsRepositoryImpl(
 
     override val sortingOrder: Flow<SortingOrder> = storage[SettingsKeys.FolderListSortingOrder, SortingOrder.Descending]
 
-    override val isShowNotesCount: Flow<Boolean> = storage[SettingsKeys.ShowNotesCount, null].map { it?.toBoolean() ?: true }
+    override val isShowNotesCount: Flow<Boolean> = storage.getNullable(SettingsKeys.ShowNotesCount, null).map { it?.toBoolean() ?: true }
 
     override val mainInterfaceId: Flow<Long> = storage[SettingsKeys.MainInterfaceId, AllFoldersId]
 
@@ -97,11 +84,11 @@ class SettingsRepositoryImpl(
 
     override val previewAutoScroll: Flow<Boolean> = storage[SettingsKeys.PreviewAutoScroll, true]
 
-    override val id: Flow<String?> = storage[SettingsKeys.Id, null]
+    override val id: Flow<String?> = storage.getNullable(SettingsKeys.Id, null)
 
-    override val name: Flow<String?> = storage[SettingsKeys.Name, null]
+    override val name: Flow<String?> = storage.getNullable(SettingsKeys.Name, null)
 
-    override val email: Flow<String?> = storage[SettingsKeys.Email, null]
+    override val email: Flow<String?> = storage.getNullable(SettingsKeys.Email, null)
 
     override val userStatus: Flow<UserStatus> = storage[SettingsKeys.UserStatus, UserStatus.New]
 
@@ -111,28 +98,31 @@ class SettingsRepositoryImpl(
 
     override fun getWidgetFolderId(widgetId: Int): Flow<Long> = storage[SettingsKeys.Widget.FolderId(widgetId), 0L]
 
-    override fun getIsWidgetCreated(widgetId: Int): Flow<Boolean> = storage[SettingsKeys.Widget.Id(widgetId), null].map { it.toBoolean() }
+    override fun getIsWidgetCreated(widgetId: Int): Flow<Boolean> = storage.getNullable(SettingsKeys.Widget.Id(widgetId), null).map { it.toBoolean() }
 
-    override fun getIsWidgetHeaderEnabled(widgetId: Int): Flow<Boolean> = storage[SettingsKeys.Widget.Header(widgetId), null]
+    override fun getIsWidgetHeaderEnabled(widgetId: Int): Flow<Boolean> = storage.getNullable(SettingsKeys.Widget.Header(widgetId), null)
         .map { it?.toBoolean() ?: true }
 
-    override fun getIsWidgetEditButtonEnabled(widgetId: Int): Flow<Boolean> = storage[SettingsKeys.Widget.EditButton(widgetId), null]
+    override fun getIsWidgetEditButtonEnabled(widgetId: Int): Flow<Boolean> = storage.getNullable(SettingsKeys.Widget.EditButton(widgetId), null)
         .map { it?.toBoolean() ?: true }
 
-    override fun getIsWidgetAppIconEnabled(widgetId: Int): Flow<Boolean> = storage[SettingsKeys.Widget.AppIcon(widgetId), null]
+    override fun getIsWidgetAppIconEnabled(widgetId: Int): Flow<Boolean> = storage.getNullable(SettingsKeys.Widget.AppIcon(widgetId), null)
         .map { it?.toBoolean() ?: true }
 
-    override fun getIsWidgetNewItemButtonEnabled(widgetId: Int): Flow<Boolean> = storage[SettingsKeys.Widget.NewItemButton(widgetId), null]
+    override fun getIsWidgetNewItemButtonEnabled(widgetId: Int): Flow<Boolean> = storage.getNullable(
+        SettingsKeys.Widget.NewItemButton(widgetId),
+        null
+    )
         .map { it?.toBoolean() ?: true }
 
-    override fun getWidgetNotesCount(widgetId: Int): Flow<Boolean> = storage[SettingsKeys.Widget.NotesCount(widgetId), null]
+    override fun getWidgetNotesCount(widgetId: Int): Flow<Boolean> = storage.getNullable(SettingsKeys.Widget.NotesCount(widgetId), null)
         .map { it?.toBoolean() ?: true }
 
-    override fun getWidgetRadius(widgetId: Int): Flow<Int> = storage[SettingsKeys.Widget.Radius(widgetId), null]
+    override fun getWidgetRadius(widgetId: Int): Flow<Int> = storage.getNullable(SettingsKeys.Widget.Radius(widgetId), null)
         .map { it?.toIntOrNull() ?: 16 }
 
     override fun getWidgetSelectedLabelIds(widgetId: Int, folderId: Long): Flow<List<Long>> =
-        storage[SettingsKeys.Widget.SelectedLabelIds(widgetId, folderId), null]
+        storage.getNullable(SettingsKeys.Widget.SelectedLabelIds(widgetId, folderId), null)
             .map { it?.toLongList() ?: emptyList() }
 
     override fun getWidgetFilteringType(widgetId: Int): Flow<FilteringType> =
@@ -225,7 +215,83 @@ class SettingsRepositoryImpl(
 
     override suspend fun updateUserStatus(userStatus: UserStatus) = storage.set(SettingsKeys.UserStatus, userStatus.toString())
 
-    override suspend fun updateConfig(config: SettingsConfig) {
+    override suspend fun exportNotoData(): String {
+        return withContext(coroutineDispatcher) {
+            val folders = localFolderDataSource.getAllLocalFolders().first()
+            val notes = localNoteDataSource.getAllNotes().first()
+            val labels = localLabelDataSource.getAllLabels().first()
+            val noteLabels = localNoteLabelDataSource.getNoteLabels().first()
+            val config = config.first()
+            val data = LocalNotoData(folders, notes, labels, noteLabels, config)
+            jsonConverter.encodeToString(data)
+        }
+    }
+
+    override suspend fun importNotoData(data: String) {
+        withContext(coroutineDispatcher) {
+            val folderIds = mutableMapOf<Long, Long>()
+            val noteIds = mutableMapOf<Long, Long>()
+            val labelIds = mutableMapOf<Long, Long>()
+            val data = jsonConverter.decodeFromString<LocalNotoData>(data)
+            data.apply {
+                folders.forEach { localFolder ->
+                    if (localFolder.id == Folder.GeneralFolderId) {
+                        localFolderDataSource.updateLocalFolder(localFolder)
+                        folderIds[localFolder.id] = Folder.GeneralFolderId
+                    } else {
+                        val parentFolder = folders.firstOrNull { it.id == localFolder.parentId }
+                        val parentId = folderIds.getOrDefault(parentFolder?.id ?: 0L, 0L).takeUnless { it == 0L }
+                        val newFolderId = localFolderDataSource.createLocalFolder(localFolder.copy(id = 0, parentId = parentId))
+                        folderIds[localFolder.id] = newFolderId
+                    }
+                }
+                notes.forEach { localNote ->
+                    val folderId = folderIds.getValue(localNote.folderId)
+                    val newNoteId = localNoteDataSource.createNote(localNote.copy(id = 0, folderId = folderId))
+                    noteIds[localNote.id] = newNoteId
+                }
+                labels.forEach { localLabel ->
+                    val folderId = folderIds.getValue(localLabel.folderId)
+                    val newLabelId = localLabelDataSource.createLabel(localLabel.copy(id = 0, folderId = folderId))
+                    labelIds[localLabel.id] = newLabelId
+                }
+                noteLabels.forEach { noteLabel ->
+                    val noteId = noteIds.getValue(noteLabel.noteId)
+                    val labelId = labelIds.getValue(noteLabel.labelId)
+                    localNoteLabelDataSource.createNoteLabel(noteLabel.copy(id = 0, noteId = noteId, labelId = labelId))
+                }
+                updateConfig(settings)
+            }
+        }
+    }
+
+    private val config: Flow<LocalSettingsConfig> = storage.data.map {
+        LocalSettingsConfig(
+            theme.first(),
+            font.first(),
+            language.first(),
+            icon.first(),
+            vaultPasscode.first(),
+            vaultTimeout.first(),
+            scheduledVaultTimeout.first(),
+            isVaultOpen.first(),
+            isBioAuthEnabled.first(),
+            lastVersion.first(),
+            sortingType.first(),
+            sortingOrder.first(),
+            isShowNotesCount.first(),
+            isDoNotDisturb.first(),
+            isScreenOn.first(),
+            mainInterfaceId.first(),
+            isRememberScrollingPosition.first(),
+            getFilteredNotesScrollingPosition(FilteredItemModel.All).first(),
+            getFilteredNotesScrollingPosition(FilteredItemModel.Recent).first(),
+            getFilteredNotesScrollingPosition(FilteredItemModel.Scheduled).first(),
+            getFilteredNotesScrollingPosition(FilteredItemModel.Archived).first(),
+        )
+    }.flowOn(coroutineDispatcher)
+
+    private suspend fun updateConfig(config: LocalSettingsConfig) {
         withContext(coroutineDispatcher) {
             with(config) {
                 updateTheme(theme)
@@ -267,7 +333,7 @@ class SettingsRepositoryImpl(
             .flowOn(coroutineDispatcher)
     }
 
-    private operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>, defaultValue: T?): Flow<T?> {
+    private fun <T> DataStore<Preferences>.getNullable(key: Preferences.Key<T>, defaultValue: T?): Flow<T?> {
         return this.data
             .map { preferences -> preferences[key] ?: defaultValue }
             .flowOn(coroutineDispatcher)

@@ -2,9 +2,7 @@ package com.noto.app.domain.model
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class Note(
     val id: Long = 0L,
     val folderId: Long,
@@ -18,4 +16,6 @@ data class Note(
     val isVaulted: Boolean = false,
     val accessDate: Instant = creationDate,
     val scrollingPosition: Int = 0,
-)
+) {
+    companion object
+}

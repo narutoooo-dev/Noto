@@ -90,7 +90,7 @@ val repositoryModule = module {
 
     single<NoteLabelRepository> { NoteLabelRepositoryImpl(get()) }
 
-    single<SettingsRepository> { SettingsRepositoryImpl(get(), get(CoroutineDispatcherQualifier)) }
+    single<SettingsRepository> { SettingsRepositoryImpl(get(), get(), get(), get(), get(), NotoDefaultJson, get(CoroutineDispatcherQualifier)) }
 
     single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get()) }
 

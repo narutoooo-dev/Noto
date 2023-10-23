@@ -7,14 +7,9 @@ import com.noto.app.components.TextFieldStatus
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.*
 import com.noto.app.toUiState
-import com.noto.app.util.NotoDefaultJson
 import com.noto.app.util.hash
-import com.noto.app.util.isGeneral
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 
 class SettingsViewModel(
     private val userRepository: UserRepository,
@@ -131,50 +126,12 @@ class SettingsViewModel(
         settingsRepository.updateScreenBrightnessLevel(level)
     }
 
-    suspend fun exportJson(): String = withContext(Dispatchers.IO) {
-        val folders = folderRepository.getAllFolders().first()
-        val notes = noteRepository.getAllNotes().first()
-        val labels = labelRepository.getAllLabels().first()
-        val noteLabels = noteLabelRepository.getNoteLabels().first()
-        val settings = settingsRepository.config.first()
-        val data = NotoData(folders, notes, labels, noteLabels, settings)
-        NotoDefaultJson.encodeToString(data)
+    suspend fun exportJson(): String {
+        return settingsRepository.exportNotoData()
     }
 
-    suspend fun importJson(json: String) = withContext(Dispatchers.IO) {
-        val folderIds = mutableMapOf<Long, Long>()
-        val noteIds = mutableMapOf<Long, Long>()
-        val labelIds = mutableMapOf<Long, Long>()
-        val data = NotoDefaultJson.decodeFromString<NotoData>(json)
-        data.apply {
-            folders.forEach { folder ->
-                if (folder.isGeneral) {
-                    folderRepository.updateFolder(folder)
-                    folderIds[folder.id] = Folder.GeneralFolderId
-                } else {
-                    val parentFolder = folders.firstOrNull { it.id == folder.parentId }
-                    val parentId = folderIds.getOrDefault(parentFolder?.id ?: 0L, 0L).takeUnless { it == 0L }
-                    val newFolderId = folderRepository.createFolder(folder.copy(id = 0, parentId = parentId), overridePosition = false).getOrThrow()
-                    folderIds[folder.id] = newFolderId
-                }
-            }
-            notes.forEach { note ->
-                val folderId = folderIds.getValue(note.folderId)
-                val newNoteId = noteRepository.createNote(note.copy(id = 0, folderId = folderId), overridePosition = false)
-                noteIds[note.id] = newNoteId
-            }
-            labels.forEach { label ->
-                val folderId = folderIds.getValue(label.folderId)
-                val newLabelId = labelRepository.createLabel(label.copy(id = 0, folderId = folderId), overridePosition = false)
-                labelIds[label.id] = newLabelId
-            }
-            noteLabels.forEach { noteLabel ->
-                val noteId = noteIds.getValue(noteLabel.noteId)
-                val labelId = labelIds.getValue(noteLabel.labelId)
-                noteLabelRepository.createNoteLabel(noteLabel.copy(id = 0, noteId = noteId, labelId = labelId))
-            }
-            settingsRepository.updateConfig(settings)
-        }
+    suspend fun importJson(data: String) {
+        settingsRepository.importNotoData(data)
     }
 
     fun setVaultPasscode(passcode: String) = viewModelScope.launch {
