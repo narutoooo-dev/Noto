@@ -15,9 +15,7 @@ private const val AuthenticationTagSize = 128 // Bits
 private const val InitializationVectorSize = 12 // Bytes
 private const val EncodingFlags = 0
 
-object EncryptionHandlerImpl : EncryptionHandler {
-
-    private val secureRandom = SecureRandom()
+class EncryptionHandlerImpl(private val secureRandom: SecureRandom = SecureRandom()) : EncryptionHandler {
 
     override fun generateDEK(): ByteArray {
         val keyGenerator = KeyGenerator.getInstance(SecretKeyAlgorithm)
