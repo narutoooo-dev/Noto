@@ -12,7 +12,7 @@ private const val NOTO_DATABASE = "Noto Database"
 
 @Database(
     entities = [LocalFolder::class, LocalNote::class, LocalLabel::class, LocalNoteLabel::class],
-    version = 33,
+    version = 34,
     autoMigrations = [
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
@@ -72,7 +72,7 @@ abstract class NotoDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context) = Room
             .databaseBuilder(context.applicationContext, NotoDatabase::class.java, NOTO_DATABASE)
-            .addMigrations(Migrations.SetAccessDateToCreationDate, Migrations.AddRemoteIdToLocalFolder)
+            .addMigrations(Migrations.SetAccessDateToCreationDate, Migrations.AddRemoteIdToLocalFolder, Migrations.SetGeneralFolderTitleToBlank)
             .build()
     }
 }

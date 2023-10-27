@@ -149,4 +149,20 @@ object Migrations {
             }
         }
     }
+
+    object SetGeneralFolderTitleToBlank : Migration(33, 34) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.beginTransaction()
+            try {
+                database.execSQL(
+                    """
+                    UPDATE folders SET title = "" WHERE id = -1;
+                    """.trimIndent()
+                )
+                database.setTransactionSuccessful()
+            } finally {
+                database.endTransaction()
+            }
+        }
+    }
 }
