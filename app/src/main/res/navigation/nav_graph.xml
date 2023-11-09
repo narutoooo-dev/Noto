@@ -762,8 +762,8 @@
         android:name="com.noto.app.settings.whatsnew.ReleaseFragment"
         android:label="ReleaseFragment">
         <argument
-            android:name="release"
-            app:argType="string" />
+            android:name="release_id"
+            app:argType="long" />
     </fragment>
     <action
         android:id="@+id/action_global_noteFragment"

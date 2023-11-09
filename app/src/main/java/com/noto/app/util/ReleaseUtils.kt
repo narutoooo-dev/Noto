@@ -3,15 +3,14 @@ package com.noto.app.util
 import android.content.Context
 import com.noto.app.R
 import com.noto.app.domain.model.*
-import kotlinx.serialization.encodeToString
-
-fun Release.toJson(): String = NotoDefaultJson.encodeToString(this)
-fun String.toRelease(): Release = NotoDefaultJson.decodeFromString(this)
 
 fun Release.Changelog.format(context: Context): String = changesIds.joinToString("\n\n") { id -> context.stringResource(id) }
 
 fun Release.Changelog.format(context: Context, count: Int) = changesIds.take(count).joinToString("\n\n") { id -> context.stringResource(id) }
     .let { if (changesIds.count() > count) it.plus("\n\n...") else it }
+
+val Release.Companion.All: List<Release>
+    get() = listOf(Current) + Previous
 
 val Release.Companion.Current: Release
     get() = Release_2_3_2(

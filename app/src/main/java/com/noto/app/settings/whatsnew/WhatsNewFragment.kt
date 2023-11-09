@@ -63,7 +63,7 @@ class WhatsNewFragment : Fragment() {
                             onClick = {
                                 navController?.navigateSafely(
                                     WhatsNewFragmentDirections.actionWhatsNewFragmentToReleaseFragment(
-                                        currentRelease.toJson()
+                                        currentRelease.id
                                     )
                                 )
                             },
@@ -90,7 +90,7 @@ class WhatsNewFragment : Fragment() {
                                 onClick = {
                                     navController?.navigateSafely(
                                         WhatsNewFragmentDirections.actionWhatsNewFragmentToReleaseFragment(
-                                            previousRelease.toJson()
+                                            previousRelease.id
                                         )
                                     )
                                 },

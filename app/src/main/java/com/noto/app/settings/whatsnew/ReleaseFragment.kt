@@ -19,19 +19,20 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
 import com.noto.app.components.Screen
+import com.noto.app.domain.model.Release
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
 import com.noto.app.theme.NotoTheme
+import com.noto.app.util.All
 import com.noto.app.util.navController
 import com.noto.app.util.setupMixedTransitions
-import com.noto.app.util.toRelease
 
 class ReleaseFragment : Fragment() {
 
     private val args by navArgs<ReleaseFragmentArgs>()
 
-    private val release by lazy { args.release.toRelease() }
+    private val release by lazy { Release.All.first { args.releaseId == it.id } }
 
     override fun onCreateView(
         inflater: LayoutInflater,
