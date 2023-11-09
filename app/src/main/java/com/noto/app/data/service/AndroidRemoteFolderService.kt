@@ -6,6 +6,7 @@ import com.noto.app.data.worker.folder.*
 import com.noto.app.domain.service.RemoteFolderService
 
 private const val GetRemoteFoldersUniqueWorkName = "GetRemoteFolders"
+private const val CreateRemoteGeneralFolderWorkName = "CreateRemoteGeneralFolder"
 
 class AndroidRemoteFolderService(context: Context) : RemoteFolderService {
 
@@ -21,6 +22,13 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService {
     override fun createRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<CreateRemoteFolderWorker>(remoteFolderId)
         workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
+    }
+
+    override fun createRemoteGeneralFolder() {
+        val workRequest = OneTimeWorkRequestBuilder<CreateRemoteGeneralFolderWorker>()
+            .setConstraints(buildConstraints())
+            .build()
+        workManager.enqueueUniqueWork(CreateRemoteGeneralFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun updateRemoteFolder(remoteFolderId: String) {

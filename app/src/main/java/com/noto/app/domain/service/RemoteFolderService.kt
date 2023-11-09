@@ -6,6 +6,8 @@ interface RemoteFolderService {
 
     fun createRemoteFolder(remoteFolderId: String)
 
+    fun createRemoteGeneralFolder()
+
     fun updateRemoteFolder(remoteFolderId: String)
 
     fun deleteRemoteFolder(remoteFolderId: String)
