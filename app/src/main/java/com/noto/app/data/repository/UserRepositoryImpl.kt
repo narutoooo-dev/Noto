@@ -1,5 +1,6 @@
 package com.noto.app.data.repository
 
+import com.noto.app.crypto.KeyStoreManager
 import com.noto.app.crypto.PasswordTransformer
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.User
@@ -18,6 +19,7 @@ class UserRepositoryImpl(
     private val settingsRepository: SettingsRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val passwordTransformer: PasswordTransformer,
+    private val keyStoreManager: KeyStoreManager,
 ) : UserRepository {
 
     override val user: Flow<Result<User>> = combine(
@@ -37,6 +39,8 @@ class UserRepositoryImpl(
                 val passwordData = passwordTransformer.hashPassword(password.toByteArray())
                 val encodedPassword = passwordData.key.let(passwordTransformer::encodeToString)
                 remoteAuthDataSource.signUp(name, email, encodedPassword, passwordData.encodedParameters)
+                val keyData = passwordTransformer.generateKEK(password.encodeToByteArray())
+                keyStoreManager.storeKEK(keyData.key, keyData.encodedParameters)
             }
         }
     }
@@ -47,6 +51,8 @@ class UserRepositoryImpl(
             val hashedPassword = passwordTransformer.verifyPassword(password.toByteArray(), passwordParametersResponse.passwordParameters)
             val encodedPassword = passwordTransformer.encodeToString(hashedPassword)
             remoteAuthDataSource.logIn(email, encodedPassword)
+            val keyData = passwordTransformer.generateKEK(password.encodeToByteArray())
+            keyStoreManager.storeKEK(keyData.key, keyData.encodedParameters)
             val remoteAuthUser = remoteAuthDataSource.get()
             finishCreatingAccount(remoteAuthUser.id, remoteAuthUser.email).getOrThrow()
         }
