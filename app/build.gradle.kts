@@ -138,6 +138,7 @@ dependencies {
     implementation(libs.google.flexbox)
 
     implementation(libs.bcprov.jdk18on)
+    implementation(libs.tink.android)
 
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)

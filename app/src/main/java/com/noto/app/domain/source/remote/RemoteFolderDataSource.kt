@@ -12,6 +12,4 @@ interface RemoteFolderDataSource {
 
     suspend fun deleteRemoteFolderById(remoteFolderId: String)
 
-    suspend fun getRemoteGeneralFolderOrNull(): RemoteFolder?
-
 }

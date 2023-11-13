@@ -9,7 +9,7 @@ import java.security.SecureRandom
 // TODO: Research values for all number properties. Supabase (Bcrypt) doesn't take more than 72 bytes.
 private const val SaltSize = 32 // Bytes
 private const val HashSize = 32 // Bytes
-private const val KeySize = 128 // Bytes
+private const val KeySize = 32 // Bytes
 private const val Parallelism = 1
 private const val MemoryInKB = 16_384 // 16 MB
 private const val Iterations = 10
@@ -39,7 +39,7 @@ class PasswordTransformerImpl(private val secureRandom: SecureRandom = SecureRan
         return hash
     }
 
-    override fun generateKEK(password: ByteArray): KeyData {
+    override fun generateKek(password: ByteArray): KeyData {
         val key = ByteArray(KeySize)
         val parameters = buildParameters(salt = null)
         generator.init(parameters)

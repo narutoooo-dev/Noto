@@ -217,7 +217,7 @@ class FolderViewModel(
         val color = notoColors.value.first { it.second }.first
 
         val folder = folder.value.copy(
-            title = if (folder.value.isGeneral) "" else title.trim(),
+            title = title.trim(),
             parentId = parentFolder.value?.id,
             color = color,
             layout = layout,

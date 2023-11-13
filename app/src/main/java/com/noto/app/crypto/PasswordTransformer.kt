@@ -8,7 +8,7 @@ interface PasswordTransformer {
 
     fun verifyPassword(password: ByteArray, encodedParameters: String): ByteArray
 
-    fun generateKEK(password: ByteArray): KeyData
+    fun generateKek(password: ByteArray): KeyData
 
     fun encodeToString(value: ByteArray): String
 

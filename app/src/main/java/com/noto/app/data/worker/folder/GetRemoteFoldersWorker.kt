@@ -14,12 +14,14 @@ class GetRemoteFoldersWorker(appContext: Context, workerParams: WorkerParameters
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {
             remoteFolderDataSource.getRemoteFolders().forEach { remoteFolder ->
-                val localFolder = localFolderDataSource.getLocalFolderByRemoteId(remoteFolder.id.toString()).first()
-                if (localFolder == null) {
-                    val id = if (remoteFolder.isGeneralFolder) GeneralFolderId else NewFolderId
-                    localFolderDataSource.createLocalFolder(remoteFolder.toLocalFolder(id = id))
+                val databaseLocalFolder = localFolderDataSource.getLocalFolderByRemoteId(remoteFolder.id.toString()).first()
+                val remoteLocalFolder = remoteFolder.toLocalFolder()
+                if (databaseLocalFolder == null) {
+                    val isGeneralFolder = remoteLocalFolder.title.isBlank()
+                    val id = if (isGeneralFolder) GeneralFolderId else NewFolderId
+                    localFolderDataSource.createLocalFolder(remoteLocalFolder.copy(id = id))
                 } else {
-                    localFolderDataSource.updateLocalFolder(remoteFolder.toLocalFolder(id = localFolder.id))
+                    localFolderDataSource.updateLocalFolder(remoteLocalFolder.copy(id = databaseLocalFolder.id))
                 }
             }
             Result.success()

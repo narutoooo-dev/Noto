@@ -1,13 +1,16 @@
 package com.noto.app.data.repository
 
+import com.noto.app.crypto.EncryptionHandler
 import com.noto.app.data.database.*
 import com.noto.app.data.model.local.LocalFolder
+import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.service.RemoteFolderService
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
+import com.noto.app.util.isGeneral
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -18,8 +21,9 @@ class FolderRepositoryImpl(
     private val localFolderDataSource: LocalFolderDataSource,
     private val settingsRepository: SettingsRepository,
     private val remoteFolderService: RemoteFolderService,
+    private val encryptionHandler: EncryptionHandler,
     private val coroutineDispatcher: CoroutineDispatcher,
-) : FolderRepository {
+) : FolderRepository, LocalGeneralFolderManager {
 
     override fun getAllFolders(): Flow<List<Folder>> = localFolderDataSource.getAllLocalFolders()
         .map { it.map { it.toDomainFolder() } }
@@ -51,15 +55,10 @@ class FolderRepositoryImpl(
 
     override suspend fun createGeneralFolder(): Result<Unit> = runCatching {
         withContext(coroutineDispatcher) {
-            val generalFolder = Folder.GeneralFolder()
-            val localGeneralFolder = generalFolder.toLocalFolder()
             if (isUserLoggedIn()) {
-                val isRemoteGeneralFolderCreated = remoteFolderDataSource.getRemoteGeneralFolderOrNull() != null
-                if (!isRemoteGeneralFolderCreated) {
-                    localFolderDataSource.createLocalFolder(localGeneralFolder)
-                    remoteFolderService.createRemoteFolder(localGeneralFolder.remoteId)
-                } // Else: General folder already exists, don't create it, but fetch it instead.
+                remoteFolderService.createRemoteGeneralFolder()
             } else {
+                val localGeneralFolder = newLocalGeneralFolder()
                 localFolderDataSource.createLocalFolder(localGeneralFolder)
             }
         }
@@ -68,7 +67,7 @@ class FolderRepositoryImpl(
     override suspend fun createFolder(folder: Folder): Result<Long> = runCatching {
         withContext(coroutineDispatcher) {
             val position = getFolderPosition()
-            val positionedFolder = folder.copy(position = position)
+            val positionedFolder = folder.copy(position = position, title = folder.correctTitle)
             val localFolder = positionedFolder.toLocalFolder()
             val localFolderId = localFolderDataSource.createLocalFolder(localFolder)
             if (isUserLoggedIn()) remoteFolderService.createRemoteFolder(localFolder.remoteId)
@@ -78,7 +77,7 @@ class FolderRepositoryImpl(
 
     override suspend fun updateFolder(folder: Folder) = runCatching {
         withContext(coroutineDispatcher) {
-            val localFolder = folder.toLocalFolder()
+            val localFolder = folder.copy(title = folder.correctTitle).toLocalFolder()
             localFolderDataSource.updateLocalFolder(localFolder)
             if (isUserLoggedIn()) remoteFolderService.updateRemoteFolder(localFolder.remoteId)
         }
@@ -132,7 +131,13 @@ class FolderRepositoryImpl(
     }
 
     private suspend fun Folder.toLocalFolder(): LocalFolder {
-        val remoteId = localFolderDataSource.getLocalFolderById(id).firstOrNull()?.remoteId ?: UUID.randomUUID().toString()
+        val localFolder = localFolderDataSource.getLocalFolderById(id).firstOrNull()
+        val remoteId = localFolder?.remoteId ?: UUID.randomUUID().toString()
+        val encryptedKey = if (isUserLoggedIn()) {
+            localFolder?.encryptedKey ?: encryptionHandler.generateEncryptedDek()
+        } else {
+            null
+        }
         return LocalFolder(
             id = id,
             remoteId = remoteId,
@@ -155,6 +160,14 @@ class FolderRepositoryImpl(
             scrollingPosition = scrollingPosition,
             filteringType = FilteringTypeConverter.toOrdinal(filteringType),
             openNotesIn = OpenNotesInConverter.toOrdinal(openNotesIn),
+            encryptedKey = encryptedKey
         )
     }
+
+    @Suppress("DEPRECATION")
+    private val Folder.correctTitle
+        get() = if (isGeneral) "" else title
+
+    override suspend fun newLocalGeneralFolder(): LocalFolder = Folder.GeneralFolder().toLocalFolder()
+
 }

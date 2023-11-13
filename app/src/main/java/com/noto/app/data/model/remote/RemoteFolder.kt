@@ -1,6 +1,5 @@
 package com.noto.app.data.model.remote
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -8,6 +7,26 @@ import java.util.UUID
 data class RemoteFolder(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val title: String,
-    val createdAt: Instant,
-)
+    val encryptedKey: ByteArray,
+    val encryptedContent: ByteArray,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RemoteFolder
+
+        if (id != other.id) return false
+        if (!encryptedKey.contentEquals(other.encryptedKey)) return false
+        if (!encryptedContent.contentEquals(other.encryptedContent)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + encryptedKey.contentHashCode()
+        result = 31 * result + encryptedContent.contentHashCode()
+        return result
+    }
+}

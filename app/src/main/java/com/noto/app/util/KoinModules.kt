@@ -6,9 +6,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.noto.app.AppViewModel
 import com.noto.app.BuildConfig
-import com.noto.app.crypto.PasswordTransformer
-import com.noto.app.crypto.PasswordTransformerImpl
+import com.noto.app.crypto.*
 import com.noto.app.data.database.NotoDatabase
+import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
 import com.noto.app.data.source.remote.*
@@ -38,22 +38,22 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
+import java.security.KeyStore
 
 private const val DataStoreName = "Noto Data Store"
 private val Context.dataStore by preferencesDataStore(name = DataStoreName)
 val CoroutineDispatcherQualifier = qualifier("CoroutineDispatcher")
+val CryptoJsonQualifier = qualifier("CryptoJson")
+private const val AndroidKeyStore = "AndroidKeyStore"
 
 val appModule = module {
 
@@ -83,7 +83,7 @@ val appModule = module {
 
 val repositoryModule = module {
 
-    single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
+    single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
     single<NoteRepository> { NoteRepositoryImpl(get()) }
 
@@ -91,11 +91,13 @@ val repositoryModule = module {
 
     single<NoteLabelRepository> { NoteLabelRepositoryImpl(get()) }
 
-    single<SettingsRepository> { SettingsRepositoryImpl(get(), get(), get(), get(), get(), ExportImportDataJson, get(CoroutineDispatcherQualifier)) }
+    single<SettingsRepository> { SettingsRepositoryImpl(get(), get(), get(), get(), get(), JsonConfigs.ExportImportData, get(CoroutineDispatcherQualifier)) }
 
-    single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get()) }
+    single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get(), keyStoreManager = get()) }
 
     single<CoroutineDispatcher>(CoroutineDispatcherQualifier) { Dispatchers.IO }
+
+    single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
 }
 
@@ -118,13 +120,13 @@ val remoteDataSourceModule = module {
 
     single<SupabaseClient> {
         createSupabaseClient(SupabaseConstants.URLs.SupabaseUrl, BuildConfig.SupabaseApiKey) {
-            defaultSerializer = KotlinXSerializer(RemoteJson)
+            defaultSerializer = KotlinXSerializer(JsonConfigs.Remote)
             httpConfig {
                 if (BuildConfig.DEBUG) {
-                    Logging {
-                        level = LogLevel.ALL
-                        logger = Logger.SIMPLE
-                    }
+//                    Logging {
+//                        level = LogLevel.ALL
+//                        logger = Logger.SIMPLE
+//                    }
                 }
             }
             install(GoTrue) {
@@ -148,6 +150,15 @@ val remoteDataSourceModule = module {
 val cryptoModule = module {
 
     single<PasswordTransformer> { PasswordTransformerImpl() }
+
+    single<EncryptionHandler> { TinkEncryptionHandler() }
+
+    single<Json>(CryptoJsonQualifier) { JsonConfigs.Crypto }
+
+    single<KeyStoreManager> {
+        val keyStore = KeyStore.getInstance(AndroidKeyStore).apply { load(null) }
+        AndroidKeyStoreManager(keyStore, androidContext().dataStore)
+    }
 
 }
 

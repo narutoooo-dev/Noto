@@ -32,12 +32,4 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
             .delete(returning = Returning.MINIMAL) { RemoteFolder::id eq remoteFolderId }
     }
 
-    override suspend fun getRemoteGeneralFolderOrNull(): RemoteFolder? {
-        return tryCatching {
-            client.postgrest[SupabaseConstants.Tables.Folders]
-                .select { RemoteFolder::title eq "" }
-                .decodeSingleOrNull()
-        }
-    }
-
 }

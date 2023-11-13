@@ -39,8 +39,8 @@ class UserRepositoryImpl(
                 val passwordData = passwordTransformer.hashPassword(password.toByteArray())
                 val encodedPassword = passwordData.key.let(passwordTransformer::encodeToString)
                 remoteAuthDataSource.signUp(name, email, encodedPassword, passwordData.encodedParameters)
-                val keyData = passwordTransformer.generateKEK(password.encodeToByteArray())
-                keyStoreManager.storeKEK(keyData.key, keyData.encodedParameters)
+                val keyData = passwordTransformer.generateKek(password.encodeToByteArray())
+                keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
             }
         }
     }
@@ -51,8 +51,8 @@ class UserRepositoryImpl(
             val hashedPassword = passwordTransformer.verifyPassword(password.toByteArray(), passwordParametersResponse.passwordParameters)
             val encodedPassword = passwordTransformer.encodeToString(hashedPassword)
             remoteAuthDataSource.logIn(email, encodedPassword)
-            val keyData = passwordTransformer.generateKEK(password.encodeToByteArray())
-            keyStoreManager.storeKEK(keyData.key, keyData.encodedParameters)
+            val keyData = passwordTransformer.generateKek(password.encodeToByteArray())
+            keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
             val remoteAuthUser = remoteAuthDataSource.get()
             finishCreatingAccount(remoteAuthUser.id, remoteAuthUser.email).getOrThrow()
         }
@@ -61,7 +61,7 @@ class UserRepositoryImpl(
             if (exception is NotoException.Auth.EmailNotVerified) remoteAuthDataSource.verifyEmail(email)
             throw exception
         }
-    }
+    }.onFailure { throw it }
 
     override suspend fun finishCreatingAccount(id: String, email: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
