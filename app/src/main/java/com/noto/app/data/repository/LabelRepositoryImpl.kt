@@ -1,6 +1,7 @@
 package com.noto.app.data.repository
 
-import com.noto.app.data.database.NotoColorConverter
+import com.noto.app.data.model.DomainMappers
+import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.repository.LabelRepository
@@ -54,21 +55,21 @@ class LabelRepositoryImpl(
 
     private fun LocalLabel.toDomainLabel(): Label {
         return Label(
-            id,
-            folderId,
-            title,
-            NotoColorConverter.toEnum(color),
-            position,
+            id = id,
+            folderId = folderId,
+            title = title,
+            color = LocalMappers.NotoColor.map(color),
+            position = position,
         )
     }
 
     private fun Label.toLocalLabel(): LocalLabel {
         return LocalLabel(
-            id,
-            folderId,
-            title,
-            NotoColorConverter.toOrdinal(color),
-            position,
+            id = id,
+            folderId = folderId,
+            title = title,
+            color = DomainMappers.NotoColor.map(color),
+            position = position,
         )
     }
 

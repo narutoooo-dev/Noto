@@ -2,6 +2,8 @@ package com.noto.app.data.repository
 
 import com.noto.app.crypto.EncryptionHandler
 import com.noto.app.data.database.*
+import com.noto.app.data.model.DomainMappers
+import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalFolder
 import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.domain.model.Folder
@@ -110,22 +112,22 @@ class FolderRepositoryImpl(
             parentId = parentId,
             title = title,
             position = position,
-            color = NotoColorConverter.toEnum(color),
-            creationDate = InstantConverter.toDate(creationDate)!!,
-            layout = LayoutConvertor.toEnum(layout),
+            color = LocalMappers.NotoColor.map(color),
+            creationDate = LocalMappers.Instant.map(creationDate),
+            layout = LocalMappers.Layout.map(layout),
             notePreviewSize = notePreviewSize,
             isArchived = isArchived,
             isPinned = isPinned,
             isShowNoteCreationDate = isShowNoteCreationDate,
-            newNoteCursorPosition = NewNoteCursorPositionConvertor.toEnum(newNoteCursorPosition),
-            sortingType = SortingTypeConverter.toEnum(sortingType),
-            sortingOrder = SortingOrderConverter.toEnum(sortingOrder),
-            grouping = GroupingConvertor.toEnum(grouping),
-            groupingOrder = GroupingOrderConverter.toEnum(groupingOrder),
+            newNoteCursorPosition = LocalMappers.NewNoteCursorPosition.map(newNoteCursorPosition),
+            sortingType = LocalMappers.NoteListSortingType.map(sortingType),
+            sortingOrder = LocalMappers.SortingOrder.map(sortingOrder),
+            grouping = LocalMappers.Grouping.map(grouping),
+            groupingOrder = LocalMappers.GroupingOrder.map(groupingOrder),
             isVaulted = isVaulted,
             scrollingPosition = scrollingPosition,
-            filteringType = FilteringTypeConverter.toEnum(filteringType),
-            openNotesIn = OpenNotesInConverter.toEnum(openNotesIn),
+            filteringType = LocalMappers.FilteringType.map(filteringType),
+            openNotesIn = LocalMappers.OpenNotesIn.map(openNotesIn),
             folders = emptyList(),
         )
     }
@@ -144,22 +146,22 @@ class FolderRepositoryImpl(
             parentId = parentId,
             title = title,
             position = position,
-            color = NotoColorConverter.toOrdinal(color),
-            creationDate = InstantConverter.toString(creationDate)!!,
-            layout = LayoutConvertor.toOrdinal(layout),
+            color = DomainMappers.NotoColor.map(color),
+            creationDate = DomainMappers.Instant.map(creationDate),
+            layout = DomainMappers.Layout.map(layout),
             notePreviewSize = notePreviewSize,
             isArchived = isArchived,
             isPinned = isPinned,
             isShowNoteCreationDate = isShowNoteCreationDate,
-            newNoteCursorPosition = NewNoteCursorPositionConvertor.toOrdinal(newNoteCursorPosition),
-            sortingType = SortingTypeConverter.toOrdinal(sortingType),
-            sortingOrder = SortingOrderConverter.toOrdinal(sortingOrder),
-            grouping = GroupingConvertor.toOrdinal(grouping),
-            groupingOrder = GroupingOrderConverter.toOrdinal(groupingOrder),
+            newNoteCursorPosition = DomainMappers.NewNoteCursorPosition.map(newNoteCursorPosition),
+            sortingType = DomainMappers.NoteListSortingType.map(sortingType),
+            sortingOrder = DomainMappers.SortingOrder.map(sortingOrder),
+            grouping = DomainMappers.Grouping.map(grouping),
+            groupingOrder = DomainMappers.GroupingOrder.map(groupingOrder),
             isVaulted = isVaulted,
             scrollingPosition = scrollingPosition,
-            filteringType = FilteringTypeConverter.toOrdinal(filteringType),
-            openNotesIn = OpenNotesInConverter.toOrdinal(openNotesIn),
+            filteringType = DomainMappers.FilteringType.map(filteringType),
+            openNotesIn = DomainMappers.OpenNotesIn.map(openNotesIn),
             encryptedKey = encryptedKey
         )
     }

@@ -1,6 +1,7 @@
 package com.noto.app.data.repository
 
-import com.noto.app.data.database.InstantConverter
+import com.noto.app.data.model.DomainMappers
+import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalNote
 import com.noto.app.domain.model.FolderIdWithNotesCount
 import com.noto.app.domain.model.Note
@@ -66,35 +67,35 @@ class NoteRepositoryImpl(
 
     private fun LocalNote.toDomainNote(): Note {
         return Note(
-            id,
-            folderId,
-            title,
-            body,
-            position,
-            InstantConverter.toDate(creationDate)!!,
-            isPinned,
-            isArchived,
-            InstantConverter.toDate(reminderDate),
-            isVaulted,
-            InstantConverter.toDate(accessDate)!!,
-            scrollingPosition,
+            id = id,
+            folderId = folderId,
+            title = title,
+            body = body,
+            position = position,
+            creationDate = LocalMappers.Instant.map(creationDate),
+            isPinned = isPinned,
+            isArchived = isArchived,
+            reminderDate = reminderDate?.let(LocalMappers.Instant::map),
+            isVaulted = isVaulted,
+            accessDate = LocalMappers.Instant.map(accessDate),
+            scrollingPosition = scrollingPosition,
         )
     }
 
     private fun Note.toLocalNote(): LocalNote {
         return LocalNote(
-            id,
-            folderId,
-            title,
-            body,
-            position,
-            InstantConverter.toString(creationDate)!!,
-            isPinned,
-            isArchived,
-            InstantConverter.toString(reminderDate),
-            isVaulted,
-            InstantConverter.toString(accessDate)!!,
-            scrollingPosition,
+            id = id,
+            folderId = folderId,
+            title = title,
+            body = body,
+            position = position,
+            creationDate = DomainMappers.Instant.map(creationDate),
+            isPinned = isPinned,
+            isArchived = isArchived,
+            reminderDate = reminderDate?.let(DomainMappers.Instant::map),
+            isVaulted = isVaulted,
+            accessDate = DomainMappers.Instant.map(accessDate)!!,
+            scrollingPosition = scrollingPosition,
         )
     }
 
