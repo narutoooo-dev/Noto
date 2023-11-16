@@ -3,12 +3,10 @@ package com.noto.app.data.worker.folder
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.domain.model.NotoException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-
-private const val GeneralFolderId = -1L
-private const val NewFolderId = 0L
 
 class GetRemoteFoldersWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams), RemoteFolderWorker {
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
@@ -18,7 +16,7 @@ class GetRemoteFoldersWorker(appContext: Context, workerParams: WorkerParameters
                 val remoteLocalFolder = remoteFolder.toLocalFolder()
                 if (databaseLocalFolder == null) {
                     val isGeneralFolder = remoteLocalFolder.title.isBlank()
-                    val id = if (isGeneralFolder) GeneralFolderId else NewFolderId
+                    val id = if (isGeneralFolder) RemoteItemWorker.GeneralFolderId else RemoteItemWorker.NewItemId
                     localFolderDataSource.createLocalFolder(remoteLocalFolder.copy(id = id))
                 } else {
                     localFolderDataSource.updateLocalFolder(remoteLocalFolder.copy(id = databaseLocalFolder.id))

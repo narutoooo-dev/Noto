@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 class GetRemoteNotesWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams), RemoteNoteWorker {
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {
-            val remoteFolderId = inputData.getString(RemoteNoteWorker.RemoteFolderId)
+            val remoteFolderId = inputData.getString(RemoteItemWorker.RemoteFolderId)
             val remoteNotes = if (remoteFolderId == null) {
                 remoteNoteDataSource.getAllRemoteNotes()
             } else {

@@ -5,6 +5,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.data.worker.note.*
 import com.noto.app.domain.service.RemoteNoteService
 
@@ -13,7 +14,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
     private val workManager by lazy { WorkManager.getInstance(context) }
 
     override fun getAllRemoteNotes() {
-        val workData = workDataOf(RemoteNoteWorker.RemoteFolderId to null)
+        val workData = workDataOf(RemoteItemWorker.RemoteFolderId to null)
         val workRequest = OneTimeWorkRequestBuilder<GetRemoteNotesWorker>()
             .setConstraints(buildConstraints())
             .setInputData(workData)
@@ -22,7 +23,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
     }
 
     override fun getRemoteNoteByRemoteFolderId(remoteFolderId: String) {
-        val workData = workDataOf(RemoteNoteWorker.RemoteFolderId to remoteFolderId)
+        val workData = workDataOf(RemoteItemWorker.RemoteFolderId to remoteFolderId)
         val workRequest = OneTimeWorkRequestBuilder<GetRemoteNotesWorker>()
             .setConstraints(buildConstraints())
             .setInputData(workData)
@@ -31,7 +32,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
     }
 
     override fun createRemoteNote(remoteNoteId: String) {
-        val workData = workDataOf(RemoteNoteWorker.RemoteNoteId to remoteNoteId)
+        val workData = workDataOf(RemoteItemWorker.RemoteNoteId to remoteNoteId)
         val workRequest = OneTimeWorkRequestBuilder<CreateRemoteNoteWorker>()
             .setConstraints(buildConstraints())
             .setInputData(workData)
@@ -40,7 +41,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
     }
 
     override fun updateRemoteNote(remoteNoteId: String) {
-        val workData = workDataOf(RemoteNoteWorker.RemoteNoteId to remoteNoteId)
+        val workData = workDataOf(RemoteItemWorker.RemoteNoteId to remoteNoteId)
         val workRequest = OneTimeWorkRequestBuilder<UpdateRemoteNoteWorker>()
             .setConstraints(buildConstraints())
             .setInputData(workData)
@@ -49,7 +50,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
     }
 
     override fun deleteRemoteNote(remoteNoteId: String) {
-        val workData = workDataOf(RemoteNoteWorker.RemoteNoteId to remoteNoteId)
+        val workData = workDataOf(RemoteItemWorker.RemoteNoteId to remoteNoteId)
         val workRequest = OneTimeWorkRequestBuilder<DeleteRemoteNoteWorker>()
             .setConstraints(buildConstraints())
             .setInputData(workData)

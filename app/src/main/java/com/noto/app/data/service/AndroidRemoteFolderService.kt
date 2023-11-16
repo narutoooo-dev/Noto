@@ -2,13 +2,11 @@ package com.noto.app.data.service
 
 import android.content.Context
 import androidx.work.*
+import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.data.worker.folder.*
 import com.noto.app.domain.service.RemoteFolderService
 
-private const val GetRemoteFoldersUniqueWorkName = "GetRemoteFolders"
-private const val CreateRemoteGeneralFolderWorkName = "CreateRemoteGeneralFolder"
-
-class AndroidRemoteFolderService(context: Context) : RemoteFolderService {
+class AndroidRemoteFolderService(context: Context) : RemoteFolderService, AndroidRemoteItemService {
 
     private val workManager by lazy { WorkManager.getInstance(context) }
 
@@ -50,10 +48,11 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService {
             .build()
     }
 
-    private fun buildWorkData(remoteFolderId: String) = workDataOf(RemoteFolderWorker.RemoteFolderId to remoteFolderId)
+    private fun buildWorkData(remoteFolderId: String) = workDataOf(RemoteItemWorker.RemoteFolderId to remoteFolderId)
 
-    private fun buildConstraints() = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .build()
+    companion object {
+        private const val GetRemoteFoldersUniqueWorkName = "GetRemoteFolders"
+        private const val CreateRemoteGeneralFolderWorkName = "CreateRemoteGeneralFolder"
+    }
 
 }

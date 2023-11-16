@@ -26,11 +26,6 @@ sealed interface RemoteNoteWorker : RemoteItemWorker {
 
     private val json get() = get<Json>(CryptoJsonQualifier)
 
-    companion object {
-        const val RemoteNoteId = "remote_note_id"
-        const val RemoteFolderId = "remote_folder_id"
-    }
-
     suspend fun LocalNote.toRemoteNote(): RemoteNote {
         val localFolder = localFolderDataSource.getLocalFolderById(folderId).first()
         val encryptedDek = localFolder.encryptedKey!!
