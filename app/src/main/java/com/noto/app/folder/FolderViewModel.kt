@@ -405,13 +405,15 @@ class FolderViewModel(
         val labels = selectedNotes.map { it.labels }.flatten()
         val note =
             Note(folderId = folderId, title = title, body = body, isPinned = isPinned, position = 0)
-        val noteId = noteRepository.createNote(note)
-        labels.forEach { label ->
-            launch {
-                val noteLabel = NoteLabel(noteId = noteId, labelId = label.id)
-                noteLabelRepository.createNoteLabel(noteLabel)
+        noteRepository.createNote(note)
+            .onSuccess { noteId ->
+                labels.forEach { label ->
+                    launch {
+                        val noteLabel = NoteLabel(noteId = noteId, labelId = label.id)
+                        noteLabelRepository.createNoteLabel(noteLabel)
+                    }
+                }
             }
-        }
     }
 
     fun pinSelectedNotes() = viewModelScope.launch {
@@ -441,21 +443,22 @@ class FolderViewModel(
     fun duplicateSelectedNotes() = viewModelScope.launch {
         selectedNotes.forEach { model ->
             launch {
-                val noteId = noteRepository.createNote(
+                noteRepository.createNote(
                     model.note.copy(
                         id = 0,
                         reminderDate = null,
                         creationDate = Clock.System.now()
                     )
-                )
-                model.labels.forEach { label ->
-                    launch {
-                        noteLabelRepository.createNoteLabel(
-                            NoteLabel(
-                                noteId = noteId,
-                                labelId = label.id
+                ).onSuccess { noteId ->
+                    model.labels.forEach { label ->
+                        launch {
+                            noteLabelRepository.createNoteLabel(
+                                NoteLabel(
+                                    noteId = noteId,
+                                    labelId = label.id
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -475,11 +478,13 @@ class FolderViewModel(
 
     fun copySelectedNotes(folderId: Long) = viewModelScope.launch {
         selectedNotes.forEach { model ->
-            val noteId = noteRepository.createNote(model.note.copy(id = 0, folderId = folderId, creationDate = Clock.System.now()))
-            model.labels.forEach { label ->
-                val labelId = labelRepository.getOrCreateLabel(folderId, label)
-                launch { noteLabelRepository.createNoteLabel(NoteLabel(labelId = labelId, noteId = noteId)) }
-            }
+            noteRepository.createNote(model.note.copy(id = 0, folderId = folderId, creationDate = Clock.System.now()))
+                .onSuccess { noteId ->
+                    model.labels.forEach { label ->
+                        val labelId = labelRepository.getOrCreateLabel(folderId, label)
+                        launch { noteLabelRepository.createNoteLabel(NoteLabel(labelId = labelId, noteId = noteId)) }
+                    }
+                }
         }
     }
 

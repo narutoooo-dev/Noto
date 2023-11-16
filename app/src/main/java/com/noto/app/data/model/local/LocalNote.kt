@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 @Entity(
@@ -22,6 +23,10 @@ data class LocalNote(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Long = 0L,
+
+    @Transient
+    @ColumnInfo(name = "remote_id")
+    val remoteId: String = "",
 
     @ColumnInfo(name = "folder_id")
     val folderId: Long,

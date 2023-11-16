@@ -10,32 +10,36 @@ import kotlinx.coroutines.flow.Flow
 interface LocalNoteDao : LocalNoteDataSource {
 
     @Query("SELECT * FROM notes")
-    override fun getAllNotes(): Flow<List<LocalNote>>
+    override fun getAllLocalNotes(): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE is_archived = 0")
-    override fun getAllMainNotes(): Flow<List<LocalNote>>
+    override fun getAllMainLocalNotes(): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_archived = 0")
-    override fun getNotesByFolderId(folderId: Long): Flow<List<LocalNote>>
+    @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 0")
+    override fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_archived = 1")
-    override fun getArchivedNotesByFolderId(folderId: Long): Flow<List<LocalNote>>
+    @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 1")
+    override fun getArchivedLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes WHERE id = :noteId")
-    override fun getNoteById(noteId: Long): Flow<LocalNote>
+    @Query("SELECT * FROM notes WHERE id = :localNoteId")
+    override fun getLocalNoteById(localNoteId: Long): Flow<LocalNote>
+
+    @Query("SELECT * FROM notes WHERE remote_id = :remoteNoteId")
+    override fun getLocalNoteByRemoteId(remoteNoteId: String): Flow<LocalNote?>
 
     @Query("SELECT folder_id, COUNT(*) as notesCount FROM notes WHERE is_archived = 0 GROUP BY folder_id")
-    override fun getFoldersNotesCount(): Flow<List<FolderIdWithNotesCount>>
+    override fun getFoldersLocalNotesCount(): Flow<List<FolderIdWithNotesCount>>
 
     @Insert
-    override suspend fun createNote(note: LocalNote): Long
+    override suspend fun createLocalNote(localNote: LocalNote): Long
 
     @Update
-    override suspend fun updateNote(note: LocalNote)
+    override suspend fun updateLocalNote(localNote: LocalNote)
 
     @Delete
-    override suspend fun deleteNote(note: LocalNote)
+    override suspend fun deleteLocalNote(localNote: LocalNote)
 
     @Query("DELETE FROM notes")
-    override suspend fun clearNotes()
+    override suspend fun clearLocalNotes()
+
 }

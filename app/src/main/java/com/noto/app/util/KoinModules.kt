@@ -11,16 +11,19 @@ import com.noto.app.data.database.NotoDatabase
 import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
+import com.noto.app.data.service.AndroidRemoteNoteService
 import com.noto.app.data.source.remote.*
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
 import com.noto.app.domain.service.RemoteFolderService
+import com.noto.app.domain.service.RemoteNoteService
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.domain.source.remote.RemoteAuthDataSource
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
+import com.noto.app.domain.source.remote.RemoteNoteDataSource
 import com.noto.app.domain.source.remote.RemoteUserDataSource
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
@@ -38,6 +41,10 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -85,13 +92,23 @@ val repositoryModule = module {
 
     single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
-    single<NoteRepository> { NoteRepositoryImpl(get()) }
+    single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
     single<LabelRepository> { LabelRepositoryImpl(get()) }
 
     single<NoteLabelRepository> { NoteLabelRepositoryImpl(get()) }
 
-    single<SettingsRepository> { SettingsRepositoryImpl(get(), get(), get(), get(), get(), JsonConfigs.ExportImportData, get(CoroutineDispatcherQualifier)) }
+    single<SettingsRepository> {
+        SettingsRepositoryImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            JsonConfigs.ExportImportData,
+            get(CoroutineDispatcherQualifier)
+        )
+    }
 
     single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get(), keyStoreManager = get()) }
 
@@ -145,6 +162,8 @@ val remoteDataSourceModule = module {
 
     single<RemoteFolderDataSource> { SupabaseFolderClient(get()) }
 
+    single<RemoteNoteDataSource> { SupabaseNoteClient(get()) }
+
 }
 
 val cryptoModule = module {
@@ -165,5 +184,7 @@ val cryptoModule = module {
 val remoteServiceModule = module {
 
     single<RemoteFolderService> { AndroidRemoteFolderService(androidContext().applicationContext) }
+
+    single<RemoteNoteService> { AndroidRemoteNoteService(androidContext().applicationContext) }
 
 }

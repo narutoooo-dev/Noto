@@ -126,7 +126,7 @@ class AppViewModel(
         val body = content.takeAfterFirstLineOrEmpty()
         val folderId = quickNoteFolder.first().id
         val note = Note(folderId = folderId, title = title, body = body, position = 0)
-        noteRepository.createNote(note).also(::setQuickNote)
+        noteRepository.createNote(note).onSuccess(::setQuickNote)
     }
 
     fun setQuickNote(noteId: Long) = viewModelScope.launch {

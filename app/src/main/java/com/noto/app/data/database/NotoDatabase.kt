@@ -12,7 +12,7 @@ private const val NOTO_DATABASE = "Noto Database"
 
 @Database(
     entities = [LocalFolder::class, LocalNote::class, LocalLabel::class, LocalNoteLabel::class],
-    version = 35,
+    version = 36,
     autoMigrations = [
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),

@@ -165,4 +165,22 @@ object Migrations {
             }
         }
     }
+
+    val AddRemoteIdsToLocalItems = Migration(35, 36) { database ->
+        database.beginTransaction()
+        try {
+            database.execSQL("ALTER TABLE notes ADD COLUMN remote_id TEXT NOT NULL DEFAULT '';")
+            database.query("SELECT * FROM notes;").useCursor { cursor ->
+                repeat(cursor.count) { rowIndex ->
+                    cursor.moveToPosition(rowIndex)
+                    val noteId = cursor.getLong(0)
+                    val remoteId = UUID.randomUUID().toString()
+                    database.execSQL("UPDATE notes SET remote_id = '$remoteId' WHERE id = $noteId;")
+                }
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
 }

@@ -18,11 +18,11 @@ interface NoteRepository {
 
     fun getFolderNotesCount(): Flow<List<FolderIdWithNotesCount>>
 
-    suspend fun createNote(note: Note): Long
+    suspend fun createNote(note: Note): Result<Long>
 
-    suspend fun updateNote(note: Note)
+    suspend fun updateNote(note: Note): Result<Unit>
 
-    suspend fun deleteNote(note: Note)
+    suspend fun deleteNote(note: Note): Result<Unit>
 
     suspend fun clearNotes()
 }

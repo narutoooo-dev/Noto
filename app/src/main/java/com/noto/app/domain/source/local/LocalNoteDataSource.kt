@@ -6,23 +6,26 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalNoteDataSource {
 
-    fun getAllNotes(): Flow<List<LocalNote>>
+    fun getAllLocalNotes(): Flow<List<LocalNote>>
 
-    fun getAllMainNotes(): Flow<List<LocalNote>>
+    fun getAllMainLocalNotes(): Flow<List<LocalNote>>
 
-    fun getNotesByFolderId(folderId: Long): Flow<List<LocalNote>>
+    fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
-    fun getArchivedNotesByFolderId(folderId: Long): Flow<List<LocalNote>>
+    fun getArchivedLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
-    fun getNoteById(noteId: Long): Flow<LocalNote>
+    fun getLocalNoteById(localNoteId: Long): Flow<LocalNote>
 
-    fun getFoldersNotesCount(): Flow<List<FolderIdWithNotesCount>>
+    fun getLocalNoteByRemoteId(remoteNoteId: String): Flow<LocalNote?>
 
-    suspend fun createNote(note: LocalNote): Long
+    fun getFoldersLocalNotesCount(): Flow<List<FolderIdWithNotesCount>>
 
-    suspend fun updateNote(note: LocalNote)
+    suspend fun createLocalNote(localNote: LocalNote): Long
 
-    suspend fun deleteNote(note: LocalNote)
+    suspend fun updateLocalNote(localNote: LocalNote)
 
-    suspend fun clearNotes()
+    suspend fun deleteLocalNote(localNote: LocalNote)
+
+    suspend fun clearLocalNotes()
+
 }

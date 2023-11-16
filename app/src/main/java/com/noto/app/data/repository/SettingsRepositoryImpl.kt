@@ -218,7 +218,7 @@ class SettingsRepositoryImpl(
     override suspend fun exportNotoData(): String {
         return withContext(coroutineDispatcher) {
             val folders = localFolderDataSource.getAllLocalFolders().first()
-            val notes = localNoteDataSource.getAllNotes().first()
+            val notes = localNoteDataSource.getAllLocalNotes().first()
             val labels = localLabelDataSource.getAllLabels().first()
             val noteLabels = localNoteLabelDataSource.getNoteLabels().first()
             val config = config.first()
@@ -247,7 +247,7 @@ class SettingsRepositoryImpl(
                 }
                 notes.forEach { localNote ->
                     val folderId = folderIds.getValue(localNote.folderId)
-                    val newNoteId = localNoteDataSource.createNote(localNote.copy(id = 0, folderId = folderId))
+                    val newNoteId = localNoteDataSource.createLocalNote(localNote.copy(id = 0, folderId = folderId))
                     noteIds[localNote.id] = newNoteId
                 }
                 labels.forEach { localLabel ->
