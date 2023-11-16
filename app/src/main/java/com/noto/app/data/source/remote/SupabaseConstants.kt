@@ -18,6 +18,7 @@ data object SupabaseConstants {
     data object Tables {
         const val Users = "users"
         const val Folders = "folders"
+        const val Notes = "notes"
     }
 
     data object URLs {
