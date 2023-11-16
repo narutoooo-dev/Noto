@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -19,7 +18,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import com.noto.app.R
-import com.noto.app.components.Button
 import com.noto.app.components.Screen
 import com.noto.app.components.ScreenCircularProgressIndicator
 import com.noto.app.fold
@@ -104,25 +102,26 @@ class AccountSettingsFragment : Fragment() {
 
                             Spacer(Modifier.weight(1F))
 
-                            val confirmationText = stringResource(id = R.string.delete_account_confirmation)
-                            val descriptionText = stringResource(id = R.string.delete_account_description)
-                            val deleteText = stringResource(id = R.string.delete_account)
-                            Button(
-                                text = deleteText,
-                                onClick = {
-                                    navController?.navigateSafely(
-                                        AccountSettingsFragmentDirections.actionAccountSettingsFragmentToConfirmationDialogFragment(
-                                            confirmation = confirmationText,
-                                            description = descriptionText,
-                                            btnText = deleteText,
-                                            key = Constants.DeleteAccount,
+                            SettingsSection {
+                                val confirmationText = stringResource(id = R.string.delete_account_confirmation)
+                                val descriptionText = stringResource(id = R.string.delete_account_description)
+                                val deleteText = stringResource(id = R.string.delete_account)
+                                SettingsItem(
+                                    title = deleteText,
+                                    type = SettingsItemType.None,
+                                    onClick = {
+                                        navController?.navigateSafely(
+                                            AccountSettingsFragmentDirections.actionAccountSettingsFragmentToConfirmationDialogFragment(
+                                                confirmation = confirmationText,
+                                                description = descriptionText,
+                                                btnText = deleteText,
+                                                key = Constants.DeleteAccount,
+                                            )
                                         )
-                                    )
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            )
+                                    },
+                                    titleColor = MaterialTheme.colorScheme.error,
+                                )
+                            }
                         },
                         onFailure = {
                             val text = stringResource(id = R.string.something_went_wrong)
