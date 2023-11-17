@@ -41,7 +41,7 @@ class NoteListWidgetProvider : AppWidgetProvider(), KoinComponent {
                     .first()
                 val labelIds = settingsRepository.getWidgetSelectedLabelIds(appWidgetId, folderId).first()
                 val selectedLabels = labels.filter { it.id in labelIds }
-                val isEmpty = noteRepository.getNotesByFolderId(folderId)
+                val isEmpty = noteRepository.getMainNotesByFolderId(folderId)
                     .filterNotNull()
                     .map {
                         it.mapToNoteItemModel(labels, noteLabels)
@@ -60,7 +60,7 @@ class NoteListWidgetProvider : AppWidgetProvider(), KoinComponent {
                     settingsRepository.getWidgetRadius(appWidgetId).first(),
                     folder,
                     isEmpty,
-                    noteRepository.getNotesByFolderId(folderId).first().isEmpty(),
+                    noteRepository.getMainNotesByFolderId(folderId).first().isEmpty(),
                     settingsRepository.icon.first(),
                 )
                 appWidgetManager?.updateAppWidget(appWidgetId, remoteViews)

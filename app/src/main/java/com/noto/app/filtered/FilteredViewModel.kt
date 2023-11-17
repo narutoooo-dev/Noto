@@ -68,7 +68,7 @@ class FilteredViewModel(
 
     init {
         combine(
-            folderRepository.getAllUnvaultedFolders(),
+            folderRepository.getAllNotVaultedFolders(),
             noteRepository.getAllNotes(),
             labelRepository.getAllLabels(),
             noteLabelRepository.getNoteLabels(),

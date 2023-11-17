@@ -97,11 +97,11 @@ inline fun EpoxyController.buildNotesModels(
 
 inline fun EpoxyController.buildFoldersModels(
     context: Context,
-    folders: List<Pair<Folder, Int>>,
-    content: (List<Pair<Folder, Int>>) -> Unit,
+    folders: List<Folder>,
+    content: (List<Folder>) -> Unit,
 ) {
-    val pinnedFolders = folders.filter { it.first.isPinned }
-    val notPinnedFolders = folders.filterNot { it.first.isPinned }
+    val pinnedFolders = folders.filter { it.isPinned }
+    val notPinnedFolders = folders.filterNot { it.isPinned }
 
     if (pinnedFolders.isNotEmpty()) {
         headerItem {

@@ -9,13 +9,15 @@ interface LocalFolderDataSource {
 
     fun getAllUnvaultedLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getLocalFolders(): Flow<List<LocalFolder>>
+    fun getMainLocalFolders(): Flow<List<LocalFolder>>
+
+    fun getChildLocalFolders(localFolderId: Long): Flow<List<LocalFolder>>
 
     fun getArchivedLocalFolders(): Flow<List<LocalFolder>>
 
     fun getVaultedLocalFolders(): Flow<List<LocalFolder>>
 
-    fun getLocalFolderById(folderId: Long): Flow<LocalFolder>
+    fun getLocalFolderById(folderId: Long): Flow<LocalFolder?>
 
     fun getLocalFolderByRemoteId(remoteFolderId: String): Flow<LocalFolder?>
 

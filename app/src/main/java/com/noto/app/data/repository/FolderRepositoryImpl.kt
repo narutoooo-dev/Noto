@@ -11,6 +11,7 @@ import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.service.RemoteFolderService
 import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
 import com.noto.app.util.isGeneral
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,6 +22,7 @@ import java.util.UUID
 class FolderRepositoryImpl(
     private val remoteFolderDataSource: RemoteFolderDataSource,
     private val localFolderDataSource: LocalFolderDataSource,
+    private val localNoteDataSource: LocalNoteDataSource,
     private val settingsRepository: SettingsRepository,
     private val remoteFolderService: RemoteFolderService,
     private val encryptionHandler: EncryptionHandler,
@@ -31,13 +33,13 @@ class FolderRepositoryImpl(
         .map { it.map { it.toDomainFolder() } }
         .flowOn(coroutineDispatcher)
 
-    override fun getAllUnvaultedFolders(): Flow<List<Folder>> = localFolderDataSource.getAllUnvaultedLocalFolders()
+    override fun getAllNotVaultedFolders(): Flow<List<Folder>> = localFolderDataSource.getAllUnvaultedLocalFolders()
         .map { it.map { it.toDomainFolder() } }
         .flowOn(coroutineDispatcher)
 
-    override fun getFolders(): Flow<List<Folder>> = flow {
+    override fun getMainFolders(): Flow<List<Folder>> = flow {
         if (isUserLoggedIn()) remoteFolderService.getRemoteFolders()
-        localFolderDataSource.getLocalFolders()
+        localFolderDataSource.getMainLocalFolders()
             .map { it.map { it.toDomainFolder() } }
             .also { emitAll(it) }
     }.flowOn(coroutineDispatcher)
@@ -98,7 +100,7 @@ class FolderRepositoryImpl(
     }
 
     private suspend fun getFolderPosition() = withContext(coroutineDispatcher) {
-        localFolderDataSource.getLocalFolders()
+        localFolderDataSource.getMainLocalFolders()
             .filterNotNull()
             .first()
             .count()
@@ -106,10 +108,20 @@ class FolderRepositoryImpl(
 
     private suspend fun isUserLoggedIn() = settingsRepository.isUserLoggedIn.first()
 
-    private fun LocalFolder.toDomainFolder(): Folder {
-        return Folder(
+    private suspend fun LocalFolder.toDomainFolder(): Folder {
+        val parentFolder = parentId?.let { localFolderDataSource.getLocalFolderById(parentId) }
+            ?.firstOrNull()
+            ?.toDomainFolder()
+
+        val childFolders = localFolderDataSource.getChildLocalFolders(id)
+            .first()
+            .map { it.copy(parentId = null).toDomainFolder() }
+
+        val notesCount = localNoteDataSource.countMainLocalNotesByFolderId(id).first()
+
+        val folder = Folder(
             id = id,
-            parentId = parentId,
+            parentFolder = parentFolder,
             title = title,
             position = position,
             color = LocalMappers.NotoColor.map(color),
@@ -128,8 +140,12 @@ class FolderRepositoryImpl(
             scrollingPosition = scrollingPosition,
             filteringType = LocalMappers.FilteringType.map(filteringType),
             openNotesIn = LocalMappers.OpenNotesIn.map(openNotesIn),
-            folders = emptyList(),
+            childFolders = childFolders,
+            notesCount = notesCount,
         )
+
+        // Required for swiping left/right to nest folders.
+        return folder.copy(childFolders = childFolders.map { it.copy(parentFolder = folder) })
     }
 
     private suspend fun Folder.toLocalFolder(): LocalFolder {
@@ -143,7 +159,7 @@ class FolderRepositoryImpl(
         return LocalFolder(
             id = id,
             remoteId = remoteId,
-            parentId = parentId,
+            parentId = parentFolder?.id,
             title = title,
             position = position,
             color = DomainMappers.NotoColor.map(color),
@@ -170,6 +186,6 @@ class FolderRepositoryImpl(
     private val Folder.correctTitle
         get() = if (isGeneral) "" else title
 
-    override suspend fun newLocalGeneralFolder(): LocalFolder = Folder.GeneralFolder().toLocalFolder()
+    override suspend fun newLocalGeneralFolder(): LocalFolder = Folder.General.toLocalFolder()
 
 }

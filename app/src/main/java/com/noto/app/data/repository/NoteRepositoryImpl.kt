@@ -3,7 +3,6 @@ package com.noto.app.data.repository
 import com.noto.app.data.model.DomainMappers
 import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalNote
-import com.noto.app.domain.model.FolderIdWithNotesCount
 import com.noto.app.domain.model.Note
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
@@ -29,11 +28,11 @@ class NoteRepositoryImpl(
         .map { it.map { it.toDomainNote() } }
         .flowOn(coroutineDispatcher)
 
-    override fun getAllMainNotes(): Flow<List<Note>> = localNoteDataSource.getAllMainLocalNotes()
+    override fun getMainNotes(): Flow<List<Note>> = localNoteDataSource.getMainLocalNotes()
         .map { it.map { it.toDomainNote() } }
         .flowOn(coroutineDispatcher)
 
-    override fun getNotesByFolderId(folderId: Long): Flow<List<Note>> = flow {
+    override fun getMainNotesByFolderId(folderId: Long): Flow<List<Note>> = flow {
         if (settingsRepository.isUserLoggedIn.first()) {
             val remoteFolderId = localFolderDataSource.getLocalFolderById(folderId).firstOrNull()?.remoteId
             if (remoteFolderId != null) remoteNoteService.getRemoteNoteByRemoteFolderId(remoteFolderId)
@@ -51,9 +50,6 @@ class NoteRepositoryImpl(
         .filterNotNull()
         .map { it.toDomainNote() }
         .flowOn(coroutineDispatcher)
-
-    override fun getFolderNotesCount(): Flow<List<FolderIdWithNotesCount>> =
-        localNoteDataSource.getFoldersLocalNotesCount().flowOn(coroutineDispatcher)
 
     override suspend fun createNote(note: Note): Result<Long> = runCatching {
         withContext(coroutineDispatcher) {

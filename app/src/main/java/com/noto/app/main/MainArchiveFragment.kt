@@ -52,7 +52,7 @@ class MainArchiveFragment : BaseDialogFragment(isCollapsable = true) {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun MainArchiveFragmentBinding.setupFolders(state: UiState<List<Pair<Folder, Int>>>, isShowNotesCount: Boolean) {
+    private fun MainArchiveFragmentBinding.setupFolders(state: UiState<List<Folder>>, isShowNotesCount: Boolean) {
         if (state is UiState.Success) {
             val folders = state.value
             rv.withModels {
@@ -64,25 +64,24 @@ class MainArchiveFragment : BaseDialogFragment(isCollapsable = true) {
                         }
                     } else {
                         buildFoldersModels(context, folders) { folders ->
-                            folders.forEachRecursively { entry, depth ->
+                            folders.forEachRecursively { folder, depth ->
                                 folderItem {
-                                    id(entry.first.id)
-                                    folder(entry.first)
-                                    notesCount(entry.second)
+                                    id(folder.id)
+                                    folder(folder)
                                     isManualSorting(false)
-                                    isSelected(entry.first.id == selectedDestinationId)
+                                    isSelected(folder.id == selectedDestinationId)
                                     isShowNotesCount(isShowNotesCount)
                                     depth(depth)
                                     onClickListener { _ ->
                                         dismiss()
-                                        if (entry.first.id != selectedDestinationId)
+                                        if (folder.id != selectedDestinationId)
                                             navController?.navigateSafely(MainArchiveFragmentDirections.actionMainArchiveFragmentToFolderFragment(
-                                                entry.first.id))
+                                                folder.id))
                                     }
                                     onLongClickListener { _ ->
                                         dismiss()
                                         navController?.navigateSafely(
-                                            MainArchiveFragmentDirections.actionMainArchiveFragmentToFolderDialogFragment(entry.first.id)
+                                            MainArchiveFragmentDirections.actionMainArchiveFragmentToFolderDialogFragment(folder.id)
                                         )
                                         true
                                     }

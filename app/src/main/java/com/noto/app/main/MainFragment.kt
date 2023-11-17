@@ -128,7 +128,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun MainFragmentBinding.setupFolders(
-        state: UiState<List<Pair<Folder, Int>>>,
+        state: UiState<List<Folder>>,
         sortingType: FolderListSortingType,
         isShowNotesCount: Boolean,
         allNotes: List<Note>,
@@ -137,8 +137,8 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
 
             rv.withModels {
                 epoxyController = this
-                val folders = state.value.filterNot { it.first.isGeneral }
-                val generalFolder = state.value.firstOrNull { it.first.isGeneral }
+                val folders = state.value.filterNot { it.isGeneral }
+                val generalFolder = state.value.firstOrNull { it.isGeneral }
                 val isManualSorting = sortingType == FolderListSortingType.Manual
                 val foldersCount = folders.countRecursively()
 
@@ -232,16 +232,15 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
 
                     generalFolder?.let {
                         folderItem {
-                            id(generalFolder.first.id)
-                            folder(generalFolder.first)
-                            notesCount(generalFolder.second)
+                            id(generalFolder.id)
+                            folder(generalFolder)
                             isManualSorting(isManualSorting)
                             isShowNotesCount(isShowNotesCount)
-                            isSelected(generalFolder.first.id == selectedDestinationId)
+                            isSelected(generalFolder.id == selectedDestinationId)
                             onClickListener { _ ->
                                 dismiss()
-                                if (generalFolder.first.id != selectedDestinationId)
-                                    navController?.navigateSafely(MainFragmentDirections.actionMainFragmentToFolderFragment(generalFolder.first.id)) {
+                                if (generalFolder.id != selectedDestinationId)
+                                    navController?.navigateSafely(MainFragmentDirections.actionMainFragmentToFolderFragment(generalFolder.id)) {
                                         popUpTo(popUpToDestinationId) {
                                             inclusive = true
                                         }
@@ -251,7 +250,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                                 dismiss()
                                 navController?.navigateSafely(
                                     MainFragmentDirections.actionMainFragmentToFolderDialogFragment(
-                                        generalFolder.first.id
+                                        generalFolder.id
                                     )
                                 )
                                 true
@@ -261,19 +260,18 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                     }
 
                     buildFoldersModels(context, folders) { folders ->
-                        folders.forEachRecursively { entry, depth ->
+                        folders.forEachRecursively { folder, depth ->
                             folderItem {
-                                id(entry.first.id)
-                                folder(entry.first)
-                                notesCount(entry.second)
+                                id(folder.id)
+                                folder(folder)
                                 isManualSorting(isManualSorting)
                                 isShowNotesCount(isShowNotesCount)
-                                isSelected(entry.first.id == selectedDestinationId)
+                                isSelected(folder.id == selectedDestinationId)
                                 depth(depth)
                                 onClickListener { _ ->
                                     dismiss()
-                                    if (entry.first.id != selectedDestinationId)
-                                        navController?.navigateSafely(MainFragmentDirections.actionMainFragmentToFolderFragment(entry.first.id)) {
+                                    if (folder.id != selectedDestinationId)
+                                        navController?.navigateSafely(MainFragmentDirections.actionMainFragmentToFolderFragment(folder.id)) {
                                             popUpTo(popUpToDestinationId) {
                                                 inclusive = true
                                             }
@@ -281,7 +279,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                                 }
                                 onLongClickListener { _ ->
                                     dismiss()
-                                    navController?.navigateSafely(MainFragmentDirections.actionMainFragmentToFolderDialogFragment(entry.first.id))
+                                    navController?.navigateSafely(MainFragmentDirections.actionMainFragmentToFolderDialogFragment(folder.id))
                                     true
                                 }
                                 onDragHandleTouchListener { view, event ->
@@ -323,19 +321,19 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
         val model = viewHolder.model as? FolderItem
         if (model != null) {
             if (direction == ItemTouchHelper.START) {
-                val parentId = folders.findRecursively { it.first.id == model.folder.parentId }?.first?.parentId
-                viewModel.updateFolderParentId(model.folder, parentId)
+                val parentFolder = folders.findRecursively { it.id == model.folder.parentFolder?.id }?.parentFolder
+                viewModel.updateFolderParentId(model.folder, parentFolder)
             } else {
                 val previousViewHolder = rv.findViewHolderForAdapterPosition(viewHolder.bindingAdapterPosition - 1) as EpoxyViewHolder?
                 val previousModel = previousViewHolder?.model as? FolderItem?
-                val parentId = folders.findRecursively {
-                    val isSameParent = it.first.parentId == model.folder.parentId
-                    val isPreviousSelf = it.first.id == previousModel?.folder?.id
-                    val isWithinPreviousFolders = it.first.folders.findRecursively { it.first.id == previousModel?.folder?.id } != null
+                val parentFolder = folders.findRecursively {
+                    val isSameParent = it.parentFolder?.id == model.folder.parentFolder?.id
+                    val isPreviousSelf = it.id == previousModel?.folder?.id
+                    val isWithinPreviousFolders = it.childFolders.findRecursively { it.id == previousModel?.folder?.id } != null
                     isSameParent && (isPreviousSelf || isWithinPreviousFolders)
-                }?.first?.id
-                if (parentId != null)
-                    viewModel.updateFolderParentId(model.folder, parentId)
+                }
+                if (parentFolder != null)
+                    viewModel.updateFolderParentId(model.folder, parentFolder)
             }
             epoxyController.notifyModelChanged(viewHolder.bindingAdapterPosition)
         }

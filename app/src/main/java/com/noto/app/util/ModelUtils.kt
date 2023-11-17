@@ -98,17 +98,17 @@ fun Note.Companion.Comparator(sortingOrder: SortingOrder, sortingType: NoteListS
 }
 
 @Suppress("DEPRECATION", "FunctionName")
-fun Folder.Companion.Comparator(sortingOrder: SortingOrder, sortingType: FolderListSortingType): Comparator<Pair<Folder, Int>> {
+fun Folder.Companion.Comparator(sortingOrder: SortingOrder, sortingType: FolderListSortingType): Comparator<Folder> {
     val collator = Collator.getInstance().apply { strength = Collator.PRIMARY }
     val isCollatorEnabled = sortingType == FolderListSortingType.Alphabetical
-    val selector: (Pair<Folder, Int>) -> Comparable<*> = { pair ->
+    val selector: (Folder) -> Comparable<*> = { pair ->
         when (sortingType) {
-            FolderListSortingType.Manual -> pair.first.position
-            FolderListSortingType.CreationDate -> pair.first.creationDate
-            FolderListSortingType.Alphabetical -> pair.first.title
+            FolderListSortingType.Manual -> pair.position
+            FolderListSortingType.CreationDate -> pair.creationDate
+            FolderListSortingType.Alphabetical -> pair.title
         }
     }
-    return compareByDescending<Pair<Folder, Int>> { pair -> pair.first.isPinned }
+    return compareByDescending<Folder> { pair -> pair.isPinned }
         .let {
             when (sortingOrder) {
                 SortingOrder.Ascending -> if (isCollatorEnabled) it.thenBy(collator, selector) else it.thenBy(selector)
@@ -220,36 +220,34 @@ val Folder.isGeneral
 @Suppress("DEPRECATION")
 fun Folder.getTitle(context: Context) = if (isGeneral) context.stringResource(R.string.general) else title
 
-fun List<Pair<Folder, Int>>.forEachRecursively(depth: Int = 1, block: (Pair<Folder, Int>, depth: Int) -> Unit) {
+fun List<Folder>.forEachRecursively(depth: Int = 1, block: (Folder, depth: Int) -> Unit) {
     forEach { entry ->
         block(entry, depth)
-        entry.first.folders.forEachRecursively(depth + 1, block)
+        entry.childFolders.forEachRecursively(depth + 1, block)
     }
 }
 
-fun List<Pair<Folder, Int>>.countRecursively(): Int {
+fun List<Folder>.countRecursively(): Int {
     var count = count()
     forEach { entry ->
-        count += entry.first.folders.countRecursively()
+        count += entry.childFolders.countRecursively()
     }
     return count
 }
 
-fun List<Pair<Folder, Int>>.filterRecursively(predicate: (Pair<Folder, Int>) -> Boolean): List<Pair<Folder, Int>> {
+fun List<Folder>.filterRecursively(predicate: (Folder) -> Boolean): List<Folder> {
     return filter(predicate).map {
-        it.first.copy(
-            folders = it.first.folders.filterRecursively(predicate)
-        ) to it.second
+        it.copy(childFolders = it.childFolders.filterRecursively(predicate))
     }
 }
 
-fun List<Pair<Folder, Int>>.findRecursively(predicate: (Pair<Folder, Int>) -> Boolean): Pair<Folder, Int>? {
-    val item: Pair<Folder, Int>? = firstOrNull(predicate)
+fun List<Folder>.findRecursively(predicate: (Folder) -> Boolean): Folder? {
+    val item: Folder? = firstOrNull(predicate)
     if (item != null)
         return item
     else
         forEach {
-            val result = it.first.folders.findRecursively(predicate)
+            val result = it.childFolders.findRecursively(predicate)
             if (result != null)
                 return result
         }

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.domain.model.Icon
 import com.noto.app.domain.repository.FolderRepository
-import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -12,17 +11,10 @@ import kotlinx.coroutines.launch
 class FolderListWidgetConfigViewModel(
     private val appWidgetId: Int,
     private val folderRepository: FolderRepository,
-    private val noteRepository: NoteRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
-    val folders = folderRepository.getFolders()
-        .combine(noteRepository.getFolderNotesCount()) { folders, foldersNotesCount ->
-            folders.map { folder ->
-                val notesCount = foldersNotesCount.firstOrNull { it.folderId == folder.id }?.notesCount ?: 0
-                folder to notesCount
-            }
-        }
+    val folders = folderRepository.getMainFolders()
         .filterNotNull()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 

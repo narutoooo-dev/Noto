@@ -12,7 +12,6 @@ import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.util.*
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -26,7 +25,7 @@ class FolderRemoteViewsFactory(private val context: Context, intent: Intent?) : 
     private val settingsRepository by inject<SettingsRepository>()
     private val appWidgetId = intent?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
         ?: AppWidgetManager.INVALID_APPWIDGET_ID
-    private lateinit var folders: List<Pair<Folder, Int>>
+    private lateinit var folders: List<Folder>
     private var isShowNotesCount: Boolean = true
     private val widgetRadius = intent?.getIntExtra(Constants.WidgetRadius, 0)
 
@@ -35,19 +34,12 @@ class FolderRemoteViewsFactory(private val context: Context, intent: Intent?) : 
     override fun onDataSetChanged() = runBlocking {
         val sortingType = settingsRepository.sortingType.first()
         val sortingOrder = settingsRepository.sortingOrder.first()
+        val comparator = Folder.Comparator(sortingOrder, sortingType).thenByDescending { it.isPinned }.thenByDescending { it.isGeneral }
         isShowNotesCount = settingsRepository.getWidgetNotesCount(appWidgetId).first()
-        folders = folderRepository.getFolders()
-            .combine(noteRepository.getFolderNotesCount()) { folders, foldersNotesCount ->
-                folders.map { folder ->
-                    val notesCount = foldersNotesCount.firstOrNull { it.folderId == folder.id }?.notesCount ?: 0
-                    folder to notesCount
-                }
-            }
+        folders = folderRepository.getMainFolders()
             .filterNotNull()
             .first()
-            .sortedWith(Folder.Comparator(sortingOrder, sortingType))
-            .sortedByDescending { it.first.isPinned }
-            .sortedByDescending { it.first.isGeneral }
+            .sortedWith(comparator)
     }
 
     override fun onDestroy() {}
@@ -55,9 +47,7 @@ class FolderRemoteViewsFactory(private val context: Context, intent: Intent?) : 
     override fun getCount(): Int = folders.count()
 
     override fun getViewAt(position: Int): RemoteViews {
-        val entry = folders[position]
-        val folder = entry.first
-        val notesCount = entry.second
+        val folder = folders[position]
         val color = context.colorResource(folder.color.toColorResourceId())
         val iconResource = if (folder.isGeneral) R.drawable.ic_round_folder_general_24 else R.drawable.ic_round_folder_24
         val intent = Intent(Constants.Intent.ActionOpenFolder, null).apply {
@@ -65,7 +55,7 @@ class FolderRemoteViewsFactory(private val context: Context, intent: Intent?) : 
             component = context.enabledComponentName
         }
         val remoteViews = RemoteViews(context.packageName, R.layout.widget_folder_item).apply {
-            setTextViewText(R.id.tv_folder_notes_count, notesCount.toString())
+            setTextViewText(R.id.tv_folder_notes_count, folder.notesCount.toString())
             setTextViewText(R.id.tv_folder_title, folder.getTitle(context))
             setContentDescription(R.id.ll, folder.getTitle(context))
             setContentDescription(R.id.iv_folder_icon, folder.getTitle(context))
@@ -86,7 +76,7 @@ class FolderRemoteViewsFactory(private val context: Context, intent: Intent?) : 
 
     override fun getViewTypeCount(): Int = 1
 
-    override fun getItemId(position: Int): Long = folders[position].first.id
+    override fun getItemId(position: Int): Long = folders[position].id
 
     override fun hasStableIds(): Boolean = true
 }

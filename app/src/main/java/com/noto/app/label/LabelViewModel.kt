@@ -2,10 +2,10 @@ package com.noto.app.label
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.noto.app.domain.model.Label
 import com.noto.app.domain.model.Folder
-import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.model.Label
 import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.LabelRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -21,7 +21,7 @@ class LabelViewModel(
 
     val folder = folderRepository.getFolderById(folderId)
         .filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.Lazily, Folder(folderId, position = 0))
+        .stateIn(viewModelScope, SharingStarted.Lazily, Folder.Default)
 
     val labels = labelRepository.getLabelsByFolderId(folderId)
         .filterNotNull()

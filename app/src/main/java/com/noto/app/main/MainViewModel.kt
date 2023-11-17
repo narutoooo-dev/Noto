@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
 import com.noto.app.domain.model.Folder
-import com.noto.app.domain.model.FolderIdWithNotesCount
 import com.noto.app.domain.model.FolderListSortingType
 import com.noto.app.domain.model.SortingOrder
 import com.noto.app.domain.repository.FolderRepository
@@ -30,43 +29,31 @@ class MainViewModel(
         .stateIn(viewModelScope, SharingStarted.Lazily, SortingOrder.Descending)
 
     val folders = combine(
-        folderRepository.getFolders(),
-        noteRepository.getFolderNotesCount(),
+        folderRepository.getMainFolders(),
         sortingType,
         sortingOrder,
-    ) { folders, notesCount, sortingType, sortingOrder ->
-        folders
-            .filter { it.parentId == null }
-            .mapRecursively(folders, notesCount, sortingType, sortingOrder)
-            .sortedWith(Folder.Comparator(sortingOrder, sortingType))
+    ) { folders, sortingType, sortingOrder ->
+        folders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
     }
         .map { UiState.Success(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
 
     val archivedFolders = combine(
         folderRepository.getArchivedFolders(),
-        noteRepository.getFolderNotesCount(),
         sortingType,
         sortingOrder,
-    ) { folders, notesCount, sortingType, sortingOrder ->
-        folders
-            .filter { it.parentId == null }
-            .mapRecursively(folders, notesCount, sortingType, sortingOrder)
-            .sortedWith(Folder.Comparator(sortingOrder, sortingType))
+    ) { folders, sortingType, sortingOrder ->
+        folders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
     }
         .map { UiState.Success(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
 
     val vaultedFolders = combine(
         folderRepository.getVaultedFolders(),
-        noteRepository.getFolderNotesCount(),
         sortingType,
         sortingOrder,
-    ) { folders, notesCount, sortingType, sortingOrder ->
-        folders
-            .filter { it.parentId == null }
-            .mapRecursively(folders, notesCount, sortingType, sortingOrder)
-            .sortedWith(Folder.Comparator(sortingOrder, sortingType))
+    ) { folders, sortingType, sortingOrder ->
+        folders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
     }
         .map { UiState.Success(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
@@ -81,7 +68,7 @@ class MainViewModel(
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
     val allNotes = noteRepository.getAllNotes()
-        .combine(folderRepository.getAllUnvaultedFolders()) { notes, folders ->
+        .combine(folderRepository.getAllNotVaultedFolders()) { notes, folders ->
             notes.filter { note -> folders.any { folder -> folder.id == note.folderId } }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
@@ -98,8 +85,8 @@ class MainViewModel(
         folderRepository.updateFolder(folder.copy(position = position))
     }
 
-    fun updateFolderParentId(folder: Folder, parentId: Long?) = viewModelScope.launch {
-        folderRepository.updateFolder(folder.copy(parentId = parentId))
+    fun updateFolderParentId(folder: Folder, parentFolder: Folder?) = viewModelScope.launch {
+        folderRepository.updateFolder(folder.copy(parentFolder = parentFolder))
     }
 
     fun openVault() = viewModelScope.launch {
@@ -110,19 +97,4 @@ class MainViewModel(
         settingsRepository.updateIsVaultOpen(false)
     }
 
-    private fun List<Folder>.mapRecursively(
-        allFolders: List<Folder>,
-        foldersNotesCount: List<FolderIdWithNotesCount>,
-        sortingType: FolderListSortingType,
-        sortingOrder: SortingOrder,
-    ): List<Pair<Folder, Int>> {
-        return map { folder ->
-            val notesCount = foldersNotesCount.firstOrNull { it.folderId == folder.id }?.notesCount ?: 0
-            val childLibraries = allFolders
-                .filter { it.parentId == folder.id }
-                .mapRecursively(allFolders, foldersNotesCount, sortingType, sortingOrder)
-                .sortedWith(Folder.Comparator(sortingOrder, sortingType))
-            folder.copy(folders = childLibraries) to notesCount
-        }
-    }
 }

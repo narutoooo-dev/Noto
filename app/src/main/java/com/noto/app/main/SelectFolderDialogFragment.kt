@@ -68,15 +68,15 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
 
     @SuppressLint("ClickableViewAccessibility")
     private fun SelectFolderDialogFragmentBinding.setupFolders(
-        state: UiState<List<Pair<Folder, Int>>>,
+        state: UiState<List<Folder>>,
         isShowNotesCount: Boolean,
         isEmpty: Boolean,
     ) {
         when (state) {
             is UiState.Loading -> rv.setupProgressIndicator()
             is UiState.Success -> {
-                val folders = state.value.filterNot { it.first.isGeneral }
-                val generalFolder = state.value.firstOrNull { it.first.isGeneral }
+                val folders = state.value.filterNot { it.isGeneral }
+                val generalFolder = state.value.firstOrNull { it.isGeneral }
                 val callback = { id: Long, title: String ->
                     try {
                         navController?.previousBackStackEntry?.savedStateHandle?.apply {
@@ -157,14 +157,13 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
 
                         generalFolder?.let {
                             folderItem {
-                                id(generalFolder.first.id)
-                                folder(generalFolder.first)
-                                notesCount(generalFolder.second)
-                                isSelected(generalFolder.first.id == args.selectedFolderId)
-                                isEnabled(if (args.filteredFolderIds.isEmpty()) true else generalFolder.first.id !in args.filteredFolderIds)
+                                id(generalFolder.id)
+                                folder(generalFolder)
+                                isSelected(generalFolder.id == args.selectedFolderId)
+                                isEnabled(if (args.filteredFolderIds.isEmpty()) true else generalFolder.id !in args.filteredFolderIds)
                                 isManualSorting(false)
                                 isShowNotesCount(isShowNotesCount && !args.isMainInterface)
-                                onClickListener { _ -> callback(generalFolder.first.id, generalFolder.first.getTitle(context)) }
+                                onClickListener { _ -> callback(generalFolder.id, generalFolder.getTitle(context)) }
                                 onLongClickListener { _ -> false }
                                 onDragHandleTouchListener { _, _ -> false }
                             }
@@ -182,17 +181,16 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
                             }
                         } else {
                             buildFoldersModels(context, folders) { folders ->
-                                folders.forEachRecursively { entry, depth ->
+                                folders.forEachRecursively { folder, depth ->
                                     folderItem {
-                                        id(entry.first.id)
-                                        folder(entry.first)
-                                        notesCount(entry.second)
+                                        id(folder.id)
+                                        folder(folder)
                                         isShowNotesCount(isShowNotesCount && !args.isMainInterface)
-                                        isSelected(entry.first.id == args.selectedFolderId)
-                                        isEnabled(if (args.filteredFolderIds.isEmpty()) true else entry.first.id !in args.filteredFolderIds)
+                                        isSelected(folder.id == args.selectedFolderId)
+                                        isEnabled(if (args.filteredFolderIds.isEmpty()) true else folder.id !in args.filteredFolderIds)
                                         isManualSorting(false)
                                         depth(depth)
-                                        onClickListener { _ -> callback(entry.first.id, entry.first.getTitle(context)) }
+                                        onClickListener { _ -> callback(folder.id, folder.getTitle(context)) }
                                         onLongClickListener { _ -> false }
                                         onDragHandleTouchListener { _, _ -> false }
                                     }

@@ -29,7 +29,7 @@ class FolderListWidgetProvider : AppWidgetProvider(), KoinComponent {
                     settingsRepository.getIsWidgetAppIconEnabled(appWidgetId).first(),
                     settingsRepository.getIsWidgetNewItemButtonEnabled(appWidgetId).first(),
                     settingsRepository.getWidgetRadius(appWidgetId).first(),
-                    folderRepository.getFolders().first().isEmpty(),
+                    folderRepository.getMainFolders().first().isEmpty(),
                     settingsRepository.icon.first(),
                 )
                 appWidgetManager?.updateAppWidget(appWidgetId, remoteViews)

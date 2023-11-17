@@ -41,10 +41,6 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +72,7 @@ val appModule = module {
 
     viewModel { LabelViewModel(get(), get(), it[0], it[1]) }
 
-    viewModel { FolderListWidgetConfigViewModel(it.get(), get(), get(), get()) }
+    viewModel { FolderListWidgetConfigViewModel(it.get(), get(), get()) }
 
     viewModel { NoteListWidgetConfigViewModel(it.get(), get(), get(), get(), get(), get()) }
 
@@ -90,7 +86,7 @@ val appModule = module {
 
 val repositoryModule = module {
 
-    single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
+    single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
     single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
@@ -114,7 +110,7 @@ val repositoryModule = module {
 
     single<CoroutineDispatcher>(CoroutineDispatcherQualifier) { Dispatchers.IO }
 
-    single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
+    single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
 }
 

@@ -38,7 +38,7 @@ class NoteViewModel(
 
     val folder = folderRepository.getFolderById(folderId)
         .filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.Lazily, Folder(position = 0))
+        .stateIn(viewModelScope, SharingStarted.Lazily, Folder.Default)
 
     val font = settingsRepository.font
         .stateIn(viewModelScope, SharingStarted.Lazily, Font.Nunito)

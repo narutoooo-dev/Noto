@@ -25,12 +25,12 @@ class NotePagerViewModel(
 
     val folder = folderRepository.getFolderById(folderId)
         .filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, Folder(position = 0))
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.Default)
 
     val noteIds = if (isArchive) {
         noteRepository.getArchivedNotesByFolderId(folderId)
     } else {
-        noteRepository.getNotesByFolderId(folderId)
+        noteRepository.getMainNotesByFolderId(folderId)
     }.combine(folder) { notes, folder ->
         notes.mapToNoteItemModel(emptyList(), emptyList())
             .sortedWith(NoteItemModel.Comparator(folder.sortingOrder, folder.sortingType))

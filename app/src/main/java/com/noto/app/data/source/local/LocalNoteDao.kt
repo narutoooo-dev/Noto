@@ -2,7 +2,6 @@ package com.noto.app.data.source.local
 
 import androidx.room.*
 import com.noto.app.data.model.local.LocalNote
-import com.noto.app.domain.model.FolderIdWithNotesCount
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import kotlinx.coroutines.flow.Flow
 
@@ -13,10 +12,13 @@ interface LocalNoteDao : LocalNoteDataSource {
     override fun getAllLocalNotes(): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE is_archived = 0")
-    override fun getAllMainLocalNotes(): Flow<List<LocalNote>>
+    override fun getMainLocalNotes(): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 0")
     override fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
+
+    @Query("SELECT COUNT(*) FROM notes WHERE folder_id = :localFolderId AND is_archived = 0")
+    override fun countMainLocalNotesByFolderId(localFolderId: Long): Flow<Int>
 
     @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 1")
     override fun getArchivedLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
@@ -26,9 +28,6 @@ interface LocalNoteDao : LocalNoteDataSource {
 
     @Query("SELECT * FROM notes WHERE remote_id = :remoteNoteId")
     override fun getLocalNoteByRemoteId(remoteNoteId: String): Flow<LocalNote?>
-
-    @Query("SELECT folder_id, COUNT(*) as notesCount FROM notes WHERE is_archived = 0 GROUP BY folder_id")
-    override fun getFoldersLocalNotesCount(): Flow<List<FolderIdWithNotesCount>>
 
     @Insert
     override suspend fun createLocalNote(localNote: LocalNote): Long

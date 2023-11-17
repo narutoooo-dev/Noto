@@ -26,8 +26,13 @@ class FolderViewModel(
     private val selectedNoteIds: LongArray = longArrayOf(),
 ) : ViewModel() {
 
-    private val mutableFolder = MutableStateFlow(Folder(position = 0))
-    val folder get() = mutableFolder.asStateFlow()
+    val folder = folderRepository.getFolderById(folderId)
+        .filterNotNull()
+        .onEach { folder ->
+            mutableNotoColors.value = notoColors.value.mapTrueIfSameColor(folder.color)
+            if (folder.parentFolder != null) mutableParentFolder.value = folder.parentFolder
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.Default)
 
     private val mutableParentFolder = MutableStateFlow<Folder?>(null)
     val parentFolder get() = mutableParentFolder.asStateFlow()
@@ -103,20 +108,7 @@ class FolderViewModel(
 
     init {
         combine(
-            folderRepository.getFolderById(folderId)
-                .filterNotNull()
-                .onStart { emit(Folder(position = 0)) },
-            folderRepository.getAllFolders(),
-        ) { folder, folders ->
-            mutableNotoColors.value = notoColors.value.mapTrueIfSameColor(folder.color)
-            mutableFolder.value = folder.mapRecursively(folders)
-            if (folder.parentId != null)
-                mutableParentFolder.value =
-                    folderRepository.getFolderById(folder.parentId).firstOrNull()
-        }.launchIn(viewModelScope)
-
-        combine(
-            noteRepository.getNotesByFolderId(folderId)
+            noteRepository.getMainNotesByFolderId(folderId)
                 .filterNotNull(),
             noteRepository.getArchivedNotesByFolderId(folderId)
                 .filterNotNull(),
@@ -218,7 +210,7 @@ class FolderViewModel(
 
         val folder = folder.value.copy(
             title = title.trim(),
-            parentId = parentFolder.value?.id,
+            parentFolder = parentFolder.value,
             color = color,
             layout = layout,
             notePreviewSize = notePreviewSize,
@@ -241,8 +233,8 @@ class FolderViewModel(
 
     fun deleteFolder() = viewModelScope.launch {
         folderRepository.deleteFolder(folder.value)
-        folder.value.folders.forEach { childFolder ->
-            folderRepository.updateFolder(childFolder.first.copy(parentId = folder.value.parentId))
+        folder.value.childFolders.forEach { childFolder ->
+            folderRepository.updateFolder(childFolder.copy(parentFolder = folder.value.parentFolder))
         }
     }
 
@@ -251,14 +243,14 @@ class FolderViewModel(
             folder.value.copy(
                 isArchived = !folder.value.isArchived,
                 isVaulted = false,
-                parentId = null
+                parentFolder = null,
             )
         )
-        folder.value.folders.forEachRecursively { entry, _ ->
+        folder.value.childFolders.forEachRecursively { folder, _ ->
             launch {
                 folderRepository.updateFolder(
-                    entry.first.copy(
-                        isArchived = !entry.first.isArchived,
+                    folder.copy(
+                        isArchived = !folder.isArchived,
                         isVaulted = false
                     )
                 )
@@ -271,14 +263,14 @@ class FolderViewModel(
             folder.value.copy(
                 isVaulted = !folder.value.isVaulted,
                 isArchived = false,
-                parentId = null
+                parentFolder = null,
             )
         )
-        folder.value.folders.forEachRecursively { entry, _ ->
+        folder.value.childFolders.forEachRecursively { folder, _ ->
             launch {
                 folderRepository.updateFolder(
-                    entry.first.copy(
-                        isVaulted = !entry.first.isVaulted,
+                    folder.copy(
+                        isVaulted = !folder.isVaulted,
                         isArchived = false
                     )
                 )
@@ -587,8 +579,8 @@ class FolderViewModel(
 
     private fun Folder.mapRecursively(allFolders: List<Folder>): Folder {
         val childFolders = allFolders
-            .filter { it.parentId == id }
-            .map { it.mapRecursively(allFolders) to 0 }
-        return copy(folders = childFolders)
+            .filter { it.parentFolder?.id == id }
+            .map { it.mapRecursively(allFolders) }
+        return copy(childFolders = childFolders)
     }
 }

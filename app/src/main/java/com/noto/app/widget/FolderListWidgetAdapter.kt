@@ -16,19 +16,17 @@ import com.noto.app.util.*
 
 class FolderListWidgetAdapter(
     context: Context,
-    folders: List<Pair<Folder, Int>>,
+    folders: List<Folder>,
     layoutResourceId: Int,
     private val isShowNotesCount: Boolean,
-) : ArrayAdapter<Pair<Folder, Int>>(context, layoutResourceId, folders) {
+) : ArrayAdapter<Folder>(context, layoutResourceId, folders) {
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layoutInflater = LayoutInflater.from(context)
         return WidgetFolderItemBinding.inflate(layoutInflater, parent, false).withBinding {
-            getItem(position)?.let { entry ->
-                val folder = entry.first
-                val notesCount = entry.second
+            getItem(position)?.let { folder ->
                 val color = context.colorResource(folder.color.toColorResourceId())
-                tvFolderNotesCount.text = notesCount.toString()
+                tvFolderNotesCount.text = folder.notesCount.toString()
                 tvFolderTitle.setTextColor(color)
                 tvFolderNotesCount.setTextColor(color)
                 ivFolderIcon.setColorFilter(color)

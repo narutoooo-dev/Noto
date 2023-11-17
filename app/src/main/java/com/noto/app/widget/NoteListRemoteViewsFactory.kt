@@ -51,7 +51,7 @@ class NoteListRemoteViewsFactory(private val context: Context, intent: Intent?) 
         filteringType = settingsRepository.getWidgetFilteringType(appWidgetId)
             .filterNotNull()
             .first()
-        notes = noteRepository.getNotesByFolderId(folderId)
+        notes = noteRepository.getMainNotesByFolderId(folderId)
             .filterNotNull()
             .map {
                 it.mapToNoteItemModel(labels, noteLabels)

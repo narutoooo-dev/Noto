@@ -31,9 +31,6 @@ abstract class FolderItem : EpoxyModelWithHolder<FolderItem.Holder>() {
     open var isShowNotesCount: Boolean = true
 
     @EpoxyAttribute
-    var notesCount: Int = 0
-
-    @EpoxyAttribute
     open var isSelected: Boolean = false
 
     @EpoxyAttribute
@@ -74,7 +71,7 @@ abstract class FolderItem : EpoxyModelWithHolder<FolderItem.Holder>() {
                 root.alpha = 0.5F
                 root.isEnabled = false
             }
-            tvFolderNotesCount.text = notesCount.toString()
+            tvFolderNotesCount.text = folder.notesCount.toString()
             tvFolderTitle.setTextColor(color)
             tvFolderNotesCount.setTextColor(color)
             ibFolderHandle.drawable?.mutate()?.setTint(color)

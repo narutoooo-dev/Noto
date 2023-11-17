@@ -48,9 +48,9 @@ class FolderListWidgetConfigActivity : BaseActivity() {
         combine(
             viewModel.folders,
             viewModel.isNotesCountEnabled,
-        ) { libraries, isShowNotesCount ->
+        ) { folders, isShowNotesCount ->
             swNotesCount.isChecked = isShowNotesCount
-            if (libraries.isEmpty()) {
+            if (folders.isEmpty()) {
                 widget.lv.isVisible = false
                 widget.tvPlaceholder.isVisible = true
             } else {
@@ -58,7 +58,7 @@ class FolderListWidgetConfigActivity : BaseActivity() {
                 widget.tvPlaceholder.isVisible = false
                 widget.lv.adapter = FolderListWidgetAdapter(
                     this@FolderListWidgetConfigActivity,
-                    libraries,
+                    folders,
                     R.layout.folder_list_widget,
                     isShowNotesCount,
                 )

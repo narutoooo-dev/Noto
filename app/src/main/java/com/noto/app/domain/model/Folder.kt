@@ -4,35 +4,60 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 data class Folder(
-    val id: Long = 0L,
-    val parentId: Long? = null,
+    val id: Long,
+    val parentFolder: Folder?,
     @Deprecated(
         message = "This shouldn't be used directly. Use folder.getTitle(context) instead.",
         replaceWith = ReplaceWith("folder.getTitle(context)", "import com.noto.app.util.getTitle"),
     )
-    val title: String = "",
+    val title: String,
     val position: Int,
-    val color: NotoColor = NotoColor.Gray,
-    val creationDate: Instant = Clock.System.now(),
-    val layout: Layout = Layout.Linear,
-    val notePreviewSize: Int = 15,
-    val isArchived: Boolean = false,
-    val isPinned: Boolean = false,
-    val isShowNoteCreationDate: Boolean = false,
-    val newNoteCursorPosition: NewNoteCursorPosition = NewNoteCursorPosition.Body,
-    val sortingType: NoteListSortingType = NoteListSortingType.CreationDate,
-    val sortingOrder: SortingOrder = SortingOrder.Descending,
-    val grouping: Grouping = Grouping.None,
-    val groupingOrder: GroupingOrder = GroupingOrder.Descending,
-    val isVaulted: Boolean = false,
-    val scrollingPosition: Int = 0,
-    val filteringType: FilteringType = FilteringType.Inclusive,
-    val openNotesIn: OpenNotesIn = OpenNotesIn.Editor,
-    val folders: List<Pair<Folder, Int>> = emptyList(),
+    val color: NotoColor,
+    val creationDate: Instant,
+    val layout: Layout,
+    val notePreviewSize: Int,
+    val isArchived: Boolean,
+    val isPinned: Boolean,
+    val isShowNoteCreationDate: Boolean,
+    val newNoteCursorPosition: NewNoteCursorPosition,
+    val sortingType: NoteListSortingType,
+    val sortingOrder: SortingOrder,
+    val grouping: Grouping,
+    val groupingOrder: GroupingOrder,
+    val isVaulted: Boolean,
+    val scrollingPosition: Int,
+    val filteringType: FilteringType,
+    val openNotesIn: OpenNotesIn,
+    val childFolders: List<Folder>,
+    val notesCount: Int,
 ) {
     @Suppress("FunctionName")
     companion object {
+        val Default = Folder(
+            id = 0L,
+            parentFolder = null,
+            title = "",
+            position = 0,
+            color = NotoColor.Gray,
+            creationDate = Clock.System.now(),
+            layout = Layout.Linear,
+            notePreviewSize = 15,
+            isArchived = false,
+            isPinned = false,
+            isShowNoteCreationDate = false,
+            newNoteCursorPosition = NewNoteCursorPosition.Body,
+            sortingType = NoteListSortingType.CreationDate,
+            sortingOrder = SortingOrder.Descending,
+            grouping = Grouping.None,
+            groupingOrder = GroupingOrder.Descending,
+            isVaulted = false,
+            scrollingPosition = 0,
+            filteringType = FilteringType.Inclusive,
+            openNotesIn = OpenNotesIn.Editor,
+            childFolders = emptyList(),
+            notesCount = 0,
+        )
         const val GeneralFolderId = -1L
-        fun GeneralFolder() = Folder(id = GeneralFolderId, position = 0, color = NotoColor.Black)
+        val General = Default.copy(id = GeneralFolderId, color = NotoColor.Black)
     }
 }

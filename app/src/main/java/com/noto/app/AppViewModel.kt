@@ -105,7 +105,7 @@ class AppViewModel(
             userStatus
                 .map { it != UserStatus.New }
                 .distinctUntilChanged(),
-            folderRepository.getFolders()
+            folderRepository.getMainFolders()
                 .map { it.firstOrNull { folder -> folder.isGeneral } == null }
                 .distinctUntilChanged()
         ) { isIntroFinished, isGeneralFolderNotCreated ->

@@ -21,7 +21,7 @@ class NoteListWidgetConfigViewModel(
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
-    private val mutableFolder = MutableStateFlow(Folder(position = 0))
+    private val mutableFolder = MutableStateFlow(Folder.Default)
     val folder get() = mutableFolder.asStateFlow()
 
     private val mutableNotes = MutableStateFlow(emptyList<NoteItemModel>())
@@ -87,7 +87,7 @@ class NoteListWidgetConfigViewModel(
             .launchIn(viewModelScope)
 
         combine(
-            noteRepository.getNotesByFolderId(folderId)
+            noteRepository.getMainNotesByFolderId(folderId)
                 .filterNotNull(),
             labelRepository.getLabelsByFolderId(folderId)
                 .filterNotNull(),
