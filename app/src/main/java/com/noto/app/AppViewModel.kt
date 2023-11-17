@@ -125,7 +125,7 @@ class AppViewModel(
         val title = content.firstLineOrEmpty()
         val body = content.takeAfterFirstLineOrEmpty()
         val folderId = quickNoteFolder.first().id
-        val note = Note(folderId = folderId, title = title, body = body, position = 0)
+        val note = Note.Default.copy(folderId = folderId, title = title, body = body)
         noteRepository.createNote(note).onSuccess(::setQuickNote)
     }
 

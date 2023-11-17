@@ -395,8 +395,7 @@ class FolderViewModel(
         val body = selectedNotes.joinToString(LineSeparator) { it.note.body }.trim()
         val isPinned = selectedNotes.any { it.note.isPinned }
         val labels = selectedNotes.map { it.labels }.flatten()
-        val note =
-            Note(folderId = folderId, title = title, body = body, isPinned = isPinned, position = 0)
+        val note = Note.Default.copy(folderId = folderId, title = title, body = body, isPinned = isPinned, position = 0)
         noteRepository.createNote(note)
             .onSuccess { noteId ->
                 labels.forEach { label ->

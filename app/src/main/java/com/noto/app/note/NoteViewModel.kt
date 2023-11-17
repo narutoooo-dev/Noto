@@ -24,7 +24,7 @@ class NoteViewModel(
     private var labelsIds: LongArray,
 ) : ViewModel() {
 
-    private val mutableNote = MutableStateFlow(Note(noteId, folderId, position = 0))
+    private val mutableNote = MutableStateFlow(Note.Default.copy(id = noteId, folderId = folderId))
     val note get() = mutableNote.asStateFlow()
 
     private val mutableTitleHistory = MutableSharedFlow<Triple<Int, Int, String>>(replay = Int.MAX_VALUE)
@@ -81,7 +81,16 @@ class NoteViewModel(
 
     init {
         noteRepository.getNoteById(noteId)
-            .onStart { emit(Note(noteId, folderId, position = 0, title = body.firstLineOrEmpty(), body = body.takeAfterFirstLineOrEmpty())) }
+            .onStart {
+                emit(
+                    Note.Default.copy(
+                        id = noteId,
+                        folderId = folderId,
+                        title = body.firstLineOrEmpty(),
+                        body = body.takeAfterFirstLineOrEmpty()
+                    )
+                )
+            }
             .filterNotNull()
             .onEach {
                 mutableNote.value = it
