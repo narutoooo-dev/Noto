@@ -5,10 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface FolderRepository {
 
-    fun getAllFolders(): Flow<List<Folder>>
-
-    fun getAllNotVaultedFolders(): Flow<List<Folder>>
-
     fun getMainFolders(): Flow<List<Folder>>
 
     fun getArchivedFolders(): Flow<List<Folder>>
@@ -26,4 +22,5 @@ interface FolderRepository {
     suspend fun deleteFolder(folder: Folder): Result<Unit>
 
     suspend fun clearFolders()
+
 }

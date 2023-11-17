@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocalNoteLabelDao : LocalNoteLabelDataSource {
 
+    @Query("SELECT * FROM note_labels")
+    override fun getAllNoteLabels(): Flow<List<LocalNoteLabel>>
+
     @Query("SELECT * FROM note_labels WHERE note_id = :noteId")
     override fun getNoteLabelsByNoteId(noteId: Long): Flow<List<LocalNoteLabel>>
-
-    @Query("SELECT * FROM note_labels")
-    override fun getNoteLabels(): Flow<List<LocalNoteLabel>>
 
     @Insert
     override suspend fun createNoteLabel(noteLabel: LocalNoteLabel)

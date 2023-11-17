@@ -72,9 +72,6 @@ class SettingsViewModel(
     val isRememberScrollingPosition = settingsRepository.isRememberScrollingPosition
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    private val mutableIsImportFinished = MutableSharedFlow<Unit>(replay = Int.MAX_VALUE)
-    val isImportFinished get() = mutableIsImportFinished.asSharedFlow()
-
     val quickNoteFolderId = settingsRepository.quickNoteFolderId
         .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.GeneralFolderId)
 
@@ -234,10 +231,6 @@ class SettingsViewModel(
         settingsRepository.updatePreviewAutoScroll(!previewAutoScroll.value)
     }
 
-    fun emitIsImportFinished() = viewModelScope.launch {
-        mutableIsImportFinished.emit(Unit)
-    }
-
     fun getFolderById(folderId: Long) = folderRepository.getFolderById(folderId)
 
     fun setQuickNoteFolderId(folderId: Long) = viewModelScope.launch {
@@ -245,7 +238,7 @@ class SettingsViewModel(
     }
 
     fun disableVault() = viewModelScope.launch {
-        folderRepository.getAllFolders().first()
+        folderRepository.getVaultedFolders().first()
             .map { it.copy(isVaulted = false) }
             .forEach { folderRepository.updateFolder(it) }
         settingsRepository.updateVaultPasscode(passcode = null)

@@ -24,11 +24,11 @@ class NoteRepositoryImpl(
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : NoteRepository {
 
-    override fun getAllNotes(): Flow<List<Note>> = localNoteDataSource.getAllLocalNotes()
+    override fun getMainNotes(): Flow<List<Note>> = localNoteDataSource.getMainLocalNotes()
         .map { it.map { it.toDomainNote() } }
         .flowOn(coroutineDispatcher)
 
-    override fun getMainNotes(): Flow<List<Note>> = localNoteDataSource.getMainLocalNotes()
+    override fun getArchivedNotes(): Flow<List<Note>> = localNoteDataSource.getArchivedLocalNotes()
         .map { it.map { it.toDomainNote() } }
         .flowOn(coroutineDispatcher)
 

@@ -7,6 +7,8 @@ interface LocalLabelDataSource {
 
     fun getAllLabels(): Flow<List<LocalLabel>>
 
+    fun getMainLabels(): Flow<List<LocalLabel>>
+
     fun getLabelsByFolderId(folderId: Long): Flow<List<LocalLabel>>
 
     fun getLabelById(id: Long): Flow<LocalLabel>

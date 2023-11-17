@@ -36,7 +36,7 @@ class NoteListWidgetProvider : AppWidgetProvider(), KoinComponent {
                 val labels = labelRepository.getLabelsByFolderId(folderId)
                     .filterNotNull()
                     .first()
-                val noteLabels = noteLabelRepository.getNoteLabels()
+                val noteLabels = noteLabelRepository.getAllNoteLabels()
                     .filterNotNull()
                     .first()
                 val labelIds = settingsRepository.getWidgetSelectedLabelIds(appWidgetId, folderId).first()

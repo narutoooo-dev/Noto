@@ -45,7 +45,7 @@ class NoteListRemoteViewsFactory(private val context: Context, intent: Intent?) 
             .filterNotNull()
             .first()
         val selectedLabels = labels.filter { it.id in labelIds }
-        val noteLabels = noteLabelRepository.getNoteLabels()
+        val noteLabels = noteLabelRepository.getAllNoteLabels()
             .filterNotNull()
             .first()
         filteringType = settingsRepository.getWidgetFilteringType(appWidgetId)

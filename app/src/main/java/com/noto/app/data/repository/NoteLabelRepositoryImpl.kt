@@ -16,11 +16,11 @@ class NoteLabelRepositoryImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : NoteLabelRepository {
 
-    override fun getNoteLabelsByNoteId(noteId: Long): Flow<List<NoteLabel>> = source.getNoteLabelsByNoteId(noteId)
+    override fun getAllNoteLabels(): Flow<List<NoteLabel>> = source.getAllNoteLabels()
         .map { it.map { it.toDomainNoteLabel() } }
         .flowOn(dispatcher)
 
-    override fun getNoteLabels(): Flow<List<NoteLabel>> = source.getNoteLabels()
+    override fun getNoteLabelsByNoteId(noteId: Long): Flow<List<NoteLabel>> = source.getNoteLabelsByNoteId(noteId)
         .map { it.map { it.toDomainNoteLabel() } }
         .flowOn(dispatcher)
 

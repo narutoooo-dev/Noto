@@ -16,7 +16,7 @@ class LabelRepositoryImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : LabelRepository {
 
-    override fun getAllLabels(): Flow<List<Label>> = dataSource.getAllLabels()
+    override fun getMainLabels(): Flow<List<Label>> = dataSource.getMainLabels()
         .map { it.map { it.toDomainLabel() } }
         .flowOn(dispatcher)
 

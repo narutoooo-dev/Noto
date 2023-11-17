@@ -92,9 +92,9 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
             viewModel.folders,
             viewModel.sortingType,
             viewModel.isShowNotesCount,
-            viewModel.allNotes,
-        ) { folders, sortingType, isShowNotesCount, allNotes ->
-            setupFolders(folders, sortingType, isShowNotesCount, allNotes)
+            viewModel.notesCount,
+        ) { folders, sortingType, isShowNotesCount, notesCount ->
+            setupFolders(folders, sortingType, isShowNotesCount, notesCount)
             setupItemTouchHelper(sortingType == FolderListSortingType.Manual)
         }.launchIn(lifecycleScope)
 
@@ -131,7 +131,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
         state: UiState<List<Folder>>,
         sortingType: FolderListSortingType,
         isShowNotesCount: Boolean,
-        allNotes: List<Note>,
+        notesCount: FilteredItemModel.NotesCount,
     ) {
         if (state is UiState.Success) {
 
@@ -157,7 +157,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                             filteredItem {
                                 id("all")
                                 model(FilteredItemModel.All)
-                                notesCount(allNotes.count { !it.isArchived })
+                                notesCount(notesCount.all)
                                 isShowNotesCount(isShowNotesCount)
                                 isSelected(FilteredItemModel.All.id == selectedDestinationId)
                                 onClickListener { _ ->
@@ -174,7 +174,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                             filteredItem {
                                 id("recent")
                                 model(FilteredItemModel.Recent)
-                                notesCount(allNotes.count { it.isRecent })
+                                notesCount(notesCount.recent)
                                 isShowNotesCount(isShowNotesCount)
                                 isSelected(FilteredItemModel.Recent.id == selectedDestinationId)
                                 onClickListener { _ ->
@@ -196,7 +196,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                             filteredItem {
                                 id("scheduled")
                                 model(FilteredItemModel.Scheduled)
-                                notesCount(allNotes.count { it.reminderDate != null })
+                                notesCount(notesCount.scheduled)
                                 isShowNotesCount(isShowNotesCount)
                                 isSelected(FilteredItemModel.Scheduled.id == selectedDestinationId)
                                 onClickListener { _ ->
@@ -213,7 +213,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
                             filteredItem {
                                 id("archived")
                                 model(FilteredItemModel.Archived)
-                                notesCount(allNotes.count { it.isArchived })
+                                notesCount(notesCount.archived)
                                 isShowNotesCount(isShowNotesCount)
                                 isSelected(FilteredItemModel.Archived.id == selectedDestinationId)
                                 onClickListener { _ ->

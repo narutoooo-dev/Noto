@@ -94,7 +94,7 @@ class NoteViewModel(
         combine(
             labelRepository.getLabelsByFolderId(folderId)
                 .filterNotNull(),
-            noteLabelRepository.getNoteLabels()
+            noteLabelRepository.getAllNoteLabels()
                 .filterNotNull(),
         ) { labels, noteLabels ->
             labels

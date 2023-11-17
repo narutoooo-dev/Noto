@@ -114,7 +114,7 @@ class FolderViewModel(
                 .filterNotNull(),
             labelRepository.getLabelsByFolderId(folderId)
                 .filterNotNull(),
-            noteLabelRepository.getNoteLabels()
+            noteLabelRepository.getAllNoteLabels()
                 .filterNotNull(),
         ) { notes, archivedNotes, labels, noteLabels ->
             val selectedNoteIds = selectedNoteIds.toList()

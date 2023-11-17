@@ -91,7 +91,7 @@ class NoteListWidgetConfigViewModel(
                 .filterNotNull(),
             labelRepository.getLabelsByFolderId(folderId)
                 .filterNotNull(),
-            noteLabelRepository.getNoteLabels()
+            noteLabelRepository.getAllNoteLabels()
                 .filterNotNull()
         ) { notes, labels, noteLabels ->
             mutableNotes.value = notes.mapToNoteItemModel(labels, noteLabels)

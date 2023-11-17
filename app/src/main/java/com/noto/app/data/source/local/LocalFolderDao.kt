@@ -11,20 +11,17 @@ interface LocalFolderDao : LocalFolderDataSource {
     @Query("SELECT * FROM folders")
     override fun getAllLocalFolders(): Flow<List<LocalFolder>>
 
-    @Query("SELECT * FROM folders WHERE is_vaulted = 0")
-    override fun getAllUnvaultedLocalFolders(): Flow<List<LocalFolder>>
-
     @Query("SELECT * FROM folders WHERE is_archived = 0 AND is_vaulted = 0 AND parent_id IS NULL")
     override fun getMainLocalFolders(): Flow<List<LocalFolder>>
-
-    @Query("SELECT * FROM folders WHERE is_archived = 0 AND is_vaulted = 0 AND parent_id = :localFolderId")
-    override fun getChildLocalFolders(localFolderId: Long): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE is_archived = 1 AND is_vaulted = 0")
     override fun getArchivedLocalFolders(): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE is_vaulted = 1 AND is_archived = 0")
     override fun getVaultedLocalFolders(): Flow<List<LocalFolder>>
+
+    @Query("SELECT * FROM folders WHERE is_archived = 0 AND is_vaulted = 0 AND parent_id = :localFolderId")
+    override fun getChildLocalFolders(localFolderId: Long): Flow<List<LocalFolder>>
 
     @Query("SELECT * FROM folders WHERE id = :folderId")
     override fun getLocalFolderById(folderId: Long): Flow<LocalFolder?>

@@ -11,4 +11,12 @@ enum class FilteredItemModel(val id: Long, val color: NotoColor) {
     companion object {
         val Ids = entries.map(FilteredItemModel::id)
     }
+
+    data class NotesCount(
+        val all: Int,
+        val recent: Int,
+        val scheduled: Int,
+        val archived: Int,
+    )
+
 }

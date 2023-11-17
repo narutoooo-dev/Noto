@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LabelRepository {
 
-    fun getAllLabels(): Flow<List<Label>>
+    fun getMainLabels(): Flow<List<Label>>
 
     fun getLabelsByFolderId(folderId: Long): Flow<List<Label>>
 

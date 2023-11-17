@@ -9,15 +9,17 @@ interface LocalNoteDataSource {
 
     fun getMainLocalNotes(): Flow<List<LocalNote>>
 
-    fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
+    fun getArchivedLocalNotes(): Flow<List<LocalNote>>
 
-    fun countMainLocalNotesByFolderId(localFolderId: Long): Flow<Int>
+    fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
     fun getArchivedLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
     fun getLocalNoteById(localNoteId: Long): Flow<LocalNote>
 
     fun getLocalNoteByRemoteId(remoteNoteId: String): Flow<LocalNote?>
+
+    fun countMainLocalNotesByFolderId(localFolderId: Long): Flow<Int>
 
     suspend fun createLocalNote(localNote: LocalNote): Long
 

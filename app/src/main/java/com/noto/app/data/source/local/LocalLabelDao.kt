@@ -11,6 +11,9 @@ interface LocalLabelDao : LocalLabelDataSource {
     @Query("SELECT * FROM labels")
     override fun getAllLabels(): Flow<List<LocalLabel>>
 
+    @Query("SELECT * FROM labels JOIN folders ON folders.id = labels.folder_id WHERE folders.is_archived = 0 AND folders.is_vaulted = 0")
+    override fun getMainLabels(): Flow<List<LocalLabel>>
+
     @Query("SELECT * FROM labels WHERE folder_id = :folderId")
     override fun getLabelsByFolderId(folderId: Long): Flow<List<LocalLabel>>
 

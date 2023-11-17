@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalNoteLabelDataSource {
 
-    fun getNoteLabelsByNoteId(noteId: Long): Flow<List<LocalNoteLabel>>
+    fun getAllNoteLabels(): Flow<List<LocalNoteLabel>>
 
-    fun getNoteLabels(): Flow<List<LocalNoteLabel>>
+    fun getNoteLabelsByNoteId(noteId: Long): Flow<List<LocalNoteLabel>>
 
     suspend fun createNoteLabel(noteLabel: LocalNoteLabel)
 

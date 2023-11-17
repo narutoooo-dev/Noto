@@ -220,7 +220,7 @@ class SettingsRepositoryImpl(
             val folders = localFolderDataSource.getAllLocalFolders().first()
             val notes = localNoteDataSource.getAllLocalNotes().first()
             val labels = localLabelDataSource.getAllLabels().first()
-            val noteLabels = localNoteLabelDataSource.getNoteLabels().first()
+            val noteLabels = localNoteLabelDataSource.getAllNoteLabels().first()
             val config = config.first()
             val data = LocalNotoData(folders, notes, labels, noteLabels, config)
             jsonConverter.encodeToString(data)

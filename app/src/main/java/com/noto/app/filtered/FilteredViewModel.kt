@@ -3,8 +3,7 @@ package com.noto.app.filtered
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
-import com.noto.app.domain.model.Folder
-import com.noto.app.domain.model.Font
+import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.*
 import com.noto.app.folder.NoteItemModel
 import com.noto.app.getOrDefault
@@ -67,18 +66,26 @@ class FilteredViewModel(
             .sortedBy { it.selectionOrder }
 
     init {
+        @Suppress("UNCHECKED_CAST")
         combine(
-            folderRepository.getAllNotVaultedFolders(),
-            noteRepository.getAllNotes(),
-            labelRepository.getAllLabels(),
-            noteLabelRepository.getNoteLabels(),
+            folderRepository.getMainFolders(),
+            noteRepository.getMainNotes(),
+            noteRepository.getArchivedNotes(),
+            labelRepository.getMainLabels(),
+            noteLabelRepository.getAllNoteLabels(),
             searchTerm,
-        ) { folders, notes, labels, noteLabels, searchTerm ->
+        ) { entries ->
+            val folders = entries[0] as List<Folder>
+            val notes = entries[1] as List<Note>
+            val archivedNotes = entries[2] as List<Note>
+            val labels = entries[3] as List<Label>
+            val noteLabels = entries[4] as List<NoteLabel>
+            val searchTerm = entries[5] as String
+
             when (filteredItemModel) {
                 FilteredItemModel.All -> {
                     mutableNotesGroupedByFolderVisibility.value = folders.associateWith { notesGroupedByFolderVisibility.value[it] ?: true }
                     mutableNotesGroupedByFolder.value = notes
-                        .filter { note -> folders.any { folder -> folder.id == note.folderId } && !note.isArchived }
                         .mapToNoteItemModel(labels, noteLabels)
                         .filterBySearchTerm(searchTerm)
                         .groupBy { model ->
@@ -101,7 +108,7 @@ class FilteredViewModel(
                         .map { it.accessDate.toLocalDate() }
                         .associateWith { notesGroupedByDateVisibility.value[it] ?: true }
                     mutableNotesGroupedByDate.value = notes
-                        .filter { note -> folders.any { folder -> folder.id == note.folderId } && note.isRecent }
+                        .filter { note -> note.isRecent }
                         .mapToNoteItemModel(labels, noteLabels)
                         .filterBySearchTerm(searchTerm)
                         .map { model -> folders.first { it.id == model.note.folderId } to model }
@@ -117,7 +124,7 @@ class FilteredViewModel(
                         .mapNotNull { it.reminderDate?.toLocalDate() }
                         .associateWith { notesGroupedByDateVisibility.value[it] ?: true }
                     mutableNotesGroupedByDate.value = notes
-                        .filter { note -> folders.any { folder -> folder.id == note.folderId } && note.reminderDate != null }
+                        .filter { note -> note.reminderDate != null }
                         .mapToNoteItemModel(labels, noteLabels)
                         .filterBySearchTerm(searchTerm)
                         .map { model -> folders.first { it.id == model.note.folderId } to model }
@@ -130,8 +137,7 @@ class FilteredViewModel(
 
                 FilteredItemModel.Archived -> {
                     mutableNotesGroupedByFolderVisibility.value = folders.associateWith { notesGroupedByFolderVisibility.value[it] ?: true }
-                    mutableNotesGroupedByFolder.value = notes
-                        .filter { note -> folders.any { folder -> folder.id == note.folderId } && note.isArchived }
+                    mutableNotesGroupedByFolder.value = archivedNotes
                         .mapToNoteItemModel(labels, noteLabels)
                         .filterBySearchTerm(searchTerm)
                         .groupBy { model ->

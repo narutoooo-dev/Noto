@@ -9,11 +9,10 @@ import com.noto.app.domain.model.SortingOrder
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.filtered.FilteredItemModel
 import com.noto.app.util.Comparator
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import com.noto.app.util.isRecent
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -67,11 +66,17 @@ class MainViewModel(
     val isShowNotesCount = settingsRepository.isShowNotesCount
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    val allNotes = noteRepository.getAllNotes()
-        .combine(folderRepository.getAllNotVaultedFolders()) { notes, folders ->
-            notes.filter { note -> folders.any { folder -> folder.id == note.folderId } }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val notesCount = combine(
+        noteRepository.getMainNotes(),
+        noteRepository.getArchivedNotes(),
+    ) { notes, archivedNotes ->
+        FilteredItemModel.NotesCount(
+            all = notes.count(),
+            recent = notes.count { it.isRecent },
+            scheduled = notes.count { it.reminderDate != null },
+            archived = archivedNotes.count(),
+        )
+    }.shareIn(viewModelScope, SharingStarted.Eagerly, Int.MAX_VALUE)
 
     fun updateFoldersView(sortingType: FolderListSortingType, sortingOrder: SortingOrder) = viewModelScope.launch {
         settingsRepository.updateSortingType(sortingType)
