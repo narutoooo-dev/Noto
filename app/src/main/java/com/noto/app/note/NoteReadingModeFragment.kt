@@ -65,41 +65,36 @@ class NoteReadingModeFragment : Fragment() {
             .launchIn(lifecycleScope)
 
         combine(
+            viewModel.folder,
             viewModel.note,
             viewModel.font,
-        ) { note, font -> setupNote(note, font) }
+        ) { folder, note, font -> setupNote(folder, note, font) }
             .launchIn(lifecycleScope)
-
-        combine(
-            viewModel.folder,
-            viewModel.labels,
-        ) { folder, labels ->
-            rv.withModels {
-                labels.filterValues { it }.forEach { entry ->
-                    labelItem {
-                        id(entry.key.id)
-                        label(entry.key)
-                        isSelected(entry.value)
-                        color(folder.color)
-                        onClickListener { _ -> }
-                        onLongClickListener { _ -> false }
-                    }
-                }
-            }
-        }.launchIn(lifecycleScope)
 
         navController?.getBackStackEntry(R.id.notePagerFragment)?.savedStateHandle
             ?.getLiveData<Int>(Constants.ClickListener)
             ?.observe(viewLifecycleOwner) { if (isVisible) nsv.smoothScrollTo(0, 0) }
     }
 
-    private fun NoteReadingModeFragmentBinding.setupNote(note: Note, font: Font) {
+    private fun NoteReadingModeFragmentBinding.setupNote(folder: Folder, note: Note, font: Font) {
         tvNoteTitle.text = note.title
         tvNoteBody.text = note.body
         tvNoteTitle.isVisible = note.title.isNotBlank()
         tvNoteBody.isVisible = note.body.isNotBlank()
         tvNoteTitle.setSemiboldFont(font)
         tvNoteBody.setMediumFont(font)
+        rv.withModels {
+            note.labels.forEach { label ->
+                labelItem {
+                    id(label.id)
+                    label(label)
+                    isSelected(true)
+                    color(folder.color)
+                    onClickListener { _ -> }
+                    onLongClickListener { _ -> false }
+                }
+            }
+        }
     }
 
     private fun NoteReadingModeFragmentBinding.setupFolder(folder: Folder) {

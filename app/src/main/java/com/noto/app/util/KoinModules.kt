@@ -62,9 +62,9 @@ val appModule = module {
 
     viewModel { MainViewModel(get(), get(), get()) }
 
-    viewModel { FolderViewModel(get(), get(), get(), get(), get(), it.get(), it.getOrNull() ?: longArrayOf()) }
+    viewModel { FolderViewModel(get(), get(), get(), get(), it.get(), it.getOrNull() ?: longArrayOf()) }
 
-    viewModel { NoteViewModel(get(), get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
+    viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
     viewModel { AppViewModel(get(), get(), get(), get(), get()) }
 
@@ -74,11 +74,11 @@ val appModule = module {
 
     viewModel { FolderListWidgetConfigViewModel(it.get(), get(), get()) }
 
-    viewModel { NoteListWidgetConfigViewModel(it.get(), get(), get(), get(), get(), get()) }
+    viewModel { NoteListWidgetConfigViewModel(it.get(), get(), get(), get(), get()) }
 
     viewModel { NotePagerViewModel(get(), get(), get(), it[0], it[1], it[2], it[3]) }
 
-    viewModel { FilteredViewModel(get(), get(), get(), get(), get(), it.get()) }
+    viewModel { FilteredViewModel(get(), get(), get(), it.get()) }
 
     viewModel { LoginViewModel(get(), get()) }
 
@@ -88,11 +88,9 @@ val repositoryModule = module {
 
     single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
-    single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
+    single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
 
     single<LabelRepository> { LabelRepositoryImpl(get()) }
-
-    single<NoteLabelRepository> { NoteLabelRepositoryImpl(get()) }
 
     single<SettingsRepository> {
         SettingsRepositoryImpl(

@@ -6,7 +6,10 @@ import com.noto.app.domain.model.FilteringType
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Icon
 import com.noto.app.domain.model.Label
-import com.noto.app.domain.repository.*
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.repository.NoteRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.folder.NoteItemModel
 import com.noto.app.util.mapToNoteItemModel
 import kotlinx.coroutines.flow.*
@@ -17,7 +20,6 @@ class NoteListWidgetConfigViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -86,16 +88,10 @@ class NoteListWidgetConfigViewModel(
             .onEach { mutableFolder.value = it }
             .launchIn(viewModelScope)
 
-        combine(
-            noteRepository.getMainNotesByFolderId(folderId)
-                .filterNotNull(),
-            labelRepository.getLabelsByFolderId(folderId)
-                .filterNotNull(),
-            noteLabelRepository.getAllNoteLabels()
-                .filterNotNull()
-        ) { notes, labels, noteLabels ->
-            mutableNotes.value = notes.mapToNoteItemModel(labels, noteLabels)
-        }.launchIn(viewModelScope)
+        noteRepository.getMainNotesByFolderId(folderId)
+            .filterNotNull()
+            .onEach { mutableNotes.value = it.mapToNoteItemModel() }
+            .launchIn(viewModelScope)
 
         combine(
             labelRepository.getLabelsByFolderId(folderId)

@@ -16,6 +16,7 @@ data class Note(
     val isVaulted: Boolean,
     val accessDate: Instant,
     val scrollingPosition: Int,
+    val labels: List<Label>,
 ) {
     companion object {
         val Default = Note(
@@ -31,6 +32,7 @@ data class Note(
             isVaulted = false,
             accessDate = Clock.System.now(),
             scrollingPosition = 0,
+            labels = emptyList(),
         )
     }
 }

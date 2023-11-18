@@ -2,8 +2,14 @@ package com.noto.app.note
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.noto.app.domain.model.*
-import com.noto.app.domain.repository.*
+import com.noto.app.domain.model.Folder
+import com.noto.app.domain.model.Font
+import com.noto.app.domain.model.Label
+import com.noto.app.domain.model.Note
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.repository.NoteRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.util.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,7 +22,6 @@ class NoteViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
     private val settingsRepository: SettingsRepository,
     private val folderId: Long,
     private val noteId: Long,
@@ -24,7 +29,14 @@ class NoteViewModel(
     private var labelsIds: LongArray,
 ) : ViewModel() {
 
-    private val mutableNote = MutableStateFlow(Note.Default.copy(id = noteId, folderId = folderId))
+    private val mutableNote = MutableStateFlow(
+        Note.Default.copy(
+            id = noteId,
+            folderId = folderId,
+            title = body.firstLineOrEmpty(),
+            body = body.takeAfterFirstLineOrEmpty()
+        )
+    )
     val note get() = mutableNote.asStateFlow()
 
     private val mutableTitleHistory = MutableSharedFlow<Triple<Int, Int, String>>(replay = Int.MAX_VALUE)
@@ -43,8 +55,10 @@ class NoteViewModel(
     val font = settingsRepository.font
         .stateIn(viewModelScope, SharingStarted.Lazily, Font.Nunito)
 
-    private val mutableLabels = MutableStateFlow<Map<Label, Boolean>>(emptyMap())
-    val labels get() = mutableLabels.asStateFlow()
+    val labels = labelRepository.getLabelsByFolderId(folderId)
+        .filterNotNull()
+        .map { it.sortedBy { label -> label.position } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val isRememberScrollingPosition = settingsRepository.isRememberScrollingPosition
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -80,60 +94,28 @@ class NoteViewModel(
         private set
 
     init {
-        noteRepository.getNoteById(noteId)
-            .onStart {
-                emit(
-                    Note.Default.copy(
-                        id = noteId,
-                        folderId = folderId,
-                        title = body.firstLineOrEmpty(),
-                        body = body.takeAfterFirstLineOrEmpty()
-                    )
-                )
-            }
-            .filterNotNull()
-            .onEach {
-                mutableNote.value = it
-                if (it.reminderDate != null) mutableReminderDateTime.value = it.reminderDate
-            }
-            .launchIn(viewModelScope)
-
-        var selectedLabels: List<Pair<Label, Boolean>>? = null
-
         combine(
+            noteRepository.getNoteById(noteId)
+                .onStart { emit(note.value) }
+                .filterNotNull(),
             labelRepository.getLabelsByFolderId(folderId)
                 .filterNotNull(),
-            noteLabelRepository.getAllNoteLabels()
-                .filterNotNull(),
-        ) { labels, noteLabels ->
-            labels
-                .map { label ->
-                    val isSelected = noteLabels.filter { it.noteId == note.value.id }
-                        .any { it.labelId == label.id } || labelsIds.any { it == label.id }
-                    label to isSelected
+        ) { note, labels ->
+            if (note.id == 0L) { // New note
+                if (labelsIds.isNotEmpty()) { // Apply selected labels.
+                    val selectedLabels = labels.filter { it.id in labelsIds }
+                    mutableNote.value = note.copy(labels = selectedLabels)
+                    labelsIds = longArrayOf() // Setting this value to empty array so it can be used only once.
+                } else { // Copy old selected labels after the labels properties have changed.
+                    val currentLabelIds = this.note.value.labels.map { it.id }
+                    val selectedLabels = labels.filter { it.id in currentLabelIds }
+                    mutableNote.value = note.copy(labels = selectedLabels)
                 }
-                .let { selectableLabels ->
-                    val isReordered = selectedLabels.orEmpty().any { selectedLabel ->
-                        val label = selectableLabels.first { it.first.id == selectedLabel.first.id }
-                        selectedLabel.first.position != label.first.position
-                    }
-                    selectedLabels = when {
-                        selectedLabels == null || isReordered -> selectableLabels.filter { it.second }
-                        else -> selectedLabels.orEmpty().map { label ->
-                            selectableLabels.first { it.first.id == label.first.id }
-                        }
-                    }.sortedBy { it.first.position }
-                    selectedLabels.orEmpty() + selectableLabels
-                        .filterNot { label -> selectedLabels.orEmpty().any { it.first.id == label.first.id } }
-                        .sortedBy { it.first.position }
-                }
-                .toMap()
-        }
-            .onEach {
-                mutableLabels.value = it
-                labelsIds = longArrayOf() // Setting this value to empty array so it can be used only once.
+            } else { // Existing note; Do not apply or copy labels.
+                mutableNote.value = note
             }
-            .launchIn(viewModelScope)
+            if (note.reminderDate != null) mutableReminderDateTime.value = note.reminderDate
+        }.launchIn(viewModelScope)
     }
 
     fun createOrUpdateNote(title: String, body: String, trimContent: Boolean) = viewModelScope.launch {
@@ -149,10 +131,6 @@ class NoteViewModel(
                             .filterNotNull()
                             .onEach { createdNote -> mutableNote.value = createdNote }
                             .launchIn(viewModelScope)
-
-                        labels.value.filterValues { it }.keys
-                            .map { label -> NoteLabel(noteId = newNoteId, labelId = label.id) }
-                            .forEach { noteLabel -> noteLabelRepository.createNoteLabel(noteLabel) }
                     }
             } else {
                 noteRepository.updateNote(note)
@@ -181,50 +159,31 @@ class NoteViewModel(
     }
 
     fun moveNote(folderId: Long) = viewModelScope.launch {
-        noteRepository.updateNote(note.value.copy(folderId = folderId))
-        labels.value.filterSelected().forEach { label ->
-            launch {
-                val labelId = labelRepository.getOrCreateLabel(folderId, label)
-                launch { noteLabelRepository.createNoteLabel(NoteLabel(labelId = labelId, noteId = note.value.id)) }
-                launch { noteLabelRepository.deleteNoteLabel(note.value.id, label.id) }
-            }
-        }
+        // Create or get labels for the destination folder.
+        val labels = note.value.labels.map { label -> label.copy(id = labelRepository.getOrCreateLabel(folderId, label)) }
+        noteRepository.updateNote(note.value.copy(folderId = folderId, labels = labels))
     }
 
     fun copyNote(folderId: Long) = viewModelScope.launch {
-        noteRepository.createNote(note.value.copy(id = 0, folderId = folderId, creationDate = Clock.System.now()))
-            .onSuccess { noteId ->
-                labels.value.filterSelected().forEach { label ->
-                    launch {
-                        val labelId = labelRepository.getOrCreateLabel(folderId, label)
-                        launch { noteLabelRepository.createNoteLabel(NoteLabel(labelId = labelId, noteId = noteId)) }
-                    }
-                }
-            }
+        // Create or get labels for the destination folder.
+        val labels = note.value.labels.map { label -> label.copy(id = labelRepository.getOrCreateLabel(folderId, label)) }
+        noteRepository.createNote(note.value.copy(id = 0, folderId = folderId, creationDate = Clock.System.now(), labels = labels))
     }
 
     fun duplicateNote() = viewModelScope.launch {
         noteRepository.createNote(note.value.copy(id = 0, reminderDate = null, creationDate = Clock.System.now()))
-            .onSuccess { noteId ->
-                labels.value.filterSelected().forEach { label ->
-                    launch { noteLabelRepository.createNoteLabel(NoteLabel(noteId = noteId, labelId = label.id)) }
-                }
-            }
     }
 
-    fun selectLabel(id: Long) = viewModelScope.launch {
-        if (note.value.id == 0L)
-            mutableLabels.value = labels.value.mapValues { if (it.key.id == id) true else it.value }
-        else
-            noteLabelRepository.createNoteLabel(NoteLabel(noteId = note.value.id, labelId = id))
-
+    fun selectLabel(label: Label) = viewModelScope.launch {
+        val selectedLabels = note.value.labels + label
+        val updatedNote = note.value.copy(labels = selectedLabels)
+        if (note.value.id == 0L) mutableNote.value = updatedNote else noteRepository.updateNote(updatedNote)
     }
 
-    fun unselectLabel(id: Long) = viewModelScope.launch {
-        if (note.value.id == 0L)
-            mutableLabels.value = labels.value.mapValues { if (it.key.id == id) false else it.value }
-        else
-            noteLabelRepository.deleteNoteLabel(note.value.id, id)
+    fun unselectLabel(label: Label) = viewModelScope.launch {
+        val selectedLabels = note.value.labels.filterNot { it.id == label.id }
+        val updatedNote = note.value.copy(labels = selectedLabels)
+        if (note.value.id == 0L) mutableNote.value = updatedNote else noteRepository.updateNote(updatedNote)
     }
 
     fun updateNoteScrollingPosition(scrollingPosition: Int) = viewModelScope.launch {

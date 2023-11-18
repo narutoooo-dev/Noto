@@ -123,10 +123,10 @@ abstract class NoteItem : EpoxyModelWithHolder<NoteItem.Holder>() {
         root.setOnLongClickListener(onLongClickListener)
         tvNoteTitle.setSemiboldFont(font)
         tvNoteBody.setMediumFont(font)
-        rv.isVisible = model.labels.isNotEmpty()
+        rv.isVisible = model.note.labels.isNotEmpty()
         rv.layoutManager = FlexboxLayoutManager(root.context, FlexDirection.ROW, FlexWrap.WRAP)
         rv.withModels {
-            model.labels.forEach { label ->
+            model.note.labels.forEach { label ->
                 noteLabelItem {
                     id(label.id)
                     label(label)

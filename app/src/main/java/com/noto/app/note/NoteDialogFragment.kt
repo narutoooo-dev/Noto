@@ -79,9 +79,8 @@ class NoteDialogFragment : BaseDialogFragment() {
         combine(
             viewModel.folder,
             viewModel.note,
-            viewModel.labels.map { it.filterSelected() },
-        ) { folder, note, labels ->
-            setupNote(folder, note, labels)
+        ) { folder, note ->
+            setupNote(folder, note)
         }.launchIn(lifecycleScope)
     }
 
@@ -321,7 +320,7 @@ class NoteDialogFragment : BaseDialogFragment() {
         }
     }
 
-    private fun NoteDialogFragmentBinding.setupNote(folder: Folder, note: Note, labels: List<Label>) {
+    private fun NoteDialogFragmentBinding.setupNote(folder: Folder, note: Note) {
         context?.let { context ->
             val colorResource = context.colorResource(folder.color.toColorResourceId())
             vNote.root.backgroundTintList = context.colorAttributeResource(R.attr.notoBackgroundColor).toColorStateList()
@@ -348,10 +347,10 @@ class NoteDialogFragment : BaseDialogFragment() {
                 vNote.tvReminder.text = note.reminderDate.format(context)
             }
             vNote.llReminder.isVisible = note.reminderDate != null
-            vNote.rv.isVisible = labels.isNotEmpty()
+            vNote.rv.isVisible = note.labels.isNotEmpty()
             vNote.rv.layoutManager = FlexboxLayoutManager(context, FlexDirection.ROW, FlexWrap.WRAP)
             vNote.rv.withModels {
-                labels.forEach { label ->
+                note.labels.forEach { label ->
                     noteLabelItem {
                         id(label.id)
                         label(label)

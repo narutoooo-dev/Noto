@@ -38,7 +38,7 @@ class NoteListWidgetAdapter(
                 tvCreationDate.isVisible = isShowCreationDate
                 tvNoteTitle.isVisible = model.note.title.isNotBlank()
                 tvNoteTitle.maxLines = 3
-                llLabels.isVisible = model.labels.isNotEmpty()
+                llLabels.isVisible = model.note.labels.isNotEmpty()
                 if (model.note.title.isBlank() && previewSize == 0) {
                     tvNoteBody.text = model.note.body.takeLines(1)
                     tvNoteBody.maxLines = 1
@@ -50,7 +50,7 @@ class NoteListWidgetAdapter(
                 }
                 tvNoteTitle.setPadding(0.dp, 0.dp, 0.dp, if (model.note.body.isBlank() || previewSize == 0) 0.dp else 4.dp)
                 tvNoteBody.setPadding(if (model.note.title.isBlank()) 0.dp else 4.dp, 0.dp, 0.dp, 0.dp)
-                model.labels.forEach { label ->
+                model.note.labels.forEach { label ->
                     NoteLabelItemBinding.inflate(layoutInflater, parent, false).withBinding {
                         tvLabel.text = label.title
                         tvLabel.background?.mutate()?.setTint(context.colorResource(color.toColorResourceId()))

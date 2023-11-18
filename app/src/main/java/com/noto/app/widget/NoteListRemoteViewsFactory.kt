@@ -9,7 +9,10 @@ import android.widget.RemoteViewsService
 import com.noto.app.R
 import com.noto.app.domain.model.FilteringType
 import com.noto.app.domain.model.Folder
-import com.noto.app.domain.repository.*
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.repository.NoteRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.folder.NoteItemModel
 import com.noto.app.util.*
 import kotlinx.coroutines.flow.filterNotNull
@@ -24,7 +27,6 @@ class NoteListRemoteViewsFactory(private val context: Context, intent: Intent?) 
     private val folderRepository by inject<FolderRepository>()
     private val noteRepository by inject<NoteRepository>()
     private val labelRepository by inject<LabelRepository>()
-    private val noteLabelRepository by inject<NoteLabelRepository>()
     private val settingsRepository by inject<SettingsRepository>()
     private val appWidgetId = intent?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
         ?: AppWidgetManager.INVALID_APPWIDGET_ID
@@ -45,16 +47,13 @@ class NoteListRemoteViewsFactory(private val context: Context, intent: Intent?) 
             .filterNotNull()
             .first()
         val selectedLabels = labels.filter { it.id in labelIds }
-        val noteLabels = noteLabelRepository.getAllNoteLabels()
-            .filterNotNull()
-            .first()
         filteringType = settingsRepository.getWidgetFilteringType(appWidgetId)
             .filterNotNull()
             .first()
         notes = noteRepository.getMainNotesByFolderId(folderId)
             .filterNotNull()
             .map {
-                it.mapToNoteItemModel(labels, noteLabels)
+                it.mapToNoteItemModel()
                     .filterByLabels(selectedLabels, filteringType)
                     .sortedWith(NoteItemModel.Comparator(folder.sortingOrder, folder.sortingType))
                     .sortedByDescending { it.note.isPinned }
@@ -76,7 +75,7 @@ class NoteListRemoteViewsFactory(private val context: Context, intent: Intent?) 
             }
             val color = context.colorResource(folder.color.toColorResourceId())
             removeAllViews(R.id.ll_labels)
-            model.labels.forEach { label ->
+            model.note.labels.forEach { label ->
                 val remoteViews = RemoteViews(context.packageName, R.layout.widget_note_label_item).apply {
                     setContentDescription(R.id.fl, label.title)
                     setTextViewText(R.id.tv_label, label.title)
@@ -90,7 +89,7 @@ class NoteListRemoteViewsFactory(private val context: Context, intent: Intent?) 
             setTextViewText(R.id.tv_creation_date, context.stringResource(R.string.created, model.note.creationDate.format(context)))
             setViewVisibility(R.id.tv_creation_date, if (folder.isShowNoteCreationDate) View.VISIBLE else View.GONE)
             setViewVisibility(R.id.tv_note_title, if (model.note.title.isNotBlank()) View.VISIBLE else View.GONE)
-            setViewVisibility(R.id.ll_labels, if (model.labels.isNotEmpty()) View.VISIBLE else View.GONE)
+            setViewVisibility(R.id.ll_labels, if (model.note.labels.isNotEmpty()) View.VISIBLE else View.GONE)
             setViewPadding(R.id.tv_note_title, 0, 0, 0, if (model.note.body.isBlank() || folder.notePreviewSize == 0) 0.dp else 4.dp)
             setViewPadding(R.id.tv_note_body, 0, if (model.note.title.isBlank()) 0.dp else 4.dp, 0, 0)
             if (model.note.title.isBlank() && folder.notePreviewSize == 0) {

@@ -128,27 +128,29 @@ class NoteFragment : Fragment() {
 
         combine(
             viewModel.folder,
+            viewModel.note,
             viewModel.labels,
-        ) { folder, labels ->
+        ) { folder, note, labels ->
             rv.withModels {
                 addModelBuildListener {
                     it.dispatchTo(NoteListUpdateCallback)
                 }
-                labels.forEach { entry ->
+                labels.forEach { label ->
+                    val isSelected = note.labels.any { it.id == label.id }
                     labelItem {
-                        id(entry.key.id)
-                        label(entry.key)
-                        isSelected(entry.value)
+                        id(label.id)
+                        label(label)
+                        isSelected(isSelected)
                         color(folder.color)
                         onClickListener { _ ->
-                            if (entry.value)
-                                viewModel.unselectLabel(entry.key.id)
+                            if (isSelected)
+                                viewModel.unselectLabel(label)
                             else
-                                viewModel.selectLabel(entry.key.id)
+                                viewModel.selectLabel(label)
                         }
                         onLongClickListener { _ ->
                             navController
-                                ?.navigateSafely(NoteFragmentDirections.actionNoteFragmentToLabelDialogFragment(args.folderId, entry.key.id))
+                                ?.navigateSafely(NoteFragmentDirections.actionNoteFragmentToLabelDialogFragment(args.folderId, label.id))
                             true
                         }
                     }

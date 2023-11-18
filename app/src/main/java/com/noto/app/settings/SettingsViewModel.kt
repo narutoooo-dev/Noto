@@ -9,6 +9,7 @@ import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.*
+import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.toUiState
 import com.noto.app.util.hash
 import com.noto.app.util.readText
@@ -21,7 +22,7 @@ class SettingsViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
+    private val localNoteLabelDataSource: LocalNoteLabelDataSource,
     private val settingsRepository: SettingsRepository,
     private val application: Application,
 ) : AndroidViewModel(application) {
@@ -279,7 +280,7 @@ class SettingsViewModel(
         folderRepository.clearFolders()
         noteRepository.clearNotes()
         labelRepository.clearLabels()
-        noteLabelRepository.clearNoteLabels()
+        localNoteLabelDataSource.clearNoteLabels()
         settingsRepository.clearSettings()
     }
 

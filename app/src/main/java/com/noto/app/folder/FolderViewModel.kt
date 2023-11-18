@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
 import com.noto.app.domain.model.*
-import com.noto.app.domain.repository.*
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.repository.NoteRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.getOrDefault
 import com.noto.app.label.LabelItemModel
 import com.noto.app.map
@@ -20,7 +23,6 @@ class FolderViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
     private val settingsRepository: SettingsRepository,
     private val folderId: Long,
     private val selectedNoteIds: LongArray = longArrayOf(),
@@ -71,8 +73,7 @@ class FolderViewModel(
     private var sortSelectedLabels = true
 
     val selectionLabels = combine(notes, labels) { notes, labels ->
-        val selectedLabels =
-            notes.getOrDefault(emptyList()).filter { it.isSelected }.map { it.labels }.flatten()
+        val selectedLabels = notes.getOrDefault(emptyList()).filter { it.isSelected }.map { it.note.labels }.flatten()
         labels.map { model -> LabelItemModel(model.label, selectedLabels.contains(model.label)) }
             .let {
                 if (it.isNotEmpty() && sortSelectedLabels) {
@@ -112,11 +113,7 @@ class FolderViewModel(
                 .filterNotNull(),
             noteRepository.getArchivedNotesByFolderId(folderId)
                 .filterNotNull(),
-            labelRepository.getLabelsByFolderId(folderId)
-                .filterNotNull(),
-            noteLabelRepository.getAllNoteLabels()
-                .filterNotNull(),
-        ) { notes, archivedNotes, labels, noteLabels ->
+        ) { notes, archivedNotes ->
             val selectedNoteIds = selectedNoteIds.toList()
                 .ifEmpty { selectedNotes.map { it.note.id } }
                 .toLongArray()
@@ -125,12 +122,10 @@ class FolderViewModel(
                 .filter { it.isDragged }
                 .map { it.note.id }
                 .toLongArray()
-            mutableNotes.value =
-                notes.mapToNoteItemModel(labels, noteLabels, selectedNoteIds, draggedNoteIds)
-                    .sortedBy { selectedNoteIds.indexOf(it.note.id) }
-                    .let { UiState.Success(it) }
-            mutableArchivedNotes.value =
-                archivedNotes.mapToNoteItemModel(labels, noteLabels).let { UiState.Success(it) }
+            mutableNotes.value = notes.mapToNoteItemModel(selectedNoteIds, draggedNoteIds)
+                .sortedBy { selectedNoteIds.indexOf(it.note.id) }
+                .let { UiState.Success(it) }
+            mutableArchivedNotes.value = archivedNotes.mapToNoteItemModel().let { UiState.Success(it) }
         }.launchIn(viewModelScope)
 
         labelRepository.getLabelsByFolderId(folderId)
@@ -394,17 +389,15 @@ class FolderViewModel(
         val title = selectedNotes.joinToString(LineSeparator) { it.note.title }.trim()
         val body = selectedNotes.joinToString(LineSeparator) { it.note.body }.trim()
         val isPinned = selectedNotes.any { it.note.isPinned }
-        val labels = selectedNotes.map { it.labels }.flatten()
-        val note = Note.Default.copy(folderId = folderId, title = title, body = body, isPinned = isPinned, position = 0)
+        val labels = selectedNotes.flatMap { it.note.labels }
+        val note = Note.Default.copy(
+            folderId = folderId,
+            title = title,
+            body = body,
+            isPinned = isPinned,
+            labels = labels,
+        )
         noteRepository.createNote(note)
-            .onSuccess { noteId ->
-                labels.forEach { label ->
-                    launch {
-                        val noteLabel = NoteLabel(noteId = noteId, labelId = label.id)
-                        noteLabelRepository.createNoteLabel(noteLabel)
-                    }
-                }
-            }
     }
 
     fun pinSelectedNotes() = viewModelScope.launch {
@@ -434,48 +427,24 @@ class FolderViewModel(
     fun duplicateSelectedNotes() = viewModelScope.launch {
         selectedNotes.forEach { model ->
             launch {
-                noteRepository.createNote(
-                    model.note.copy(
-                        id = 0,
-                        reminderDate = null,
-                        creationDate = Clock.System.now()
-                    )
-                ).onSuccess { noteId ->
-                    model.labels.forEach { label ->
-                        launch {
-                            noteLabelRepository.createNoteLabel(
-                                NoteLabel(
-                                    noteId = noteId,
-                                    labelId = label.id
-                                )
-                            )
-                        }
-                    }
-                }
+                noteRepository.createNote(model.note.copy(id = 0, reminderDate = null, creationDate = Clock.System.now()))
             }
         }
     }
 
     fun moveSelectedNotes(folderId: Long) = viewModelScope.launch {
         selectedNotes.forEach { model ->
-            noteRepository.updateNote(model.note.copy(folderId = folderId))
-            model.labels.forEach { label ->
-                val labelId = labelRepository.getOrCreateLabel(folderId, label)
-                launch { noteLabelRepository.createNoteLabel(NoteLabel(labelId = labelId, noteId = model.note.id)) }
-                launch { noteLabelRepository.deleteNoteLabel(model.note.id, label.id) }
-            }
+            // Create or get labels for the destination folder.
+            val labels = model.note.labels.map { label -> label.copy(id = labelRepository.getOrCreateLabel(folderId, label)) }
+            noteRepository.updateNote(model.note.copy(folderId = folderId, labels = labels))
         }
     }
 
     fun copySelectedNotes(folderId: Long) = viewModelScope.launch {
         selectedNotes.forEach { model ->
-            noteRepository.createNote(model.note.copy(id = 0, folderId = folderId, creationDate = Clock.System.now()))
-                .onSuccess { noteId ->
-                    model.labels.forEach { label ->
-                        val labelId = labelRepository.getOrCreateLabel(folderId, label)
-                        launch { noteLabelRepository.createNoteLabel(NoteLabel(labelId = labelId, noteId = noteId)) }
-                    }
-                }
+            // Create or get labels for the destination folder.
+            val labels = model.note.labels.map { label -> label.copy(id = labelRepository.getOrCreateLabel(folderId, label)) }
+            noteRepository.createNote(model.note.copy(id = 0, folderId = folderId, creationDate = Clock.System.now(), labels = labels))
         }
     }
 
@@ -495,16 +464,23 @@ class FolderViewModel(
         isUserScrolling = isScrolling
     }
 
-    fun selectLabelForSelectedNotes(id: Long) = viewModelScope.launch {
+    fun selectLabelForSelectedNotes(label: Label) = viewModelScope.launch {
         selectedNotes.forEach { model ->
-            val noteLabel = NoteLabel(noteId = model.note.id, labelId = id)
-            launch { noteLabelRepository.createNoteLabel(noteLabel) }
+            launch {
+                val selectedLabels = model.note.labels + label
+                val updatedNote = model.note.copy(labels = selectedLabels)
+                noteRepository.updateNote(updatedNote)
+            }
         }
     }
 
-    fun deselectLabelForSelectedNotes(id: Long) = viewModelScope.launch {
+    fun deselectLabelForSelectedNotes(label: Label) = viewModelScope.launch {
         selectedNotes.forEach { model ->
-            launch { noteLabelRepository.deleteNoteLabel(model.note.id, labelId = id) }
+            launch {
+                val selectedLabels = model.note.labels.filterNot { it.id == label.id }
+                val updatedNote = model.note.copy(labels = selectedLabels)
+                noteRepository.updateNote(updatedNote)
+            }
         }
     }
 

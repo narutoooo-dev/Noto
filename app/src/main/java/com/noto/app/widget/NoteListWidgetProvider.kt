@@ -3,9 +3,15 @@ package com.noto.app.widget
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import com.noto.app.domain.repository.*
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.repository.NoteRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.folder.NoteItemModel
-import com.noto.app.util.*
+import com.noto.app.util.Comparator
+import com.noto.app.util.createNoteListWidgetRemoteViews
+import com.noto.app.util.filterByLabels
+import com.noto.app.util.mapToNoteItemModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
@@ -21,7 +27,6 @@ class NoteListWidgetProvider : AppWidgetProvider(), KoinComponent {
     private val folderRepository by inject<FolderRepository>()
     private val noteRepository by inject<NoteRepository>()
     private val labelRepository by inject<LabelRepository>()
-    private val noteLabelRepository by inject<NoteLabelRepository>()
     private val settingsRepository by inject<SettingsRepository>()
 
     override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager?, appWidgetIds: IntArray?) {
@@ -36,15 +41,12 @@ class NoteListWidgetProvider : AppWidgetProvider(), KoinComponent {
                 val labels = labelRepository.getLabelsByFolderId(folderId)
                     .filterNotNull()
                     .first()
-                val noteLabels = noteLabelRepository.getAllNoteLabels()
-                    .filterNotNull()
-                    .first()
                 val labelIds = settingsRepository.getWidgetSelectedLabelIds(appWidgetId, folderId).first()
                 val selectedLabels = labels.filter { it.id in labelIds }
                 val isEmpty = noteRepository.getMainNotesByFolderId(folderId)
                     .filterNotNull()
                     .map {
-                        it.mapToNoteItemModel(labels, noteLabels)
+                        it.mapToNoteItemModel()
                             .filterByLabels(selectedLabels, filteringType)
                             .sortedWith(NoteItemModel.Comparator(folder.sortingOrder, folder.sortingType))
                             .sortedByDescending { it.note.isPinned }

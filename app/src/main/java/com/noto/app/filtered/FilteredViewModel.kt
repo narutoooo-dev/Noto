@@ -3,8 +3,11 @@ package com.noto.app.filtered
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
-import com.noto.app.domain.model.*
-import com.noto.app.domain.repository.*
+import com.noto.app.domain.model.Folder
+import com.noto.app.domain.model.Font
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.NoteRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.folder.NoteItemModel
 import com.noto.app.getOrDefault
 import com.noto.app.map
@@ -19,8 +22,6 @@ typealias NotesGroupedByDate = Map<LocalDate, List<Pair<Folder, NoteItemModel>>>
 class FilteredViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
-    private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
     private val settingsRepository: SettingsRepository,
     private val filteredItemModel: FilteredItemModel,
 ) : ViewModel() {
@@ -66,27 +67,17 @@ class FilteredViewModel(
             .sortedBy { it.selectionOrder }
 
     init {
-        @Suppress("UNCHECKED_CAST")
         combine(
             folderRepository.getMainFolders(),
             noteRepository.getMainNotes(),
             noteRepository.getArchivedNotes(),
-            labelRepository.getMainLabels(),
-            noteLabelRepository.getAllNoteLabels(),
             searchTerm,
-        ) { entries ->
-            val folders = entries[0] as List<Folder>
-            val notes = entries[1] as List<Note>
-            val archivedNotes = entries[2] as List<Note>
-            val labels = entries[3] as List<Label>
-            val noteLabels = entries[4] as List<NoteLabel>
-            val searchTerm = entries[5] as String
-
+        ) { folders, notes, archivedNotes, searchTerm ->
             when (filteredItemModel) {
                 FilteredItemModel.All -> {
                     mutableNotesGroupedByFolderVisibility.value = folders.associateWith { notesGroupedByFolderVisibility.value[it] ?: true }
                     mutableNotesGroupedByFolder.value = notes
-                        .mapToNoteItemModel(labels, noteLabels)
+                        .mapToNoteItemModel()
                         .filterBySearchTerm(searchTerm)
                         .groupBy { model ->
                             folders.firstOrNull { folder ->
@@ -109,7 +100,7 @@ class FilteredViewModel(
                         .associateWith { notesGroupedByDateVisibility.value[it] ?: true }
                     mutableNotesGroupedByDate.value = notes
                         .filter { note -> note.isRecent }
-                        .mapToNoteItemModel(labels, noteLabels)
+                        .mapToNoteItemModel()
                         .filterBySearchTerm(searchTerm)
                         .map { model -> folders.first { it.id == model.note.folderId } to model }
                         .groupBy { pair -> pair.second.note.accessDate.toLocalDate() }
@@ -125,7 +116,7 @@ class FilteredViewModel(
                         .associateWith { notesGroupedByDateVisibility.value[it] ?: true }
                     mutableNotesGroupedByDate.value = notes
                         .filter { note -> note.reminderDate != null }
-                        .mapToNoteItemModel(labels, noteLabels)
+                        .mapToNoteItemModel()
                         .filterBySearchTerm(searchTerm)
                         .map { model -> folders.first { it.id == model.note.folderId } to model }
                         .groupBy { pair -> pair.second.note.accessDate.toLocalDate() }
@@ -138,7 +129,7 @@ class FilteredViewModel(
                 FilteredItemModel.Archived -> {
                     mutableNotesGroupedByFolderVisibility.value = folders.associateWith { notesGroupedByFolderVisibility.value[it] ?: true }
                     mutableNotesGroupedByFolder.value = archivedNotes
-                        .mapToNoteItemModel(labels, noteLabels)
+                        .mapToNoteItemModel()
                         .filterBySearchTerm(searchTerm)
                         .groupBy { model ->
                             folders.firstOrNull { folder ->

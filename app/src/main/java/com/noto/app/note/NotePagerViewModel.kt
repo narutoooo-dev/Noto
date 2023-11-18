@@ -32,7 +32,7 @@ class NotePagerViewModel(
     } else {
         noteRepository.getMainNotesByFolderId(folderId)
     }.combine(folder) { notes, folder ->
-        notes.mapToNoteItemModel(emptyList(), emptyList())
+        notes.mapToNoteItemModel()
             .sortedWith(NoteItemModel.Comparator(folder.sortingOrder, folder.sortingType))
             .map { it.note.id }
             .filter { id -> if (selectedNoteIds.isEmpty()) true else selectedNoteIds.contains(id) }

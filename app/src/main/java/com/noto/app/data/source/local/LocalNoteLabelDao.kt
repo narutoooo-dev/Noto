@@ -1,6 +1,7 @@
 package com.noto.app.data.source.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.noto.app.data.model.local.LocalNoteLabel
@@ -19,8 +20,8 @@ interface LocalNoteLabelDao : LocalNoteLabelDataSource {
     @Insert
     override suspend fun createNoteLabel(noteLabel: LocalNoteLabel)
 
-    @Query("DELETE FROM note_labels WHERE note_id = :noteId AND label_id = :labelId")
-    override suspend fun deleteNoteLabel(noteId: Long, labelId: Long)
+    @Delete
+    override suspend fun deleteNoteLabel(noteLabel: LocalNoteLabel)
 
     @Query("DELETE FROM note_labels")
     override suspend fun clearNoteLabels()

@@ -168,9 +168,9 @@ class NoteSelectionDialogFragment : BaseDialogFragment() {
                         color(folder.color)
                         onClickListener { _ ->
                             if (model.isSelected)
-                                viewModel.deselectLabelForSelectedNotes(model.label.id)
+                                viewModel.deselectLabelForSelectedNotes(model.label)
                             else
-                                viewModel.selectLabelForSelectedNotes(model.label.id)
+                                viewModel.selectLabelForSelectedNotes(model.label)
                         }
                         onLongClickListener { _ -> false }
                     }

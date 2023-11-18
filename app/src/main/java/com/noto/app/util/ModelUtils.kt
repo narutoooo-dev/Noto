@@ -120,9 +120,9 @@ fun Folder.Companion.Comparator(sortingOrder: SortingOrder, sortingType: FolderL
 fun List<NoteItemModel>.filterByLabels(selectedLabels: List<Label>, filteringType: FilteringType) = filter { model ->
     if (selectedLabels.isNotEmpty()) {
         when (filteringType) {
-            FilteringType.Inclusive -> model.labels.any { label -> selectedLabels.any { it == label } }
-            FilteringType.Exclusive -> model.labels.containsAll(selectedLabels)
-            FilteringType.Strict -> model.labels == selectedLabels
+            FilteringType.Inclusive -> model.note.labels.any { label -> selectedLabels.any { it == label } }
+            FilteringType.Exclusive -> model.note.labels.containsAll(selectedLabels)
+            FilteringType.Strict -> model.note.labels == selectedLabels
         }
     } else {
         true
@@ -165,7 +165,7 @@ fun List<NoteItemModel>.groupByLabels(
     sortingType: NoteListSortingType,
     sortingOrder: SortingOrder,
     groupingOrder: GroupingOrder,
-): List<Pair<List<Label>, List<NoteItemModel>>> = map { model -> model.labels to model.copy(labels = emptyList()) }
+): List<Pair<List<Label>, List<NoteItemModel>>> = map { model -> model.note.labels to model.copy(note = model.note.copy(labels = emptyList())) }
     .groupBy({ it.first }, { it.second })
     .mapValues { it.value.sortedWith(NoteItemModel.Comparator(sortingOrder, sortingType)).sortedByDescending { it.note.isPinned } }
     .map { it.toPair() }
@@ -177,20 +177,12 @@ fun List<NoteItemModel>.groupByLabels(
     }
 
 fun List<Note>.mapToNoteItemModel(
-    labels: List<Label>,
-    noteLabels: List<NoteLabel>,
     selectedNoteIds: LongArray = longArrayOf(),
     draggedNoteIds: LongArray = longArrayOf(),
 ): List<NoteItemModel> {
     return map { note ->
         NoteItemModel(
-            note,
-            labels.sortedBy { it.position }
-                .filter { label ->
-                    noteLabels.filter { it.noteId == note.id }.any { noteLabel ->
-                        noteLabel.labelId == label.id
-                    }
-                },
+            note.copy(labels = note.labels.sortedBy { it.position }),
             isSelected = selectedNoteIds.contains(note.id),
             isDragged = draggedNoteIds.contains(note.id),
         )
