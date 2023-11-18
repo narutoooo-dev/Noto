@@ -17,7 +17,10 @@ val typography
         initialTypography.displayLarge.copy(fontFamily = NunitoFontFamily),
         initialTypography.displayMedium.copy(fontFamily = NunitoFontFamily),
         initialTypography.displaySmall.copy(fontFamily = NunitoFontFamily),
-        initialTypography.headlineLarge.copy(fontFamily = NunitoFontFamily),
+        initialTypography.headlineLarge.copy(
+            fontFamily = NunitoFontFamily,
+            fontWeight = FontWeight.Bold
+        ),
         initialTypography.headlineMedium.copy(
             // Note Title TextField, Placeholder
             fontFamily = NunitoFontFamily,

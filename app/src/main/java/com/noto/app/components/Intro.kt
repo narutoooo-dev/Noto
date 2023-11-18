@@ -20,7 +20,6 @@ fun IntroPageTitle(text: String, modifier: Modifier = Modifier, color: Color = M
     Text(
         text = text,
         color = color,
-        fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
