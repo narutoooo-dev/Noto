@@ -11,10 +11,10 @@ interface LocalNoteDao : LocalNoteDataSource {
     @Query("SELECT * FROM notes")
     override fun getAllLocalNotes(): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes JOIN folders ON folders.id = notes.folder_id WHERE folders.is_archived = 0 AND folders.is_vaulted = 0 AND notes.is_archived = 0")
+    @Query("SELECT notes.* FROM notes JOIN folders ON folders.id = notes.folder_id WHERE folders.is_archived = 0 AND folders.is_vaulted = 0 AND notes.is_archived = 0")
     override fun getMainLocalNotes(): Flow<List<LocalNote>>
 
-    @Query("SELECT * FROM notes JOIN folders ON folders.id = notes.folder_id WHERE folders.is_archived = 0 AND folders.is_vaulted = 0 AND notes.is_archived = 1")
+    @Query("SELECT notes.* FROM notes JOIN folders ON folders.id = notes.folder_id WHERE folders.is_archived = 0 AND folders.is_vaulted = 0 AND notes.is_archived = 1")
     override fun getArchivedLocalNotes(): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 0")
