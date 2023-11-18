@@ -20,6 +20,7 @@ fun FilledIconButton(
     enabled: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    rippleColor: Color = Color.Unspecified,
 ) {
     Surface(
         onClick = onClick,
@@ -28,6 +29,7 @@ fun FilledIconButton(
         shape = MaterialTheme.shapes.small,
         color = containerColor,
         contentColor = contentColor,
+        rippleColor = rippleColor,
     ) {
         Box(modifier = Modifier.padding(NotoTheme.dimensions.medium), contentAlignment = Alignment.Center) {
             Icon(painter = painter, contentDescription = contentDescription)
