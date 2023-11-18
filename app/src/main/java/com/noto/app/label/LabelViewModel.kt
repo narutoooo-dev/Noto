@@ -30,7 +30,7 @@ class LabelViewModel(
 
     val label = labelRepository.getLabelById(labelId)
         .filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.Lazily, Label(labelId, folderId))
+        .stateIn(viewModelScope, SharingStarted.Lazily, Label.Default.copy(id = labelId, folderId = folderId))
 
     fun createOrUpdateLabel(title: String) = viewModelScope.launch {
         val label = label.value.copy(title = title.trim())
