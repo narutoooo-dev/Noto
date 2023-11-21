@@ -23,13 +23,12 @@ import com.noto.app.util.DefaultAnimationDuration
 private val IconSize = 24.dp
 
 sealed interface SettingsItemType {
-    object None : SettingsItemType
+    data object None : SettingsItemType
 
     @JvmInline
     value class Text(val value: String) : SettingsItemType
 
-    @JvmInline
-    value class Switch(val isChecked: Boolean) : SettingsItemType
+    data class Switch(val isChecked: Boolean, val color: Color? = null) : SettingsItemType
 }
 
 @Composable
@@ -148,7 +147,7 @@ private fun RowScope.SettingsItemContent(
                         onCheckedChange = null,
                         modifier = Modifier.height(24.dp),
                         colors = SwitchDefaults.colors(
-                            checkedTrackColor = MaterialTheme.colorScheme.secondary
+                            checkedTrackColor = type.color ?: MaterialTheme.colorScheme.secondary
                         )
                     )
                 }
