@@ -3,6 +3,7 @@ package com.noto.app.folder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
+import com.noto.app.components.NotoColorItem
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.LabelRepository
@@ -31,7 +32,7 @@ class FolderViewModel(
     val folder = folderRepository.getFolderById(folderId)
         .filterNotNull()
         .onEach { folder ->
-            mutableNotoColors.value = notoColors.value.mapTrueIfSameColor(folder.color)
+            mutableNotoColors.value = notoColors.value.selectNotoColor(folder.color)
             if (folder.parentFolder != null) mutableParentFolder.value = folder.parentFolder
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.Default)
@@ -52,7 +53,7 @@ class FolderViewModel(
     val font = settingsRepository.font
         .stateIn(viewModelScope, SharingStarted.Lazily, Font.Nunito)
 
-    private val mutableNotoColors = MutableStateFlow(NotoColor.entries.associateWith { false }.toList())
+    private val mutableNotoColors = MutableStateFlow(NotoColor.entries.map { NotoColorItem(it, false) })
     val notoColors get() = mutableNotoColors.asStateFlow()
 
     private val mutableIsSearchEnabled = MutableStateFlow(false)
@@ -201,7 +202,7 @@ class FolderViewModel(
         isShowNoteCreationDate: Boolean,
         onCreateFolder: (Long) -> Unit,
     ) = viewModelScope.launch {
-        val color = notoColors.value.first { it.second }.first
+        val color = notoColors.value.first { it.isSelected }.notoColor
 
         val folder = folder.value.copy(
             title = title.trim(),
@@ -282,8 +283,7 @@ class FolderViewModel(
     }
 
     fun selectNotoColor(notoColor: NotoColor) {
-        mutableNotoColors.value = mutableNotoColors.value
-            .mapTrueIfSameColor(notoColor)
+        mutableNotoColors.value = notoColors.value.selectNotoColor(notoColor)
     }
 
     fun selectLabel(id: Long) {
@@ -549,8 +549,9 @@ class FolderViewModel(
         )
     }
 
-    private fun List<Pair<NotoColor, Boolean>>.mapTrueIfSameColor(notoColor: NotoColor) =
-        map { it.first to (it.first == notoColor) }
+    private fun List<NotoColorItem>.selectNotoColor(notoColor: NotoColor) = map {
+        it.copy(isSelected = it.notoColor == notoColor)
+    }
 
     private fun Folder.mapRecursively(allFolders: List<Folder>): Folder {
         val childFolders = allFolders

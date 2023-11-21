@@ -1,5 +1,6 @@
 package com.noto.app.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,5 +24,15 @@ fun MediumSubtitle(text: AnnotatedString, modifier: Modifier = Modifier) {
         modifier = modifier,
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.secondary,
+    )
+}
+
+@Composable
+fun SectionTitle(title: String, modifier: Modifier = Modifier) {
+    Text(
+        text = title,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.primary,
     )
 }
