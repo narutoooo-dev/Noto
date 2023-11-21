@@ -35,7 +35,6 @@ fun AndroidViewSlider(
             slider.valueTo = valueRange.endInclusive
             slider.stepSize = stepSize
             slider.contentDescription = contentDescription
-            slider.value = value
             if (trackInActiveColorStateList != null) {
                 slider.trackInactiveTintList = trackInActiveColorStateList
             }
@@ -43,6 +42,7 @@ fun AndroidViewSlider(
     },
     modifier = modifier.heightIn(max = 24.dp),
     update = {
+        slider.value = value
         val parent = root.parent as? ViewGroup
         parent?.apply { clipChildren = false }
         slider.isEnabled = enabled
