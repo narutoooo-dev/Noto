@@ -4,6 +4,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -29,6 +32,54 @@ private val TipHeight = 5.dp
 private val TipWidth = 30.dp
 
 @Composable
+fun BaseDialogFragment.LazyBottomSheetDialog(
+    title: String,
+    modifier: Modifier = Modifier,
+    headerColor: Color? = null,
+    painter: Painter? = null,
+    content: LazyListScope.() -> Unit,
+) {
+    val lazyListState = rememberLazyListState()
+    val headerScrollState = rememberScrollState()
+    val nestedScrollConnection = rememberNestedScrollInteropConnection()
+    val viewModel by viewModel<SettingsViewModel>()
+    val theme by viewModel.theme.collectAsState()
+    val isScrolling by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
+    val elevation by animateDpAsState(
+        targetValue = if (isScrolling) NotoTheme.dimensions.extraSmall else 0.dp,
+        animationSpec = tween(ElevationAnimationDuration),
+        label = "LazyBottomSheetDialog"
+    )
+    NotoTheme(theme = theme) {
+        Surface(
+            shape = MaterialTheme.shapes.dialog,
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier
+        ) {
+            Column {
+                Header(
+                    title = title,
+                    painter = painter,
+                    headerColor = headerColor,
+                    elevation = elevation,
+                    modifier = Modifier
+                        .nestedScroll(nestedScrollConnection)
+                        .verticalScroll(headerScrollState)
+                )
+
+                LazyColumn(
+                    modifier = modifier.nestedScroll(nestedScrollConnection),
+                    state = lazyListState,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    contentPadding = PaddingValues(NotoTheme.dimensions.medium),
+                    content = content,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun BaseDialogFragment.BottomSheetDialog(
     title: String,
     modifier: Modifier = Modifier,
@@ -44,7 +95,8 @@ fun BaseDialogFragment.BottomSheetDialog(
     val isContentScrolling by remember { derivedStateOf { contentScrollState.value > 0 } }
     val elevation by animateDpAsState(
         targetValue = if (isContentScrolling) NotoTheme.dimensions.extraSmall else 0.dp,
-        animationSpec = tween(ElevationAnimationDuration)
+        animationSpec = tween(ElevationAnimationDuration),
+        label = "BottomSheetDialog"
     )
     NotoTheme(theme = theme) {
         Surface(
@@ -69,9 +121,8 @@ fun BaseDialogFragment.BottomSheetDialog(
                         .verticalScroll(contentScrollState)
                         .padding(NotoTheme.dimensions.medium),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    content()
-                }
+                    content = content,
+                )
             }
         }
     }
