@@ -12,7 +12,10 @@ import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.filtered.FilteredItemModel
 import com.noto.app.util.Comparator
 import com.noto.app.util.isRecent
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -76,7 +79,7 @@ class MainViewModel(
             scheduled = notes.count { it.reminderDate != null },
             archived = archivedNotes.count(),
         )
-    }.shareIn(viewModelScope, SharingStarted.Eagerly, Int.MAX_VALUE)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, FilteredItemModel.NotesCount(0, 0, 0, 0))
 
     fun updateFoldersView(sortingType: FolderListSortingType, sortingOrder: SortingOrder) = viewModelScope.launch {
         settingsRepository.updateSortingType(sortingType)

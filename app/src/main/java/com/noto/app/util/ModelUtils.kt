@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.viewbinding.ViewBinding
 import com.noto.app.R
+import com.noto.app.components.FolderItem
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.LabelRepository
 import com.noto.app.folder.NoteItemModel
@@ -230,6 +231,16 @@ fun List<Folder>.countRecursively(): Int {
 fun List<Folder>.filterRecursively(predicate: (Folder) -> Boolean): List<Folder> {
     return filter(predicate).map {
         it.copy(childFolders = it.childFolders.filterRecursively(predicate))
+    }
+}
+
+fun List<Folder>.mapRecursivelyToFolderItem(depth: Int = 0, transform: (Folder, Int, List<FolderItem>) -> FolderItem): List<FolderItem> {
+    return map { folder ->
+        transform(
+            folder,
+            depth,
+            folder.childFolders.mapRecursivelyToFolderItem(depth + 1, transform)
+        )
     }
 }
 

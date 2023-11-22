@@ -2,12 +2,20 @@ package com.noto.app.components
 
 import android.annotation.SuppressLint
 import android.view.View
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyHolder
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.noto.app.R
 import com.noto.app.databinding.PlaceholderItemBinding
+import com.noto.app.theme.NotoTheme
 import com.noto.app.util.setFullSpan
 
 @SuppressLint("NonConstantResourceId")
@@ -36,4 +44,17 @@ abstract class PlaceholderItem : EpoxyModelWithHolder<PlaceholderItem.Holder>() 
             binding = PlaceholderItemBinding.bind(itemView)
         }
     }
+}
+
+@Composable
+fun PlaceholderItem(placeholder: String, modifier: Modifier = Modifier) {
+    Text(
+        text = placeholder,
+        style = MaterialTheme.typography.headlineMedium,
+        color = MaterialTheme.colorScheme.secondary,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(NotoTheme.dimensions.medium),
+    )
 }
