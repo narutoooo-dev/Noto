@@ -317,7 +317,7 @@ class MainFragment : BaseDialogFragment(isCollapsable = true) {
     }
 
     private fun MainFragmentBinding.onSwipe(viewHolder: EpoxyViewHolder, direction: Int) {
-        val folders = viewModel.folders.value.getOrDefault(emptyList())
+        val folders = viewModel.folders.value.getOrDefault(emptyList()).filterNot { it.isGeneral }
         val model = viewHolder.model as? FolderItem
         if (model != null) {
             if (direction == ItemTouchHelper.START) {
