@@ -31,10 +31,6 @@ class FolderViewModel(
 
     val folder = folderRepository.getFolderById(folderId)
         .filterNotNull()
-        .onEach { folder ->
-            mutableNotoColors.value = notoColors.value.selectNotoColor(folder.color)
-            if (folder.parentFolder != null) mutableParentFolder.value = folder.parentFolder
-        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.Default)
 
     private val mutableParentFolder = MutableStateFlow<Folder?>(null)
@@ -109,6 +105,13 @@ class FolderViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     init {
+        folder
+            .onEach { folder ->
+                mutableNotoColors.value = notoColors.value.selectNotoColor(folder.color)
+                if (folder.parentFolder != null) mutableParentFolder.value = folder.parentFolder
+            }
+            .launchIn(viewModelScope)
+
         combine(
             noteRepository.getMainNotesByFolderId(folderId)
                 .filterNotNull(),
