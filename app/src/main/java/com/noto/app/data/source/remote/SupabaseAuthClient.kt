@@ -84,9 +84,41 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
         }
     }
 
-    override suspend fun verifyEmail(email: String) {
+    override suspend fun verifySignUpOtp(email: String, otp: String) {
+        tryCatching(
+            onException = { exception ->
+                when (exception) {
+                    is RestException -> NotoException.Auth.InvalidOtp()
+                    else -> unknownException(exception.message)
+                }
+            }
+        ) {
+            client.gotrue.verifyEmailOtp(OtpType.Email.SIGNUP, email, otp)
+        }
+    }
+
+    override suspend fun verifyEmailChangeOtp(email: String, otp: String) {
+        tryCatching(
+            onException = { exception ->
+                when (exception) {
+                    is RestException -> NotoException.Auth.InvalidOtp()
+                    else -> unknownException(exception.message)
+                }
+            }
+        ) {
+            client.gotrue.verifyEmailOtp(OtpType.Email.EMAIL_CHANGE, email, otp)
+        }
+    }
+
+    override suspend fun sendSignUpOtp(email: String) {
         tryCatching {
             client.gotrue.resendEmail(OtpType.Email.SIGNUP, email)
+        }
+    }
+
+    override suspend fun sendEmailChangeOtp(email: String) {
+        tryCatching {
+            client.gotrue.resendEmail(OtpType.Email.EMAIL_CHANGE, email)
         }
     }
 
@@ -116,9 +148,9 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
         }
     }
 
-    override suspend fun get(): RemoteAuthUser {
+    override suspend fun get(): RemoteAuthUser? {
         return tryCatching {
-            client.gotrue.currentUserOrNull()!!.toRemoteAuthUser()
+            client.gotrue.currentUserOrNull()?.toRemoteAuthUser()
         }
     }
 

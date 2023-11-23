@@ -204,7 +204,7 @@ class LoginFragment : Fragment() {
                             }
 
                             NotoException.Auth.EmailNotVerified -> {
-                                navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToVerifyEmailDialogFragment())
+                                navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToVerifyEmailDialogFragment(email))
                             }
 
                             else -> {

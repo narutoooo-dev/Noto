@@ -51,15 +51,6 @@ class AppActivity : BaseActivity() {
 
     private val workManager by lazy { WorkManager.getInstance(this) }
 
-    private val currentFragment
-        get() = navHostFragment.parentFragmentManager.fragments
-            .firstOrNull { it != null && it.isVisible }
-
-    private val isVerifyEmailDialogFragment get() = navController.currentDestination?.id == R.id.verifyEmailDialogFragment
-    private val isChangeEmailDialogFragment get() = navController.currentDestination?.id == R.id.changeEmailDialogFragment
-    private val isProgressIndicatorDialogFragment get() = navController.currentDestination?.id == R.id.progressIndicatorDialogFragment
-    private val isAccountSettingsFragment get() = navController.currentDestination?.id == R.id.accountSettingsFragment
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (appViewModel.currentTheme == null) return
@@ -121,8 +112,6 @@ class AppActivity : BaseActivity() {
 
     private fun handleIntentContent() {
         when (intent?.action) {
-            Intent.ACTION_VIEW -> handleActionViewIntent(intent)
-
             Intent.ACTION_SEND -> {
                 val content = intent.getStringExtra(Intent.EXTRA_TEXT)
                 showSelectFolderDialog(content)
@@ -190,27 +179,6 @@ class AppActivity : BaseActivity() {
         }
         /** Set [intent] to null, so that the code above doesn't run again after a configuration change.*/
         intent = null
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.action == Intent.ACTION_VIEW) handleActionViewIntent(intent)
-    }
-
-    private fun handleActionViewIntent(intent: Intent) {
-        if (isVerifyEmailDialogFragment) navController.navigateUp()
-        if (isChangeEmailDialogFragment) navController.navigateUp()
-        navController.navigateSafely(NavGraphDirections.actionGlobalProgressIndicatorDialogFragment(stringResource(R.string.verifying_email)))
-        viewModel.handleDeepLinks(
-            intent = intent,
-            onSuccess = {
-                if (isProgressIndicatorDialogFragment) navController.navigateUp()
-                if (isAccountSettingsFragment) currentFragment?.view?.snackbar(stringResource(R.string.email_is_updated))
-            },
-            onFailure = { exception ->
-                currentFragment?.view?.snackbar(exception.message ?: stringResource(R.string.something_went_wrong))
-            }
-        )
     }
 
     private fun showSelectFolderDialog(content: String?) {

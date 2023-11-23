@@ -53,22 +53,24 @@ class UserRepositoryImpl(
             remoteAuthDataSource.logIn(email, encodedPassword)
             val keyData = passwordTransformer.generateKek(password.encodeToByteArray())
             keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
-            val remoteAuthUser = remoteAuthDataSource.get()
-            finishCreatingAccount(remoteAuthUser.id, remoteAuthUser.email).getOrThrow()
+            finishLogin()
         }
     }.recoverCatching { exception ->
         withContext(dispatcher) {
-            if (exception is NotoException.Auth.EmailNotVerified) remoteAuthDataSource.verifyEmail(email)
+            if (exception is NotoException.Auth.EmailNotVerified) remoteAuthDataSource.sendSignUpOtp(email)
             throw exception
         }
-    }.onFailure { throw it }
+    }
 
-    override suspend fun finishCreatingAccount(id: String, email: String): Result<Unit> = runCatching {
+    override suspend fun verifyEmail(email: String, otp: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
-            settingsRepository.updateId(id)
-            settingsRepository.updateEmail(email)
-            val user = remoteUserDataSource.getUser()
-            settingsRepository.updateName(user.name)
+            val currentEmail = remoteAuthDataSource.get()?.email
+            if (currentEmail == null || currentEmail == email) {
+                remoteAuthDataSource.verifySignUpOtp(email, otp)
+            } else {
+                remoteAuthDataSource.verifyEmailChangeOtp(email, otp)
+            }
+            finishLogin()
         }
     }
 
@@ -86,12 +88,6 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun finishUpdatingEmail(email: String): Result<Unit> = runCatching {
-        withContext(dispatcher) {
-            settingsRepository.updateEmail(email)
-        }
-    }
-
     override suspend fun logOut(): Result<Unit> = runCatching {
         withContext(dispatcher) {
             remoteAuthDataSource.logOut()
@@ -102,6 +98,14 @@ class UserRepositoryImpl(
         withContext(dispatcher) {
             remoteAuthDataSource.delete()
         }
+    }
+
+    private suspend fun finishLogin() {
+        val remoteUser = remoteUserDataSource.getUser()
+        val remoteAuthUser = remoteAuthDataSource.get()
+        settingsRepository.updateId(remoteUser.id)
+        settingsRepository.updateName(remoteUser.name)
+        remoteAuthUser?.let { settingsRepository.updateEmail(it.email) }
     }
 
 }

@@ -1,13 +1,11 @@
 package com.noto.app
 
-import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
-import com.noto.app.domain.repository.UserRepository
 import com.noto.app.util.AllFoldersId
 import com.noto.app.util.firstLineOrEmpty
 import com.noto.app.util.isGeneral
@@ -23,11 +21,9 @@ import kotlinx.coroutines.launch
  * */
 
 class AppViewModel(
-    private val userRepository: UserRepository,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val settingsRepository: SettingsRepository,
-    private val deepLinksHandler: DeepLinksHandler,
 ) : ViewModel() {
 
     val userStatus = settingsRepository.userStatus
@@ -131,23 +127,6 @@ class AppViewModel(
 
     fun setQuickNote(noteId: Long) = viewModelScope.launch {
         mutableQuickNote.value = noteRepository.getNoteById(noteId).first()
-    }
-
-    fun handleDeepLinks(intent: Intent, onSuccess: (Unit) -> Unit, onFailure: (Throwable) -> Unit) {
-        deepLinksHandler.handleDeepLinks(
-            intent = intent,
-            onFinishCreatingAccount = { id, email ->
-                viewModelScope.launch {
-                    userRepository.finishCreatingAccount(id, email).onSuccess(onSuccess).onFailure(onFailure)
-                    settingsRepository.updateUserStatus(UserStatus.LoggedIn)
-                }
-            },
-            onFinishUpdatingEmail = { email ->
-                viewModelScope.launch {
-                    userRepository.finishUpdatingEmail(email).onSuccess(onSuccess).onFailure(onFailure)
-                }
-            }
-        ).onFailure(onFailure)
     }
 
     fun setNotificationPermissionResult(isGranted: Boolean?) {

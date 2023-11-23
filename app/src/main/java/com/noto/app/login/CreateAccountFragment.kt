@@ -305,7 +305,7 @@ class CreateAccountFragment : Fragment() {
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
 
-                        navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToVerifyEmailDialogFragment())
+                        navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToVerifyEmailDialogFragment(email))
                     },
                     onFailure = { exception ->
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)

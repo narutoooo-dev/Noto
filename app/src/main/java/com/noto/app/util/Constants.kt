@@ -35,6 +35,7 @@ object Constants {
     const val DeleteAccount = "delete_account"
 
     const val NameMaxLength = 32
+    const val OtpMaxLength = 6
 
     object Regex {
         val Email = Regex(".+@.+\\..+")

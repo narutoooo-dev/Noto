@@ -10,6 +10,7 @@ sealed class NotoException(message: String?) : RuntimeException(message) {
         data object InvalidCredentials : Auth()
         data object InvalidEmail : Auth()
         data object InvalidPassword : Auth()
+        data object InvalidOtp: Auth()
     }
 
     sealed class Entity : NotoException(message = null) {

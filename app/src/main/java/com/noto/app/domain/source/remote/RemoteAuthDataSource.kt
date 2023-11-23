@@ -12,13 +12,19 @@ interface RemoteAuthDataSource {
 
     suspend fun logIn(email: String, password: String)
 
-    suspend fun verifyEmail(email: String)
+    suspend fun verifySignUpOtp(email: String, otp: String)
+
+    suspend fun verifyEmailChangeOtp(email: String, otp: String)
+
+    suspend fun sendSignUpOtp(email: String)
+
+    suspend fun sendEmailChangeOtp(email: String)
 
     suspend fun isEmailExist(email: String): Boolean
 
     suspend fun updateEmail(email: String)
 
-    suspend fun get(): RemoteAuthUser
+    suspend fun get(): RemoteAuthUser?
 
     suspend fun retrieve(): RemoteAuthUser
 

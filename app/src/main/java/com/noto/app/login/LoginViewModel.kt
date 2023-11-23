@@ -8,6 +8,7 @@ import com.noto.app.domain.model.UserStatus
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
 import com.noto.app.toUiState
+import com.noto.app.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -32,6 +33,9 @@ class LoginViewModel(
     private val mutableConfirmPassword = MutableStateFlow("")
     val confirmPassword get() = mutableConfirmPassword.asStateFlow()
 
+    private val mutableOtp = MutableStateFlow("")
+    val otp get() = mutableOtp.asStateFlow()
+
     private val mutableNameStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
     val nameStatus get() = mutableNameStatus.asStateFlow()
 
@@ -44,6 +48,9 @@ class LoginViewModel(
     private val mutableConfirmPasswordStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
     val confirmPasswordStatus get() = mutableConfirmPasswordStatus.asStateFlow()
 
+    private val mutableOtpStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
+    val otpStatus get() = mutableOtpStatus.asStateFlow()
+
     fun createAccount(name: String, email: String, password: String) = viewModelScope.launch {
         mutableState.value = UiState.Loading
         mutableState.value = userRepository.createAccount(name, email, password)
@@ -53,6 +60,13 @@ class LoginViewModel(
     fun logIn(email: String, password: String) = viewModelScope.launch {
         mutableState.value = UiState.Loading
         mutableState.value = userRepository.logIn(email, password)
+            .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
+            .toUiState()
+    }
+
+    fun verifyEmail(email: String, otp: String) = viewModelScope.launch {
+        mutableState.value = UiState.Loading
+        mutableState.value = userRepository.verifyEmail(email, otp)
             .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
             .toUiState()
     }
@@ -73,6 +87,13 @@ class LoginViewModel(
         mutableConfirmPassword.value = confirmPassword
     }
 
+    fun setOtp(otp: String) {
+        if (otp.length <= Constants.OtpMaxLength) {
+            mutableOtp.value = otp
+            setOtpStatus(TextFieldStatus.Empty)
+        }
+    }
+
     fun setNameStatus(status: TextFieldStatus) {
         mutableNameStatus.value = status
     }
@@ -87,6 +108,10 @@ class LoginViewModel(
 
     fun setConfirmPasswordStatus(status: TextFieldStatus) {
         mutableConfirmPasswordStatus.value = status
+    }
+
+    fun setOtpStatus(status: TextFieldStatus) {
+        mutableOtpStatus.value = status
     }
 
 }

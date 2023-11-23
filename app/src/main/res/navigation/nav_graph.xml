@@ -825,7 +825,11 @@
     <dialog
         android:id="@+id/verifyEmailDialogFragment"
         android:name="com.noto.app.login.VerifyEmailDialogFragment"
-        android:label="VerifyEmailDialogFragment" />
+        android:label="VerifyEmailDialogFragment" >
+        <argument
+            android:name="email"
+            app:argType="string" />
+    </dialog>
     <fragment
         android:id="@+id/startFragment"
         android:name="com.noto.app.StartFragment"

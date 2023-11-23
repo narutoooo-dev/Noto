@@ -94,7 +94,11 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
 
-                        navController?.navigateSafely(ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToVerifyEmailDialogFragment())
+                        navController?.navigateSafely(
+                            ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToVerifyEmailDialogFragment(
+                                email
+                            )
+                        )
                     },
                     onFailure = { exception ->
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)

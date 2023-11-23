@@ -711,7 +711,10 @@
     <string name="email_not_verified">Email is not verified. Please try to create account again.</string>
     <string name="verify_email">Verify email</string>
     <string name="verifying_email">Verifying email…</string>
-    <string name="verify_email_info">Verification email has been sent to your Inbox.\n\nMake sure to check Junk and Spam folders if you can\'t find in the Inbox folder.</string>
+    <string name="verify_email_info">A one-time passcode has been sent to the email you have provided.\n\nMake sure to check Junk and Spam folders if you can\'t find in the Inbox folder.\n\nPlease enter the code below.</string>
+    <string name="one_time_passcode">One-time passcode</string>
+    <string name="one_time_passcode_is_invalid">One-time passcode is invalid.</string>
+    <string name="one_time_passcode_is_required">One-time passcode is required.</string>
     <string name="open_inbox">Open Inbox</string>
     <string name="edit_email">Edit email</string>
     <string name="change_email">Change email</string>

@@ -41,6 +41,10 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +70,7 @@ val appModule = module {
 
     viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
-    viewModel { AppViewModel(get(), get(), get(), get(), get()) }
+    viewModel { AppViewModel(get(), get(), get()) }
 
     viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), androidApplication()) }
 
@@ -134,10 +138,10 @@ val remoteDataSourceModule = module {
             defaultSerializer = KotlinXSerializer(JsonConfigs.Remote)
             httpConfig {
                 if (BuildConfig.DEBUG) {
-//                    Logging {
-//                        level = LogLevel.ALL
-//                        logger = Logger.SIMPLE
-//                    }
+                    Logging {
+                        level = LogLevel.ALL
+                        logger = Logger.SIMPLE
+                    }
                 }
             }
             install(GoTrue) {
