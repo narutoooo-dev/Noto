@@ -6,8 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import com.noto.app.theme.NotoTheme
 
 @Composable
@@ -54,37 +52,15 @@ fun TextButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
-    contentPadding: PaddingValues = PaddingValues(NotoTheme.dimensions.medium),
-    style: TextStyle = MaterialTheme.typography.titleSmall,
+    contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     TextButton(
         onClick = onClick,
         modifier = modifier,
         shape = MaterialTheme.shapes.small,
-        contentPadding = contentPadding,
-        colors = colors,
+        contentPadding = PaddingValues(NotoTheme.dimensions.medium),
+        colors = ButtonDefaults.textButtonColors(contentColor = contentColor),
     ) {
-        Text(text, style = style)
-    }
-}
-
-@Composable
-fun TextButton(
-    text: AnnotatedString,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
-    contentPadding: PaddingValues = PaddingValues(NotoTheme.dimensions.medium),
-    style: TextStyle = MaterialTheme.typography.titleSmall,
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier,
-        shape = MaterialTheme.shapes.small,
-        contentPadding = contentPadding,
-        colors = colors,
-    ) {
-        Text(text, style = style)
+        Text(text, style = MaterialTheme.typography.titleMedium)
     }
 }
