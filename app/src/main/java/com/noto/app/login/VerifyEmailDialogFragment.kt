@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
 import com.noto.app.components.*
+import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
@@ -121,11 +122,17 @@ class VerifyEmailDialogFragment : BaseDialogFragment() {
                             }
                         }
                     },
-                    onFailure = {
+                    onFailure = { exception ->
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
-
-                        viewModel.setOtpStatus(TextFieldStatus.Error(R.string.one_time_passcode_is_invalid))
+                        when (exception) {
+                            is NotoException.Auth.InvalidOtp -> {
+                                viewModel.setOtpStatus(TextFieldStatus.Error(R.string.one_time_passcode_is_invalid))
+                            }
+                            else -> {
+                                TODO()
+                            }
+                        }
                     },
                 )
             }

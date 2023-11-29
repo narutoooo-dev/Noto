@@ -19,15 +19,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.components.BottomSheetDialog
-import com.noto.app.components.Button
-import com.noto.app.components.NotoTextField
-import com.noto.app.components.TextFieldStatus
+import com.noto.app.components.*
+import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.Constants
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely
 import com.noto.app.util.snackbar
@@ -51,12 +47,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
                 BottomSheetDialog(title = stringResource(id = R.string.edit_name)) {
                     NotoTextField(
                         value = name,
-                        onValueChange = {
-                            if (it.length <= Constants.NameMaxLength) {
-                                viewModel.setName(it)
-                            }
-                            viewModel.setNameStatus(TextFieldStatus.Empty)
-                        },
+                        onValueChange = viewModel::setName,
                         placeholder = stringResource(id = R.string.name),
                         leadingIcon = {
                             Icon(
@@ -76,13 +67,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
 
                     Button(
                         text = stringResource(id = R.string.update_name),
-                        onClick = {
-                            if (name.isBlank()) {
-                                viewModel.setNameStatus(TextFieldStatus.Error(R.string.name_is_required))
-                            } else {
-                                viewModel.updateName()
-                            }
-                        },
+                        onClick = viewModel::updateName,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -102,11 +87,19 @@ class EditNameDialogFragment : BaseDialogFragment() {
                             navController?.navigateUp()
                         }
                     },
-                    onFailure = {
-                        parentFragment?.view?.snackbar(stringResource(R.string.something_went_wrong))
-                        SideEffect {
-                            navController?.navigateUp()
-                            navController?.navigateUp()
+                    onFailure = { exception ->
+                        when (exception) {
+                            NotoException.Model.NameIsRequired -> {
+                                viewModel.setNameStatus(TextFieldStatus.Error(R.string.name_is_required))
+                            }
+
+                            else -> {
+                                parentFragment?.view?.snackbar(stringResource(R.string.something_went_wrong))
+                                SideEffect {
+                                    navController?.navigateUp()
+                                    navController?.navigateUp()
+                                }
+                            }
                         }
                     }
                 )

@@ -27,8 +27,12 @@ import com.noto.app.domain.source.remote.RemoteNoteDataSource
 import com.noto.app.domain.source.remote.RemoteUserDataSource
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
+import com.noto.app.folder.NewFolderViewModel
 import com.noto.app.label.LabelViewModel
+import com.noto.app.label.NewLabelViewModel
+import com.noto.app.login.CreateAccountViewModel
 import com.noto.app.login.LoginViewModel
+import com.noto.app.login.VerifyEmailViewModel
 import com.noto.app.main.MainViewModel
 import com.noto.app.note.NotePagerViewModel
 import com.noto.app.note.NoteViewModel
@@ -85,6 +89,14 @@ val appModule = module {
     viewModel { FilteredViewModel(get(), get(), get(), it.get()) }
 
     viewModel { LoginViewModel(get(), get()) }
+
+    viewModel { CreateAccountViewModel(get()) }
+
+    viewModel { VerifyEmailViewModel(get(), get(), it.get()) }
+
+    viewModel { NewFolderViewModel(get(), get()) }
+
+    viewModel { NewLabelViewModel(get(), get(), it[0], it[1]) }
 
 }
 

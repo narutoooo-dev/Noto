@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
+import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
@@ -38,7 +39,7 @@ class LoginViewModel(
         val isInputValid = checkIsInputValid()
         if (isInputValid) {
             mutableState.value = UiState.Loading
-            userRepository.logIn(email.value, password.value)
+            mutableState.value = userRepository.logIn(email.value, password.value)
                 .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
                 .toUiState()
         }

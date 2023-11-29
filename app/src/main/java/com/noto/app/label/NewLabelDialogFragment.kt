@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,13 +24,14 @@ import com.noto.app.R
 import com.noto.app.components.*
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
+import com.noto.app.theme.NotoTheme
 import com.noto.app.theme.toColor
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class NewLabelDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<LabelViewModel> { parametersOf(args.folderId, args.labelId) }
+    private val viewModel by viewModel<NewLabelViewModel> { parametersOf(args.folderId, args.labelId) }
 
     private val args by navArgs<NewLabelDialogFragmentArgs>()
 
@@ -62,6 +65,8 @@ class NewLabelDialogFragment : BaseDialogFragment() {
                         status = titleStatus,
                     )
 
+                    Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
+
                     Button(
                         text = if (args.labelId == 0L) stringResource(id = R.string.create_label) else stringResource(id = R.string.update_label),
                         onClick = viewModel::createOrUpdateLabel,
@@ -80,6 +85,8 @@ class NewLabelDialogFragment : BaseDialogFragment() {
                                     focusRequester.requestFocus()
                                     viewModel.setTitleStatus(TextFieldStatus.Error(R.string.title_is_required))
                                 }
+
+                                else -> {}
                             }
                         }
                     )

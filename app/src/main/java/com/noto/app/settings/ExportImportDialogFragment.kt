@@ -87,15 +87,15 @@ class ExportImportDialogFragment : BaseDialogFragment() {
 
                 is UiState.Failure -> {
                     when (state.exception) {
-                        NotoException.ExportImport.ExportFailed -> {
+                        NotoException.Export.ExportFailed -> {
                             parentView?.snackbar(context.stringResource(R.string.exporting_failed), R.drawable.ic_round_error_24)
                         }
 
-                        NotoException.ExportImport.FileCreationFailed -> {
+                        NotoException.Export.FileCreationFailed -> {
                             parentView?.snackbar(context.stringResource(R.string.create_file_failed), R.drawable.ic_round_error_24)
                         }
 
-                        NotoException.ExportImport.NoFolderSelected -> {
+                        NotoException.Export.NoFolderSelected -> {
                             parentView?.snackbar(context.stringResource(R.string.no_folder_is_selected), R.drawable.ic_round_warning_24)
                         }
 
@@ -134,11 +134,11 @@ class ExportImportDialogFragment : BaseDialogFragment() {
 
                 is UiState.Failure -> {
                     when (state.exception) {
-                        NotoException.ExportImport.ImportFailed -> {
+                        NotoException.Import.ImportFailed -> {
                             parentView?.snackbar(context.stringResource(R.string.importing_failed), R.drawable.ic_round_error_24)
                         }
 
-                        NotoException.ExportImport.NoFileSelected -> {
+                        NotoException.Import.NoFileSelected -> {
                             parentView?.snackbar(context.stringResource(R.string.no_file_is_selected), R.drawable.ic_round_warning_24)
                         }
 

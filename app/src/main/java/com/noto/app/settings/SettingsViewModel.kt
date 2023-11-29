@@ -5,12 +5,14 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.*
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.toUiState
+import com.noto.app.util.Constants
 import com.noto.app.util.hash
 import com.noto.app.util.readText
 import com.noto.app.util.writeText
@@ -145,38 +147,38 @@ class SettingsViewModel(
 
     fun exportData(uri: Uri?) = viewModelScope.launch {
         mutableExportState.value = UiState.Loading
-        if (uri != null) {
+        mutableExportState.value = if (uri != null) {
             val documentFile = DocumentFile.fromTreeUri(application, uri)?.createFile(JsonFileType, FileName)
             if (documentFile != null) {
                 val outputStream = application.contentResolver?.openOutputStream(documentFile.uri)
                 if (outputStream != null) {
                     val data = settingsRepository.exportNotoData()
                     outputStream.writeText(data)
-                    mutableExportState.value = UiState.Success(documentFile.uri)
+                    UiState.Success(documentFile.uri)
                 } else {
-                    mutableExportState.value = UiState.Failure(NotoException.ExportImport.ExportFailed)
+                    UiState.Failure(NotoException.Export.ExportFailed)
                 }
             } else {
-                mutableExportState.value = UiState.Failure(NotoException.ExportImport.FileCreationFailed)
+                UiState.Failure(NotoException.Export.FileCreationFailed)
             }
         } else {
-            mutableExportState.value = UiState.Failure(NotoException.ExportImport.NoFolderSelected)
+            UiState.Failure(NotoException.Export.NoFolderSelected)
         }
     }
 
     fun importData(uri: Uri?) = viewModelScope.launch {
         mutableImportState.value = UiState.Loading
-        if (uri != null) {
+        mutableImportState.value = if (uri != null) {
             val inputStream = application.contentResolver?.openInputStream(uri)
             if (inputStream != null) {
                 val data = inputStream.readText()
                 settingsRepository.importNotoData(data)
-                mutableImportState.value = UiState.Success(Unit)
+                UiState.Success(Unit)
             } else {
-                mutableImportState.value = UiState.Failure(NotoException.ExportImport.ImportFailed)
+                UiState.Failure(NotoException.Import.ImportFailed)
             }
         } else {
-            mutableImportState.value = UiState.Failure(NotoException.ExportImport.NoFileSelected)
+            UiState.Failure(NotoException.Import.NoFileSelected)
         }
     }
 
@@ -250,7 +252,8 @@ class SettingsViewModel(
     }
 
     fun setName(name: String) {
-        mutableName.value = name
+        if (name.length <= Constants.NameMaxLength) mutableName.value = name
+        mutableNameStatus.value = TextFieldStatus.Empty
     }
 
     fun setNameStatus(status: TextFieldStatus) {
@@ -258,8 +261,12 @@ class SettingsViewModel(
     }
 
     fun updateName() = viewModelScope.launch {
-        mutableNameState.value = UiState.Loading
-        mutableNameState.value = userRepository.updateName(name.value.trim()).toUiState()
+        if (name.value.isNotBlank()) {
+            mutableNameState.value = UiState.Loading
+            mutableNameState.value = userRepository.updateName(name.value.trim()).toUiState()
+        } else {
+            mutableNameState.value = UiState.Failure(NotoException.Model.NameIsRequired)
+        }
     }
 
     fun setEmail(email: String) {
@@ -271,8 +278,12 @@ class SettingsViewModel(
     }
 
     fun updateEmail() = viewModelScope.launch {
-        mutableEmailState.value = UiState.Loading
-        mutableEmailState.value = userRepository.updateEmail(email.value.trim()).toUiState()
+        if (!email.value.matches(Constants.Regex.Email) || email.value.any { it.isWhitespace() }) {
+            mutableEmailState.value = UiState.Failure(NotoException.Auth.InvalidEmail)
+        } else {
+            mutableEmailState.value = UiState.Loading
+            mutableEmailState.value = userRepository.updateEmail(email.value.trim()).toUiState()
+        }
     }
 
     fun logOutUser() = viewModelScope.launch {

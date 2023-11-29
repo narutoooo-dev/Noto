@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
+import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.repository.UserRepository
 import com.noto.app.toUiState
 import com.noto.app.util.Constants

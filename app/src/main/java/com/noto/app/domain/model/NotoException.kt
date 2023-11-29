@@ -1,10 +1,10 @@
 package com.noto.app.domain.model
 
-sealed class NotoException(message: String?) : RuntimeException(message) {
+sealed class NotoException(message: String? = null) : RuntimeException(message) {
 
     operator fun invoke(): Nothing = throw this
 
-    sealed class Auth : NotoException(message = null) {
+    sealed class Auth : NotoException() {
         data object UserAlreadyExists : Auth()
         data object EmailNotVerified : Auth()
         data object InvalidCredentials : Auth()
@@ -13,24 +13,28 @@ sealed class NotoException(message: String?) : RuntimeException(message) {
         data object InvalidOtp : Auth()
     }
 
-    sealed class Entity : NotoException(message = null) {
+    sealed class Entity : NotoException() {
         data object InvalidLocalItem : Entity()
         data object MissingRemoteId : Entity()
     }
 
-    sealed class Model : NotoException(message = null) {
+    sealed class Model : NotoException() {
         data object TitleIsRequired : Model()
+        data object NameIsRequired: Model()
+    }
+
+    sealed class Export : NotoException() {
+        data object ExportFailed : Export()
+        data object FileCreationFailed : Export()
+        data object NoFolderSelected : Export()
+    }
+
+    sealed class Import : NotoException() {
+        data object ImportFailed : Import()
+        data object NoFileSelected : Import()
     }
 
     data object TryAgainLater : NotoException(message = null)
-
-    sealed class ExportImport : NotoException(message = null) {
-        data object ExportFailed : ExportImport()
-        data object ImportFailed : ExportImport()
-        data object FileCreationFailed : ExportImport()
-        data object NoFolderSelected : ExportImport()
-        data object NoFileSelected : ExportImport()
-    }
 
     class Unknown(message: String?) : NotoException(message)
 

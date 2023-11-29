@@ -42,7 +42,7 @@ import org.koin.core.parameter.parametersOf
 
 class NewFolderFragment : Fragment() {
 
-    private val viewModel by viewModel<FolderViewModel> { parametersOf(args.folderId) }
+    private val viewModel by viewModel<NewFolderViewModel> { parametersOf(args.folderId) }
 
     private val args by navArgs<NewFolderFragmentArgs>()
 
@@ -226,6 +226,8 @@ class NewFolderFragment : Fragment() {
                                     focusRequester.requestFocus()
                                     viewModel.setTitleStatus(TextFieldStatus.Error(R.string.title_is_required))
                                 }
+
+                                else -> {}
                             }
                         },
                         onSuccess = { folderId ->

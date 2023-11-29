@@ -71,13 +71,7 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
 
                     Button(
                         text = stringResource(id = R.string.update_email),
-                        onClick = {
-                            if (!email.matches(Constants.Regex.Email) || email.any { it.isWhitespace() }) {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-                            } else {
-                                viewModel.updateEmail()
-                            }
-                        },
+                        onClick = viewModel::updateEmail,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

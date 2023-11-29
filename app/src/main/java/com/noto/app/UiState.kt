@@ -1,12 +1,13 @@
 package com.noto.app
 
 import com.noto.app.UiState.*
+import com.noto.app.domain.model.NotoException
 
 sealed interface UiState<out T> {
     data object Empty : UiState<Nothing>
     data object Loading : UiState<Nothing>
     data class Success<T>(val value: T) : UiState<T>
-    data class Failure(val exception: Throwable) : UiState<Nothing>
+    data class Failure(val exception: NotoException) : UiState<Nothing>
 
     val isEmpty: Boolean
         get() = this is Empty
@@ -39,7 +40,7 @@ inline fun <T> UiState<T>.fold(
     onEmpty: () -> Unit = {},
     onLoading: () -> Unit = {},
     onSuccess: (T) -> Unit = {},
-    onFailure: (Throwable) -> Unit = {},
+    onFailure: (NotoException) -> Unit = {},
 ): UiState<T> {
     when (this) {
         is Empty -> onEmpty()
@@ -52,5 +53,5 @@ inline fun <T> UiState<T>.fold(
 
 fun <T> Result<T>.toUiState() = fold(
     onSuccess = { Success(it) },
-    onFailure = { Failure(it) },
+    onFailure = { Failure(it as? NotoException ?: NotoException.Unknown(it.message)) },
 )

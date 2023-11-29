@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
+import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
@@ -32,7 +33,7 @@ class VerifyEmailViewModel(
     fun verifyEmail() = viewModelScope.launch {
         if (otp.value.isNotBlank()) {
             mutableState.value = UiState.Loading
-            userRepository.verifyEmail(email, otp.value)
+            mutableState.value = userRepository.verifyEmail(email, otp.value)
                 .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
                 .toUiState()
         } else {
