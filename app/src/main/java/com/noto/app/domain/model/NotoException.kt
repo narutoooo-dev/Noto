@@ -10,22 +10,26 @@ sealed class NotoException(message: String?) : RuntimeException(message) {
         data object InvalidCredentials : Auth()
         data object InvalidEmail : Auth()
         data object InvalidPassword : Auth()
-        data object InvalidOtp: Auth()
+        data object InvalidOtp : Auth()
     }
 
     sealed class Entity : NotoException(message = null) {
         data object InvalidLocalItem : Entity()
-        data object MissingRemoteId: Entity()
+        data object MissingRemoteId : Entity()
+    }
+
+    sealed class Model : NotoException(message = null) {
+        data object TitleIsRequired : Model()
     }
 
     data object TryAgainLater : NotoException(message = null)
 
-    sealed class ExportImport: NotoException(message = null) {
-        data object ExportFailed: ExportImport()
-        data object ImportFailed: ExportImport()
-        data object FileCreationFailed: ExportImport()
-        data object NoFolderSelected: ExportImport()
-        data object NoFileSelected: ExportImport()
+    sealed class ExportImport : NotoException(message = null) {
+        data object ExportFailed : ExportImport()
+        data object ImportFailed : ExportImport()
+        data object FileCreationFailed : ExportImport()
+        data object NoFolderSelected : ExportImport()
+        data object NoFileSelected : ExportImport()
     }
 
     class Unknown(message: String?) : NotoException(message)

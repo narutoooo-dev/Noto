@@ -28,10 +28,11 @@ import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class VerifyEmailDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<LoginViewModel>()
+    private val viewModel by viewModel<VerifyEmailViewModel> { parametersOf(args.email) }
 
     private val args by navArgs<VerifyEmailDialogFragmentArgs>()
 
@@ -87,13 +88,7 @@ class VerifyEmailDialogFragment : BaseDialogFragment() {
 
                     Button(
                         text = stringResource(id = R.string.verify_email),
-                        onClick = {
-                            if (otp.isNotBlank()) {
-                                viewModel.verifyEmail(args.email, otp)
-                            } else {
-                                viewModel.setOtpStatus(TextFieldStatus.Error(R.string.one_time_passcode_is_required))
-                            }
-                        },
+                        onClick = viewModel::verifyEmail,
                         modifier = Modifier.fillMaxWidth(),
                     )
 

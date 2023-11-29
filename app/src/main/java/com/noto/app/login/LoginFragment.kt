@@ -31,7 +31,10 @@ import com.noto.app.components.*
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.*
+import com.noto.app.util.navController
+import com.noto.app.util.navigateSafely
+import com.noto.app.util.setupMixedTransitions
+import com.noto.app.util.toAnnotatedString
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment() {
@@ -84,27 +87,10 @@ class LoginFragment : Fragment() {
 
                         NotoTextField(
                             value = email,
-                            onValueChange = { email ->
-                                viewModel.setEmail(email)
-                                if (email.isNotBlank()) {
-                                    val isEmailValid = Constants.Regex.matchesEmail(email)
-                                    if (isEmailValid) {
-                                        viewModel.setEmailStatus(TextFieldStatus.Empty)
-                                    } else if (emailStatus.isError) {
-                                        viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-                                    }
-                                } else {
-                                    viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_required))
-                                }
-                            },
+                            onValueChange = viewModel::setEmail,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .onFocusChanged { focusState ->
-                                    if (!focusState.isFocused && email.isNotBlank()) {
-                                        val isEmailValid = Constants.Regex.matchesEmail(email)
-                                        if (!isEmailValid) viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-                                    }
-                                },
+                                .onFocusChanged { focusState -> if (!focusState.isFocused) viewModel.validateEmail() },
                             placeholder = stringResource(id = R.string.email),
                             leadingIcon = {
                                 Icon(
@@ -123,14 +109,7 @@ class LoginFragment : Fragment() {
 
                         NotoPasswordTextField(
                             value = password,
-                            onValueChange = { password ->
-                                viewModel.setPassword(password)
-                                if (password.isNotBlank()) {
-                                    viewModel.setPasswordStatus(TextFieldStatus.Empty)
-                                } else {
-                                    viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_required))
-                                }
-                            },
+                            onValueChange = viewModel::setPassword,
                             modifier = Modifier.fillMaxWidth(),
                             status = passwordStatus,
                             keyboardOptions = KeyboardOptions.Password.copy(imeAction = ImeAction.Done),
@@ -153,10 +132,7 @@ class LoginFragment : Fragment() {
 
                         Button(
                             text = stringResource(id = R.string.log_in),
-                            onClick = {
-                                val isInputValid = checkIsInputValid(email, password)
-                                if (isInputValid) viewModel.logIn(email, password)
-                            },
+                            onClick = viewModel::logIn,
                             modifier = Modifier.fillMaxWidth(),
                         )
 
@@ -228,20 +204,5 @@ class LoginFragment : Fragment() {
                 )
             }
         }
-    }
-
-    private fun checkIsInputValid(email: String, password: String): Boolean {
-        val isEmailValid = Constants.Regex.matchesEmail(email)
-        val isPasswordValid = password.isNotBlank()
-
-        if (email.isBlank()) {
-            viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_required))
-        } else {
-            if (!isEmailValid) viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-        }
-
-        if (!isPasswordValid) viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_required))
-
-        return isEmailValid && isPasswordValid
     }
 }

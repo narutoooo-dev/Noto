@@ -38,7 +38,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateAccountFragment : Fragment() {
 
-    private val viewModel by viewModel<LoginViewModel>()
+    private val viewModel by viewModel<CreateAccountViewModel>()
 
     @OptIn(ExperimentalTextApi::class)
     override fun onCreateView(
@@ -96,16 +96,7 @@ class CreateAccountFragment : Fragment() {
 
                         NotoTextField(
                             value = name,
-                            onValueChange = { name ->
-                                if (name.length <= Constants.NameMaxLength) {
-                                    viewModel.setName(name)
-                                }
-                                if (name.isNotBlank()) {
-                                    viewModel.setNameStatus(TextFieldStatus.Empty)
-                                } else {
-                                    viewModel.setNameStatus(TextFieldStatus.Error(R.string.name_is_required))
-                                }
-                            },
+                            onValueChange = viewModel::setName,
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = stringResource(id = R.string.name),
                             leadingIcon = {
@@ -125,27 +116,10 @@ class CreateAccountFragment : Fragment() {
 
                         NotoTextField(
                             value = email,
-                            onValueChange = { email ->
-                                viewModel.setEmail(email)
-                                if (email.isNotBlank()) {
-                                    val isEmailValid = Constants.Regex.matchesEmail(email)
-                                    if (isEmailValid) {
-                                        viewModel.setEmailStatus(TextFieldStatus.Empty)
-                                    } else if (emailStatus.isError) {
-                                        viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-                                    }
-                                } else {
-                                    viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_required))
-                                }
-                            },
+                            onValueChange = viewModel::setEmail,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .onFocusChanged { focusState ->
-                                    if (!focusState.isFocused && email.isNotBlank()) {
-                                        val isEmailValid = Constants.Regex.matchesEmail(email)
-                                        if (!isEmailValid) viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-                                    }
-                                },
+                                .onFocusChanged { focusState -> if (!focusState.isFocused) viewModel.validateEmail() },
                             placeholder = stringResource(id = R.string.email),
                             leadingIcon = {
                                 Icon(
@@ -164,35 +138,10 @@ class CreateAccountFragment : Fragment() {
 
                         NotoPasswordTextField(
                             value = password,
-                            onValueChange = { password ->
-                                viewModel.setPassword(password)
-                                if (password.isNotBlank()) {
-                                    val isPasswordValid = Constants.Regex.matchesPassword(password)
-                                    if (isPasswordValid) {
-                                        viewModel.setPasswordStatus(TextFieldStatus.Empty)
-                                    } else if (passwordStatus.isError) {
-                                        viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_invalid_requirements))
-                                    }
-                                    if (confirmPassword.isNotBlank()) {
-                                        val isConfirmPasswordValid = confirmPassword == password
-                                        if (isConfirmPasswordValid) {
-                                            viewModel.setConfirmPasswordStatus(TextFieldStatus.Empty)
-                                        } else {
-                                            viewModel.setConfirmPasswordStatus(TextFieldStatus.Error(R.string.confirm_password_is_invalid))
-                                        }
-                                    }
-                                } else {
-                                    viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_required))
-                                }
-                            },
+                            onValueChange = viewModel::setPassword,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .onFocusChanged { focusState ->
-                                    if (!focusState.isFocused && password.isNotBlank()) {
-                                        val isPasswordValid = Constants.Regex.matchesPassword(password)
-                                        if (!isPasswordValid) viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_invalid_requirements))
-                                    }
-                                },
+                                .onFocusChanged { focusState -> if (!focusState.isFocused) viewModel.validatePassword() },
                             status = passwordStatus,
                             isPasswordVisible = isPasswordVisible,
                         )
@@ -201,28 +150,10 @@ class CreateAccountFragment : Fragment() {
 
                         NotoPasswordTextField(
                             value = confirmPassword,
-                            onValueChange = { confirmPassword ->
-                                viewModel.setConfirmPassword(confirmPassword)
-                                if (confirmPassword.isNotBlank()) {
-                                    val isConfirmPasswordValid = confirmPassword == password
-                                    if (isConfirmPasswordValid) {
-                                        viewModel.setConfirmPasswordStatus(TextFieldStatus.Empty)
-                                    } else if (confirmPasswordStatus.isError) {
-                                        viewModel.setConfirmPasswordStatus(TextFieldStatus.Error(R.string.confirm_password_is_invalid))
-                                    }
-                                } else {
-                                    viewModel.setConfirmPasswordStatus(TextFieldStatus.Error(R.string.confirm_password_is_required))
-                                }
-                            },
+                            onValueChange = viewModel::setConfirmPassword,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .onFocusChanged { focusState ->
-                                    if (!focusState.isFocused && confirmPassword.isNotBlank()) {
-                                        val isConfirmPasswordValid = confirmPassword == password
-                                        if (!isConfirmPasswordValid)
-                                            viewModel.setConfirmPasswordStatus(TextFieldStatus.Error(R.string.confirm_password_is_invalid))
-                                    }
-                                },
+                                .onFocusChanged { focusState -> if (!focusState.isFocused) viewModel.validateConfirmPassword() },
                             placeholder = stringResource(id = R.string.confirm_password),
                             status = confirmPasswordStatus,
                             keyboardOptions = KeyboardOptions.Password.copy(imeAction = ImeAction.Done),
@@ -242,9 +173,7 @@ class CreateAccountFragment : Fragment() {
                             style = MaterialTheme.typography.labelLarge.copy(textDecoration = TextDecoration.Underline, textAlign = TextAlign.End),
                             onClick = {
                                 navController?.navigateSafely(
-                                    CreateAccountFragmentDirections.actionCreateAccountFragmentToPasswordRequirementsDialogFragment(
-                                        password
-                                    )
+                                    CreateAccountFragmentDirections.actionCreateAccountFragmentToPasswordRequirementsDialogFragment(password)
                                 )
                             }
                         )
@@ -253,10 +182,7 @@ class CreateAccountFragment : Fragment() {
 
                         Button(
                             text = stringResource(id = R.string.create_account),
-                            onClick = {
-                                val isInputValid = checkIsInputValid(name, email, password, confirmPassword)
-                                if (isInputValid) viewModel.createAccount(name, email, password)
-                            },
+                            onClick = viewModel::createAccount,
                             modifier = Modifier.fillMaxWidth(),
                             contentColor = Color.White,
                         )
@@ -270,11 +196,12 @@ class CreateAccountFragment : Fragment() {
                                 color = MaterialTheme.colorScheme.secondary,
                                 textAlign = TextAlign.Center,
                             ),
-                        ) { offset ->
-                            accountAgreementAnnotatedString.getUrlAnnotations(offset, offset).firstOrNull()?.let {
-                                uriHandler.openUri(it.item.url)
+                            onClick = { offset ->
+                                accountAgreementAnnotatedString.getUrlAnnotations(offset, offset).firstOrNull()?.let {
+                                    uriHandler.openUri(it.item.url)
+                                }
                             }
-                        }
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge * 2))
@@ -351,34 +278,5 @@ class CreateAccountFragment : Fragment() {
                 )
             }
         }
-    }
-
-    private fun checkIsInputValid(name: String, email: String, password: String, confirmPassword: String): Boolean {
-        val isNameValid = name.isNotBlank()
-        val isEmailValid = Constants.Regex.matchesEmail(email)
-        val isPasswordValid = Constants.Regex.matchesPassword(password)
-        val isConfirmPasswordValid = confirmPassword == password
-
-        if (name.isBlank()) viewModel.setNameStatus(TextFieldStatus.Error(R.string.name_is_required))
-
-        if (email.isBlank()) {
-            viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_required))
-        } else {
-            if (!isEmailValid) viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-        }
-
-        if (password.isBlank()) {
-            viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_required))
-        } else {
-            if (!isPasswordValid) viewModel.setPasswordStatus(TextFieldStatus.Error(R.string.password_is_invalid_requirements))
-        }
-
-        if (confirmPassword.isBlank()) {
-            viewModel.setConfirmPasswordStatus(TextFieldStatus.Error(R.string.confirm_password_is_required))
-        } else {
-            if (!isConfirmPasswordValid) viewModel.setConfirmPasswordStatus(TextFieldStatus.Error(R.string.confirm_password_is_invalid))
-        }
-
-        return isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid
     }
 }
