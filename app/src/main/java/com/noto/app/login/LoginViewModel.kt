@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
-import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
+import com.noto.app.toUiState
 import com.noto.app.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,16 +39,8 @@ class LoginViewModel(
         if (isInputValid) {
             mutableState.value = UiState.Loading
             userRepository.logIn(email.value, password.value)
-                .fold(
-                    onSuccess = { settingsRepository.updateUserStatus(UserStatus.LoggedIn) },
-                    onFailure = { exception ->
-                        when (exception) {
-                            NotoException.Auth.InvalidCredentials -> mutableState.value = UiState.Failure(R.string.invalid_credentials)
-                            NotoException.Auth.EmailNotVerified -> mutableState.value = UiState.Failure(R.string.emailnot)
-                            else -> mutableState.value = UiState.Failure(R.string.something_went_wrong)
-                        }
-                    },
-                )
+                .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
+                .toUiState()
         }
     }
 

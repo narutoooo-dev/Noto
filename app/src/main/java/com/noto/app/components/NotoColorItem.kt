@@ -32,10 +32,10 @@ data class NotoColorItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotoColorItem(item: NotoColorItem, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val color = item.notoColor.toColor()
+fun NotoColorItem(notoColor: NotoColor, isSelected: Boolean, onClick: (NotoColor) -> Unit, modifier: Modifier = Modifier) {
+    val color = notoColor.toColor()
     AnimatedContent(
-        targetState = item.isSelected,
+        targetState = isSelected,
         label = "NotoColorItem",
         contentAlignment = Alignment.Center,
         transitionSpec = { fadeIn(tween(DefaultAnimationDuration.toInt())) togetherWith fadeOut(tween(DefaultAnimationDuration.toInt())) }
@@ -46,16 +46,16 @@ fun NotoColorItem(item: NotoColorItem, onClick: () -> Unit, modifier: Modifier =
             painterResource(id = R.drawable.ic_round_circle_24)
 
         PlainTooltipBox(
-            tooltip = { Text(text = item.notoColor.name) },
+            tooltip = { Text(text = notoColor.name) },
             containerColor = color,
         ) {
             Icon(
                 painter = painter,
-                contentDescription = item.notoColor.name,
+                contentDescription = notoColor.name,
                 modifier = modifier
                     .tooltipAnchor()
                     .clip(CircleShape)
-                    .clickable(onClick = onClick)
+                    .clickable { onClick(notoColor) }
                     .size(NotoColorItemSize),
                 tint = color,
             )

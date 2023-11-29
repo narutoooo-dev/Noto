@@ -3,7 +3,7 @@ package com.noto.app.folder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
-import com.noto.app.components.NotoColorItem
+import com.noto.app.components.TextFieldStatus
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.LabelRepository
@@ -12,6 +12,7 @@ import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.getOrDefault
 import com.noto.app.label.LabelItemModel
 import com.noto.app.map
+import com.noto.app.toUiState
 import com.noto.app.util.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -29,18 +30,16 @@ class FolderViewModel(
     private val selectedNoteIds: LongArray = longArrayOf(),
 ) : ViewModel() {
 
-    val folder = folderRepository.getFolderById(folderId)
-        .filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.Default)
+    private val mutableFolder = MutableStateFlow(Folder.Default)
+    val folder get() = mutableFolder.asStateFlow()
 
-    private val mutableParentFolder = MutableStateFlow<Folder?>(null)
-    val parentFolder get() = mutableParentFolder.asStateFlow()
+    private val mutableTitleStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
+    val titleStatus get() = mutableTitleStatus.asStateFlow()
 
     private val mutableNotes = MutableStateFlow<UiState<List<NoteItemModel>>>(UiState.Loading)
     val notes get() = mutableNotes.asStateFlow()
 
-    private val mutableArchivedNotes =
-        MutableStateFlow<UiState<List<NoteItemModel>>>(UiState.Loading)
+    private val mutableArchivedNotes = MutableStateFlow<UiState<List<NoteItemModel>>>(UiState.Loading)
     val archivedNotes get() = mutableArchivedNotes.asStateFlow()
 
     private val mutableLabels = MutableStateFlow(emptyList<LabelItemModel>())
@@ -48,9 +47,6 @@ class FolderViewModel(
 
     val font = settingsRepository.font
         .stateIn(viewModelScope, SharingStarted.Lazily, Font.Nunito)
-
-    private val mutableNotoColors = MutableStateFlow(NotoColor.entries.map { NotoColorItem(it, false) })
-    val notoColors get() = mutableNotoColors.asStateFlow()
 
     private val mutableIsSearchEnabled = MutableStateFlow(false)
     val isSearchEnabled get() = mutableIsSearchEnabled.asStateFlow()
@@ -85,6 +81,9 @@ class FolderViewModel(
     private val mutablePreviewNotePosition = MutableStateFlow(0)
     val previewNotePosition get() = mutablePreviewNotePosition.asStateFlow()
 
+    private val mutableState = MutableStateFlow<UiState<Long>>(UiState.Empty)
+    val state get() = mutableState.asStateFlow()
+
     private var currentPosition = mutablePreviewNotePosition.value
 
     private var isUserScrolling = false
@@ -105,11 +104,9 @@ class FolderViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     init {
-        folder
-            .onEach { folder ->
-                mutableNotoColors.value = notoColors.value.selectNotoColor(folder.color)
-                if (folder.parentFolder != null) mutableParentFolder.value = folder.parentFolder
-            }
+        folderRepository.getFolderById(folderId)
+            .filterNotNull()
+            .onEach { mutableFolder.value = it }
             .launchIn(viewModelScope)
 
         combine(
@@ -187,43 +184,6 @@ class FolderViewModel(
         }.launchIn(viewModelScope)
     }
 
-    suspend fun getFolderById(id: Long) = folderRepository.getFolderById(id).firstOrNull()
-
-    fun setParentFolder(parentId: Long?) = viewModelScope.launch {
-        mutableParentFolder.value = if (parentId != null && parentId != 0L)
-            folderRepository.getFolderById(parentId).firstOrNull()
-        else
-            null
-    }
-
-    fun createOrUpdateFolder(
-        title: String,
-        layout: Layout,
-        notePreviewSize: Int,
-        newNoteCursorPosition: NewNoteCursorPosition,
-        openNotesIn: OpenNotesIn,
-        isShowNoteCreationDate: Boolean,
-        onCreateFolder: (Long) -> Unit,
-    ) = viewModelScope.launch {
-        val color = notoColors.value.first { it.isSelected }.notoColor
-
-        val folder = folder.value.copy(
-            title = title.trim(),
-            parentFolder = parentFolder.value,
-            color = color,
-            layout = layout,
-            notePreviewSize = notePreviewSize,
-            isShowNoteCreationDate = isShowNoteCreationDate,
-            newNoteCursorPosition = newNoteCursorPosition,
-            openNotesIn = openNotesIn,
-        )
-
-        if (folderId == 0L)
-            folderRepository.createFolder(folder).onSuccess(onCreateFolder)
-        else
-            folderRepository.updateFolder(folder)
-    }
-
     fun updateFolderScrollingPosition(scrollingPosition: Int) = viewModelScope.launch {
         if (folder.value.id != 0L) {
             folderRepository.updateFolder(folder.value.copy(scrollingPosition = scrollingPosition))
@@ -283,10 +243,6 @@ class FolderViewModel(
 
     fun updateNotePosition(note: Note, position: Int) = viewModelScope.launch {
         noteRepository.updateNote(note.copy(position = position))
-    }
-
-    fun selectNotoColor(notoColor: NotoColor) {
-        mutableNotoColors.value = notoColors.value.selectNotoColor(notoColor)
     }
 
     fun selectLabel(id: Long) {
@@ -552,14 +508,61 @@ class FolderViewModel(
         )
     }
 
-    private fun List<NotoColorItem>.selectNotoColor(notoColor: NotoColor) = map {
-        it.copy(isSelected = it.notoColor == notoColor)
+    fun createOrUpdateFolder() = viewModelScope.launch {
+        val folder = folder.value
+        mutableState.value = UiState.Loading
+        mutableState.value = if (folder.title.isBlank() && folderId != Folder.GeneralFolderId) {
+            UiState.Failure(NotoException.Model.TitleIsRequired)
+        } else {
+            if (folderId == 0L) {
+                folderRepository.createFolder(folder)
+                    .toUiState()
+            } else {
+                folderRepository.updateFolder(folder)
+                    .map { folder.id }
+                    .toUiState()
+            }
+        }
     }
 
-    private fun Folder.mapRecursively(allFolders: List<Folder>): Folder {
-        val childFolders = allFolders
-            .filter { it.parentFolder?.id == id }
-            .map { it.mapRecursively(allFolders) }
-        return copy(childFolders = childFolders)
+    fun setParentFolder(parentId: Long?) = viewModelScope.launch {
+        val parentFolder = if (parentId != null && parentId != 0L)
+            folderRepository.getFolderById(parentId).firstOrNull()
+        else
+            null
+        mutableFolder.value = folder.value.copy(parentFolder = parentFolder)
     }
+
+    fun setNotoColor(notoColor: NotoColor) {
+        mutableFolder.value = folder.value.copy(color = notoColor)
+    }
+
+    fun setTitle(title: String) {
+        mutableFolder.value = folder.value.copy(title = title)
+    }
+
+    fun setTitleStatus(status: TextFieldStatus) {
+        mutableTitleStatus.value = status
+    }
+
+    fun setLayout(layout: Layout) {
+        mutableFolder.value = folder.value.copy(layout = layout)
+    }
+
+    fun setNewNoteCursorPosition(newNoteCursorPosition: NewNoteCursorPosition) {
+        mutableFolder.value = folder.value.copy(newNoteCursorPosition = newNoteCursorPosition)
+    }
+
+    fun setOpenNotesIn(openNotesIn: OpenNotesIn) {
+        mutableFolder.value = folder.value.copy(openNotesIn = openNotesIn)
+    }
+
+    fun setNotePreviewSize(notePreviewSize: Float) {
+        mutableFolder.value = folder.value.copy(notePreviewSize = notePreviewSize.toInt())
+    }
+
+    fun toggleIsShowNoteCreationDate() {
+        mutableFolder.value = folder.value.copy(isShowNoteCreationDate = !folder.value.isShowNoteCreationDate)
+    }
+
 }
