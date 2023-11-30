@@ -26,7 +26,6 @@ import com.noto.app.components.material.NotoTextField
 import com.noto.app.components.material.TextFieldStatus
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely
@@ -35,7 +34,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EditNameDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<AccountSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

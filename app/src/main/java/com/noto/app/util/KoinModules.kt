@@ -37,6 +37,7 @@ import com.noto.app.main.MainViewModel
 import com.noto.app.note.NotePagerViewModel
 import com.noto.app.note.NoteViewModel
 import com.noto.app.settings.SettingsViewModel
+import com.noto.app.settings.account.AccountSettingsViewModel
 import com.noto.app.settings.vault.VaultSettingsViewModel
 import com.noto.app.vault.VaultPasscodeViewModel
 import com.noto.app.widget.FolderListWidgetConfigViewModel
@@ -78,7 +79,7 @@ val appModule = module {
 
     viewModel { AppViewModel(get(), get(), get()) }
 
-    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), androidApplication()) }
+    viewModel { SettingsViewModel(get(), get(), androidApplication()) }
 
     viewModel { LabelViewModel(get(), get(), it[0], it[1]) }
 
@@ -103,6 +104,8 @@ val appModule = module {
     viewModel { VaultSettingsViewModel(get(), get()) }
 
     viewModel { VaultPasscodeViewModel(get()) }
+
+    viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get(), get()) }
 
 }
 

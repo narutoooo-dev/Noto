@@ -6,30 +6,22 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
-import com.noto.app.components.material.TextFieldStatus
 import com.noto.app.domain.model.*
-import com.noto.app.domain.repository.*
-import com.noto.app.domain.source.local.LocalNoteLabelDataSource
-import com.noto.app.toUiState
-import com.noto.app.util.Constants
+import com.noto.app.domain.repository.FolderRepository
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.util.readText
 import com.noto.app.util.writeText
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val userRepository: UserRepository,
     private val folderRepository: FolderRepository,
-    private val noteRepository: NoteRepository,
-    private val labelRepository: LabelRepository,
-    private val localNoteLabelDataSource: LocalNoteLabelDataSource,
     private val settingsRepository: SettingsRepository,
     private val application: Application,
 ) : AndroidViewModel(application) {
-
-    val userState = userRepository.user
-        .map { it.toUiState() }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, UiState.Loading)
 
     val userStatus = settingsRepository.userStatus
         .stateIn(viewModelScope, SharingStarted.Eagerly, UserStatus.New)
@@ -79,36 +71,11 @@ class SettingsViewModel(
     val previewAutoScroll = settingsRepository.previewAutoScroll
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    private val mutableName = MutableStateFlow("")
-    val name get() = mutableName.asStateFlow()
-
-    private val mutableNameStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
-    val nameStatus get() = mutableNameStatus.asStateFlow()
-
-    private val mutableNameState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
-    val nameState get() = mutableNameState.asStateFlow()
-
-    private val mutableEmail = MutableStateFlow("")
-    val email get() = mutableEmail.asStateFlow()
-
-    private val mutableEmailStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
-    val emailStatus get() = mutableEmailStatus.asStateFlow()
-
-    private val mutableEmailState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
-    val emailState get() = mutableEmailState.asStateFlow()
-
     private val mutableExportState = MutableStateFlow<UiState<Uri>>(UiState.Empty)
     val exportState get() = mutableExportState.asStateFlow()
 
     private val mutableImportState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val importState get() = mutableImportState.asStateFlow()
-
-    init {
-        settingsRepository.name
-            .filterNotNull()
-            .onEach(::setName)
-            .launchIn(viewModelScope)
-    }
 
     companion object {
         private const val FileName = "Noto.json"
@@ -220,52 +187,5 @@ class SettingsViewModel(
         settingsRepository.updateQuickNoteFolderId(folderId)
     }
 
-    fun setName(name: String) {
-        if (name.length <= Constants.NameMaxLength) mutableName.value = name
-        mutableNameStatus.value = TextFieldStatus.Empty
-    }
 
-    fun setNameStatus(status: TextFieldStatus) {
-        mutableNameStatus.value = status
-    }
-
-    fun updateName() = viewModelScope.launch {
-        if (name.value.isNotBlank()) {
-            mutableNameState.value = UiState.Loading
-            mutableNameState.value = userRepository.updateName(name.value.trim()).toUiState()
-        } else {
-            mutableNameState.value = UiState.Failure(NotoException.Model.NameIsRequired)
-        }
-    }
-
-    fun setEmail(email: String) {
-        mutableEmail.value = email
-    }
-
-    fun setEmailStatus(status: TextFieldStatus) {
-        mutableEmailStatus.value = status
-    }
-
-    fun updateEmail() = viewModelScope.launch {
-        if (!email.value.matches(Constants.Regex.Email) || email.value.any { it.isWhitespace() }) {
-            mutableEmailState.value = UiState.Failure(NotoException.Auth.InvalidEmail)
-        } else {
-            mutableEmailState.value = UiState.Loading
-            mutableEmailState.value = userRepository.updateEmail(email.value.trim()).toUiState()
-        }
-    }
-
-    fun logOutUser() = viewModelScope.launch {
-        userRepository.logOut()
-        folderRepository.clearFolders()
-        noteRepository.clearNotes()
-        labelRepository.clearLabels()
-        localNoteLabelDataSource.clearNoteLabels()
-        settingsRepository.clearSettings()
-    }
-
-    fun deleteUser() = viewModelScope.launch {
-        logOutUser().join()
-        userRepository.delete()
-    }
 }

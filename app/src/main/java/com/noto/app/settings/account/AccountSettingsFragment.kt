@@ -18,13 +18,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import com.noto.app.R
-import com.noto.app.components.screen.Screen
 import com.noto.app.components.material.ScreenCircularProgressIndicator
+import com.noto.app.components.screen.Screen
 import com.noto.app.fold
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.warning
 import com.noto.app.util.*
 import kotlinx.coroutines.launch
@@ -32,7 +31,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AccountSettingsFragment : Fragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<AccountSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
