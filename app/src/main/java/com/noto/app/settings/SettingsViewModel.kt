@@ -38,18 +38,6 @@ class SettingsViewModel(
     val isShowNotesCount = settingsRepository.isShowNotesCount
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    val isDoNotDisturb = settingsRepository.isDoNotDisturb
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val isScreenOn = settingsRepository.isScreenOn
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
-
-    val isFullScreen = settingsRepository.isFullScreen
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
-
-    val screenBrightnessLevel = settingsRepository.screenBrightnessLevel
-        .stateIn(viewModelScope, SharingStarted.Eagerly, ScreenBrightnessLevel.System)
-
     val vaultPasscode = settingsRepository.vaultPasscode
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -86,22 +74,6 @@ class SettingsViewModel(
 
     fun toggleShowNotesCount() = viewModelScope.launch {
         settingsRepository.updateIsShowNotesCount(!isShowNotesCount.value)
-    }
-
-    fun toggleDoNotDisturb() = viewModelScope.launch {
-        settingsRepository.updateIsDoNotDisturb(!isDoNotDisturb.value)
-    }
-
-    fun toggleScreenOn() = viewModelScope.launch {
-        settingsRepository.updateIsScreenOn(!isScreenOn.value)
-    }
-
-    fun toggleFullScreen() = viewModelScope.launch {
-        settingsRepository.updateIsFullScreen(!isFullScreen.value)
-    }
-
-    fun updateScreenBrightnessLevel(level: ScreenBrightnessLevel) = viewModelScope.launch {
-        settingsRepository.updateScreenBrightnessLevel(level)
     }
 
     fun exportData(uri: Uri?) = viewModelScope.launch {
@@ -186,6 +158,5 @@ class SettingsViewModel(
     fun setQuickNoteFolderId(folderId: Long) = viewModelScope.launch {
         settingsRepository.updateQuickNoteFolderId(folderId)
     }
-
 
 }

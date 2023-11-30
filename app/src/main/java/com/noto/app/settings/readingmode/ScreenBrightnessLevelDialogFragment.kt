@@ -21,14 +21,13 @@ import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.components.dialog.BottomSheetDialog
 import com.noto.app.components.dialog.SelectableDialogItem
 import com.noto.app.domain.model.ScreenBrightnessLevel
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.util.toStringResourceId
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.NumberFormat
 
 class ScreenBrightnessLevelDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<ReadingModeSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -22,13 +22,12 @@ import com.noto.app.components.screen.Screen
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReadingModeSettingsFragment : Fragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<ReadingModeSettingsViewModel>()
 
     private val notificationManager by lazy {
         context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
