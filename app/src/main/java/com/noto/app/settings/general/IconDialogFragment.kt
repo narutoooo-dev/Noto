@@ -23,7 +23,6 @@ import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.components.dialog.BottomSheetDialog
 import com.noto.app.components.dialog.SelectableDialogItem
 import com.noto.app.domain.model.Icon
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.toDrawableResourceId
 import com.noto.app.util.toStringResourceId
@@ -34,7 +33,7 @@ private val IconFontSize = 18.sp
 
 class IconDialogFragment : BaseDialogFragment(isCollapsable = true) {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<GeneralSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

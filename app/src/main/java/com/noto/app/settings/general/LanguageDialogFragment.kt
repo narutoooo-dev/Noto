@@ -16,17 +16,16 @@ import androidx.core.os.LocaleListCompat
 import com.noto.app.R
 import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.components.dialog.BottomSheetDialog
-import com.noto.app.components.material.MediumSubtitle
 import com.noto.app.components.dialog.SelectableDialogItem
+import com.noto.app.components.material.MediumSubtitle
 import com.noto.app.domain.model.Language
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LanguageDialogFragment : BaseDialogFragment(isCollapsable = true) {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<GeneralSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

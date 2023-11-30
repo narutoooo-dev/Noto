@@ -16,13 +16,12 @@ import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.components.dialog.BottomSheetDialog
 import com.noto.app.components.dialog.SelectableDialogItem
 import com.noto.app.domain.model.Theme
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.util.toStringResourceId
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ThemeDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<GeneralSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
