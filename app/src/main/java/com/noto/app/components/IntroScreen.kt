@@ -119,7 +119,7 @@ private fun BottomAppBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FilledIconButton(
+            NotoFilledIconButton(
                 painter = painterResource(id = R.drawable.ic_round_previous_page_24),
                 contentDescription = stringResource(id = R.string.previous),
                 onClick = {
@@ -143,7 +143,7 @@ private fun BottomAppBar(
 
             Spacer(modifier = Modifier.weight(1F))
 
-            FilledIconButton(
+            NotoFilledIconButton(
                 painter = painterResource(id = R.drawable.ic_round_next_page_24),
                 contentDescription = stringResource(id = R.string.next),
                 onClick = {

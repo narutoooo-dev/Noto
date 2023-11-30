@@ -38,7 +38,7 @@ fun FolderItem(item: FolderItem, isShowNotesCount: Boolean, onClick: (FolderItem
     val context = LocalContext.current
     val title = remember(context) { item.folder.getTitle(context) }
 
-    Surface(
+    NotoSurface(
         onClick = { onClick(item) },
         shape = MaterialTheme.shapes.small,
         color = item.surfaceColor,

@@ -30,7 +30,7 @@ fun FilteredItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
+    NotoSurface(
         onClick = onClick,
         shape = MaterialTheme.shapes.small,
         border = BorderStroke(BorderStrokeWidth, item.color.toColor()),

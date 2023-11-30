@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import com.noto.app.theme.NotoTheme
 
 @Composable
-fun FilledIconButton(
+fun NotoFilledIconButton(
     painter: Painter,
     contentDescription: String,
     onClick: () -> Unit,
@@ -22,7 +22,7 @@ fun FilledIconButton(
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     rippleColor: Color = Color.Unspecified,
 ) {
-    Surface(
+    NotoSurface(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,

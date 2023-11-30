@@ -82,7 +82,7 @@ class ValidateVaultPasscodeDialogFragment : BaseDialogFragment() {
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.validate),
                         onClick = viewModel::validatePasscode,
                         modifier = Modifier.fillMaxWidth(),
@@ -91,7 +91,7 @@ class ValidateVaultPasscodeDialogFragment : BaseDialogFragment() {
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
 
                     if (isBioAuthEnabled) {
-                        TextButton(
+                        NotoTextButton(
                             text = stringResource(id = R.string.use_bio),
                             onClick = { biometricPrompt.authenticate(biometricPromptInfo) },
                             modifier = Modifier.fillMaxWidth(),

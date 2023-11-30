@@ -180,7 +180,7 @@ class CreateAccountFragment : Fragment() {
 
                         Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                        Button(
+                        NotoButton(
                             text = stringResource(id = R.string.create_account),
                             onClick = viewModel::createAccount,
                             modifier = Modifier.fillMaxWidth(),
@@ -212,7 +212,7 @@ class CreateAccountFragment : Fragment() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = stringResource(id = R.string.already_have_an_account))
-                        OutlinedButton(
+                        NotoOutlinedButton(
                             text = stringResource(id = R.string.log_in),
                             onClick = { navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToLoginFragment()) },
                             modifier = Modifier.fillMaxWidth()

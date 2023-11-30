@@ -87,7 +87,7 @@ class VerifyEmailDialogFragment : BaseDialogFragment() {
 
                     Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.verify_email),
                         onClick = viewModel::verifyEmail,
                         modifier = Modifier.fillMaxWidth(),
@@ -95,7 +95,7 @@ class VerifyEmailDialogFragment : BaseDialogFragment() {
 
                     Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
-                    TextButton(
+                    NotoTextButton(
                         text = stringResource(id = R.string.edit_email),
                         onClick = { dismiss() },
                         modifier = Modifier

@@ -132,7 +132,7 @@ class IntroFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val notificationPermissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                 if (notificationPermissionStatus == PackageManager.PERMISSION_DENIED) {
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.grant_permission),
                         onClick = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
                         modifier = Modifier.fillMaxWidth(),
@@ -165,7 +165,7 @@ class IntroFragment : Fragment() {
     private fun BottomAppBarVaultContent(color: Color) {
         val vaultPasscode by viewModel.vaultPasscode.collectAsState()
         if (vaultPasscode == null) {
-            Button(
+            NotoButton(
                 text = stringResource(id = R.string.enable_vault),
                 onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToVaultPasscodeDialogFragment()) },
                 modifier = Modifier.fillMaxWidth(),
@@ -196,7 +196,7 @@ class IntroFragment : Fragment() {
     private fun BottomAppBarAccountContent(color: Color) {
         val userStatus by viewModel.userStatus.collectAsState(UserStatus.New)
         if (userStatus == UserStatus.NotLoggedIn || userStatus == UserStatus.New) {
-            Button(
+            NotoButton(
                 text = stringResource(id = R.string.create_account),
                 onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToCreateAccountFragment()) },
                 modifier = Modifier.fillMaxWidth(),
@@ -225,7 +225,7 @@ class IntroFragment : Fragment() {
 
     @Composable
     private fun BottomAppBarSetupContent(color: Color) {
-        Button(
+        NotoButton(
             text = stringResource(id = R.string.intro_finish),
             onClick = { viewModel.finishIntro() },
             modifier = Modifier.fillMaxWidth(),
@@ -236,7 +236,7 @@ class IntroFragment : Fragment() {
 
     @Composable
     private fun BottomAppBarSourceCodeContent(color: Color) {
-        Button(
+        NotoButton(
             text = stringResource(id = R.string.source_code),
             onClick = {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.Noto.GithubUrl))

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @NonRestartableComposable
-fun Surface(
+fun NotoSurface(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

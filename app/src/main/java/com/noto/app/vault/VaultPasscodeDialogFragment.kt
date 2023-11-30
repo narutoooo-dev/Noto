@@ -86,7 +86,7 @@ class VaultPasscodeDialogFragment : BaseDialogFragment() {
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.enable_vault),
                         onClick = viewModel::enableVault,
                         modifier = Modifier.fillMaxWidth(),

@@ -130,7 +130,7 @@ class LoginFragment : Fragment() {
 
                         Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                        Button(
+                        NotoButton(
                             text = stringResource(id = R.string.log_in),
                             onClick = viewModel::logIn,
                             modifier = Modifier.fillMaxWidth(),
@@ -147,7 +147,7 @@ class LoginFragment : Fragment() {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(text = stringResource(id = R.string.dont_have_account))
-                            OutlinedButton(
+                            NotoOutlinedButton(
                                 text = stringResource(id = R.string.create_account),
                                 onClick = { navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToCreateAccountFragment()) },
                                 modifier = Modifier.fillMaxWidth()

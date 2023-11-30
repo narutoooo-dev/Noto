@@ -71,7 +71,7 @@ class FolderListViewDialogFragment : BaseDialogFragment() {
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.apply),
                         onClick = {
                             viewModel.updateFoldersView(

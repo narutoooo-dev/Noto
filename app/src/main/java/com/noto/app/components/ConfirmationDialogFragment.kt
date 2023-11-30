@@ -52,7 +52,7 @@ class ConfirmationDialogFragment : BaseDialogFragment() {
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                    Button(
+                    NotoButton(
                         text = args.btnText,
                         onClick = {
                             navController?.previousBackStackEntry?.savedStateHandle?.set(args.key ?: Constants.ClickListener, 0)

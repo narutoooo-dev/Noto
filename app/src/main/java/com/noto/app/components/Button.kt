@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import com.noto.app.theme.NotoTheme
 
 @Composable
-fun Button(
+fun NotoButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -28,7 +28,7 @@ fun Button(
 }
 
 @Composable
-fun OutlinedButton(
+fun NotoOutlinedButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -48,7 +48,7 @@ fun OutlinedButton(
 }
 
 @Composable
-fun TextButton(
+fun NotoTextButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

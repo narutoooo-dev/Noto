@@ -65,7 +65,7 @@ class EditNameDialogFragment : BaseDialogFragment() {
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
 
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.update_name),
                         onClick = viewModel::updateName,
                         modifier = Modifier.fillMaxWidth()

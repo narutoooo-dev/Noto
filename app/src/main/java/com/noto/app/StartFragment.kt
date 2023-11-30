@@ -61,13 +61,13 @@ class StartFragment : Fragment() {
                             verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Button(
+                            NotoButton(
                                 text = stringResource(id = R.string.get_started),
                                 onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToIntroFragment()) },
                                 modifier = Modifier.fillMaxWidth(),
                             )
 
-                            OutlinedButton(
+                            NotoOutlinedButton(
                                 text = stringResource(id = R.string.log_in),
                                 onClick = { navController?.navigateSafely(StartFragmentDirections.actionStartFragmentToLoginFragment()) },
                                 modifier = Modifier.fillMaxWidth(),

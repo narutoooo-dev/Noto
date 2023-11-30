@@ -75,7 +75,7 @@ class NewFolderFragment : Fragment() {
                     title = if (args.folderId == 0L) stringResource(id = R.string.new_folder) else stringResource(id = R.string.edit_folder),
                     color = if (args.folderId == 0L) MaterialTheme.colorScheme.onBackground else folder.color.toColor(),
                     bottomBar = {
-                        Button(
+                        NotoButton(
                             text = if (args.folderId == 0L) stringResource(R.string.create_folder) else stringResource(R.string.update_folder),
                             onClick = viewModel::createOrUpdateFolder,
                             containerColor = if (args.folderId == 0L) MaterialTheme.colorScheme.primary else folder.color.toColor(),

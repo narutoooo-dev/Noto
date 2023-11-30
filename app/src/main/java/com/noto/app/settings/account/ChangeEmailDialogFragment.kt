@@ -24,7 +24,6 @@ import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.Constants
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely
 import com.noto.app.util.snackbar
@@ -69,7 +68,7 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
 
                     Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
 
-                    Button(
+                    NotoButton(
                         text = stringResource(id = R.string.update_email),
                         onClick = viewModel::updateEmail,
                         modifier = Modifier.fillMaxWidth()

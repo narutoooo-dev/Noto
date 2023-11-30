@@ -19,7 +19,7 @@ const val NoneItemId = 0L
 
 @Composable
 fun NoneItem(isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(
+    NotoSurface(
         onClick = onClick,
         shape = MaterialTheme.shapes.small,
         color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,

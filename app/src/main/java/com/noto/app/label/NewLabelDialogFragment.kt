@@ -67,7 +67,7 @@ class NewLabelDialogFragment : BaseDialogFragment() {
 
                     Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
 
-                    Button(
+                    NotoButton(
                         text = if (args.labelId == 0L) stringResource(id = R.string.create_label) else stringResource(id = R.string.update_label),
                         onClick = viewModel::createOrUpdateLabel,
                         containerColor = folder.color.toColor(),

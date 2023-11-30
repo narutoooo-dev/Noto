@@ -25,7 +25,7 @@ fun RowScope.BottomSheetDialogItem(
     rippleColor: Color = Color.Unspecified,
 ) {
     val alpha by animateFloatAsState(targetValue = if (enabled) 1F else 0.5F)
-    Surface(
+    NotoSurface(
         onClick = onClick,
         modifier = Modifier
             .alpha(alpha)
@@ -56,7 +56,7 @@ fun ColumnScope.BottomSheetDialogItem(
     rippleColor: Color = Color.Unspecified,
 ) {
     val alpha by animateFloatAsState(targetValue = if (enabled) 1F else 0.5F)
-    Surface(
+    NotoSurface(
         onClick = onClick,
         modifier = Modifier
             .alpha(alpha)
@@ -88,7 +88,7 @@ fun ColumnScope.BottomSheetDialogItem(
     rippleColor: Color = Color.Unspecified,
 ) {
     val alpha by animateFloatAsState(targetValue = if (enabled) 1F else 0.5F)
-    Surface(
+    NotoSurface(
         onClick = onClick,
         modifier = Modifier
             .alpha(alpha)
