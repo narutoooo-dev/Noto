@@ -28,6 +28,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.noto.app.components.*
+import com.noto.app.components.material.IntroPageDescription
+import com.noto.app.components.material.IntroPageImage
+import com.noto.app.components.material.IntroPageTitle
+import com.noto.app.components.screen.IntroScreen
+import com.noto.app.components.screen.animatePageAlpha
+import com.noto.app.components.material.NotoButton
+import com.noto.app.components.util.EmptyPainter
+import com.noto.app.components.util.Group
 import com.noto.app.domain.model.NotoColor
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.settings.SettingsItem

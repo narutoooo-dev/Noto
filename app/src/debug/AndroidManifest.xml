@@ -52,7 +52,7 @@
         </activity>
 
         <activity
-            android:name=".components.TransparentActivity"
+            android:name=".components.activity.TransparentActivity"
             android:exported="true"
             android:theme="@style/TransparentTheme">
 

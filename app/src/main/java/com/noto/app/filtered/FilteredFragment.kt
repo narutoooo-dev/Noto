@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.*
+import com.noto.app.components.util.headerItem
+import com.noto.app.components.util.placeholderItem
 import com.noto.app.databinding.FilteredFragmentBinding
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Font

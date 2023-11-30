@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
+import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.databinding.LabelDialogFragmentBinding
 import com.noto.app.util.*
 import kotlinx.coroutines.flow.launchIn

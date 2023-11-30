@@ -20,7 +20,7 @@ import com.airbnb.epoxy.group
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.noto.app.R
 import com.noto.app.UiState
-import com.noto.app.components.BaseDialogFragment
+import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.databinding.MainFragmentBinding
 import com.noto.app.domain.model.*
 import com.noto.app.filtered.FilteredItemModel

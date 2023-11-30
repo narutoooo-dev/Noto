@@ -14,8 +14,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
-import com.noto.app.components.*
-import com.noto.app.components.FolderItem
+import com.noto.app.components.model.FolderItem
+import com.noto.app.components.dialog.BaseDialogFragment
+import com.noto.app.components.dialog.LazyBottomSheetDialog
+import com.noto.app.components.model.FilteredItem
+import com.noto.app.components.util.NoneItem
+import com.noto.app.components.util.NoneItemId
+import com.noto.app.components.util.PlaceholderItem
 import com.noto.app.filtered.FilteredItemModel
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme

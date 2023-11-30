@@ -3,7 +3,7 @@ package com.noto.app.label
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
-import com.noto.app.components.TextFieldStatus
+import com.noto.app.components.material.TextFieldStatus
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.model.NotoException

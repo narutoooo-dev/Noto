@@ -20,9 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.noto.app.R
 import com.noto.app.UiState
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.components.BottomSheetDialog
-import com.noto.app.components.BottomSheetDialogItem
+import com.noto.app.components.dialog.BaseDialogFragment
+import com.noto.app.components.dialog.BottomSheetDialog
+import com.noto.app.components.dialog.BottomSheetDialogItem
 import com.noto.app.domain.model.NotoException
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*

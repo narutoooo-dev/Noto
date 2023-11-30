@@ -21,7 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import com.noto.app.components.*
+import com.noto.app.components.material.*
+import com.noto.app.components.screen.Screen
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.navController
 import com.noto.app.util.navigateSafely

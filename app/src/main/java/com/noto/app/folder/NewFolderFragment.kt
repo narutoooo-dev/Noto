@@ -29,7 +29,10 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
-import com.noto.app.components.*
+import com.noto.app.components.android.AndroidViewSlider
+import com.noto.app.components.model.NotoColorItem
+import com.noto.app.components.screen.Screen
+import com.noto.app.components.material.*
 import com.noto.app.domain.model.*
 import com.noto.app.fold
 import com.noto.app.settings.SettingsItem

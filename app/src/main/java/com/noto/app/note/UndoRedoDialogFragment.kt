@@ -14,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
+import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.databinding.UndoRedoDialogFragmentBinding
 import com.noto.app.domain.model.NotoColor
 import com.noto.app.util.*

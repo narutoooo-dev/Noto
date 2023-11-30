@@ -4,8 +4,8 @@ import android.content.Context
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.noto.app.R
-import com.noto.app.components.headerItem
-import com.noto.app.components.progressIndicatorItem
+import com.noto.app.components.material.progressIndicatorItem
+import com.noto.app.components.util.headerItem
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Grouping
 import com.noto.app.domain.model.NotoColor

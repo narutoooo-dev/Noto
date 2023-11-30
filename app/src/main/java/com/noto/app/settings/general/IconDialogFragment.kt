@@ -18,10 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.noto.app.R
-import com.noto.app.components.AndroidIcon
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.components.BottomSheetDialog
-import com.noto.app.components.SelectableDialogItem
+import com.noto.app.components.android.AndroidIcon
+import com.noto.app.components.dialog.BaseDialogFragment
+import com.noto.app.components.dialog.BottomSheetDialog
+import com.noto.app.components.dialog.SelectableDialogItem
 import com.noto.app.domain.model.Icon
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme

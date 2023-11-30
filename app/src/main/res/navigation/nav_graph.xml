@@ -261,7 +261,7 @@
     </dialog>
     <dialog
         android:id="@+id/confirmationDialogFragment"
-        android:name="com.noto.app.components.ConfirmationDialogFragment"
+        android:name="com.noto.app.components.dialog.ConfirmationDialogFragment"
         android:label="ConfirmationDialogFragment">
         <argument
             android:name="confirmation"
@@ -468,7 +468,7 @@
     </dialog>
     <dialog
         android:id="@+id/progressIndicatorDialogFragment"
-        android:name="com.noto.app.components.ProgressIndicatorDialogFragment"
+        android:name="com.noto.app.components.dialog.ProgressIndicatorDialogFragment"
         android:label="ProgressIndicatorDialogFragment">
         <argument
             android:name="title"

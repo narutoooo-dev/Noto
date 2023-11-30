@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.components.BottomSheetDialog
-import com.noto.app.components.TelegramBanner
+import com.noto.app.components.dialog.BaseDialogFragment
+import com.noto.app.components.dialog.BottomSheetDialog
+import com.noto.app.components.util.TelegramBanner
 import com.noto.app.domain.model.Release
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType

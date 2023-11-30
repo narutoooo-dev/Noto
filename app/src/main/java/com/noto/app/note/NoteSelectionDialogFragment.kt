@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.noto.app.R
 import com.noto.app.UiState
-import com.noto.app.components.BaseDialogFragment
+import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.databinding.NoteSelectionDialogFragmentBinding
 import com.noto.app.folder.FolderViewModel
 import com.noto.app.folder.noteItem

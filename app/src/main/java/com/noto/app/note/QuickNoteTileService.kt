@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import com.noto.app.components.TransparentActivity
+import com.noto.app.components.activity.TransparentActivity
 import com.noto.app.util.Constants
 import com.noto.app.util.PendingIntentFlags
 

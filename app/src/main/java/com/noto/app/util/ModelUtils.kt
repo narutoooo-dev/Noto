@@ -6,7 +6,7 @@ import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.viewbinding.ViewBinding
 import com.noto.app.R
-import com.noto.app.components.FolderItem
+import com.noto.app.components.model.FolderItem
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.LabelRepository
 import com.noto.app.folder.NoteItemModel

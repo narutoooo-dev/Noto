@@ -32,8 +32,8 @@ import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.noto.app.R
-import com.noto.app.components.Screen
-import com.noto.app.components.TelegramBanner
+import com.noto.app.components.screen.Screen
+import com.noto.app.components.util.TelegramBanner
 import com.noto.app.domain.model.NotoColor
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.theme.NotoTheme

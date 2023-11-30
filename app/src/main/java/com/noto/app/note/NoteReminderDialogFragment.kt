@@ -17,7 +17,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
+import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.databinding.NoteReminderDialogFragmentBinding
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.Note

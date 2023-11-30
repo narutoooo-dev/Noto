@@ -9,7 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
+import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.databinding.QuickNoteDialogFragmentBinding
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.NewNoteCursorPosition

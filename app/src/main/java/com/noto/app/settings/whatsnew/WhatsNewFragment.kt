@@ -18,8 +18,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import com.noto.app.R
-import com.noto.app.components.HeaderItem
-import com.noto.app.components.LazyScreen
+import com.noto.app.components.util.HeaderItem
+import com.noto.app.components.screen.LazyScreen
 import com.noto.app.domain.model.Release
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType

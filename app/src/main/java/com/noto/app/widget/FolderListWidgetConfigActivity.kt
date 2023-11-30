@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import com.noto.app.R
-import com.noto.app.components.BaseActivity
+import com.noto.app.components.activity.BaseActivity
 import com.noto.app.databinding.FolderListWidgetConfigActivityBinding
 import com.noto.app.util.*
 import kotlinx.coroutines.flow.combine

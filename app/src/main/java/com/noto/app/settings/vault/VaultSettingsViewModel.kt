@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
-import com.noto.app.components.TextFieldStatus
+import com.noto.app.components.material.TextFieldStatus
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.VaultTimeout
 import com.noto.app.domain.repository.FolderRepository
