@@ -26,14 +26,13 @@ import com.noto.app.domain.model.Release
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.Current
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class WhatsNewDialogFragment : BaseDialogFragment(isCollapsable = true) {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<WhatsNewViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

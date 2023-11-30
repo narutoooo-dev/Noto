@@ -41,6 +41,7 @@ import com.noto.app.settings.account.AccountSettingsViewModel
 import com.noto.app.settings.general.GeneralSettingsViewModel
 import com.noto.app.settings.readingmode.ReadingModeSettingsViewModel
 import com.noto.app.settings.vault.VaultSettingsViewModel
+import com.noto.app.settings.whatsnew.WhatsNewViewModel
 import com.noto.app.vault.VaultPasscodeViewModel
 import com.noto.app.widget.FolderListWidgetConfigViewModel
 import com.noto.app.widget.NoteListWidgetConfigViewModel
@@ -112,6 +113,8 @@ val appModule = module {
     viewModel { ReadingModeSettingsViewModel(get()) }
 
     viewModel { GeneralSettingsViewModel(get(), get()) }
+
+    viewModel { WhatsNewViewModel(get()) }
 
 }
 

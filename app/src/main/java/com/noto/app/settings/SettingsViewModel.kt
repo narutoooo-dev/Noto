@@ -7,7 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
 import com.noto.app.domain.model.NotoException
-import com.noto.app.domain.model.Release
 import com.noto.app.domain.model.Theme
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.domain.repository.SettingsRepository
@@ -90,10 +89,6 @@ class SettingsViewModel(
         } else {
             UiState.Failure(NotoException.Import.NoFileSelected)
         }
-    }
-
-    fun updateLastVersion() = viewModelScope.launch {
-        settingsRepository.updateLastVersion(Release.Version.Current.format())
     }
 
     fun toggleShowNotesCount() = viewModelScope.launch {
