@@ -67,155 +67,162 @@ import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import java.security.KeyStore
 
-private const val DataStoreName = "Noto Data Store"
-private val Context.dataStore by preferencesDataStore(name = DataStoreName)
-val CoroutineDispatcherQualifier = qualifier("CoroutineDispatcher")
-val CryptoJsonQualifier = qualifier("CryptoJson")
-private const val AndroidKeyStore = "AndroidKeyStore"
+object KoinModules {
 
-val appModule = module {
+    private const val DataStoreName = "Noto Data Store"
+    private val Context.dataStore by preferencesDataStore(name = DataStoreName)
+    private const val AndroidKeyStore = "AndroidKeyStore"
 
-    viewModel { MainViewModel(get(), get(), get()) }
-
-    viewModel { FolderViewModel(get(), get(), get(), get(), it.get(), it.getOrNull() ?: longArrayOf()) }
-
-    viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
-
-    viewModel { AppViewModel(get(), get(), get()) }
-
-    viewModel { SettingsViewModel(get()) }
-
-    viewModel { LabelViewModel(get(), get(), it[0], it[1]) }
-
-    viewModel { FolderListWidgetConfigViewModel(it.get(), get(), get()) }
-
-    viewModel { NoteListWidgetConfigViewModel(it.get(), get(), get(), get(), get()) }
-
-    viewModel { NotePagerViewModel(get(), get(), get(), it[0], it[1], it[2], it[3]) }
-
-    viewModel { FilteredViewModel(get(), get(), get(), it.get()) }
-
-    viewModel { LoginViewModel(get(), get()) }
-
-    viewModel { CreateAccountViewModel(get()) }
-
-    viewModel { VerifyEmailViewModel(get(), get(), it.get()) }
-
-    viewModel { NewFolderViewModel(get(), get()) }
-
-    viewModel { NewLabelViewModel(get(), get(), it[0], it[1]) }
-
-    viewModel { VaultSettingsViewModel(get(), get()) }
-
-    viewModel { VaultPasscodeViewModel(get()) }
-
-    viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get(), get()) }
-
-    viewModel { ReadingModeSettingsViewModel(get()) }
-
-    viewModel { GeneralSettingsViewModel(get(), get()) }
-
-    viewModel { WhatsNewViewModel(get()) }
-
-    viewModel { BackupViewModel(get(), androidApplication()) }
-
-}
-
-val repositoryModule = module {
-
-    single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
-
-    single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
-
-    single<LabelRepository> { LabelRepositoryImpl(get()) }
-
-    single<SettingsRepository> {
-        SettingsRepositoryImpl(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            JsonConfigs.ExportImportData,
-            get(CoroutineDispatcherQualifier)
-        )
+    object Qualifiers {
+        val CoroutineDispatcher = qualifier("CoroutineDispatcher")
+        val CryptoJson = qualifier("CryptoJson")
     }
 
-    single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get(), keyStoreManager = get()) }
+    val ViewModel = module {
 
-    single<CoroutineDispatcher>(CoroutineDispatcherQualifier) { Dispatchers.IO }
+        viewModel { MainViewModel(get(), get(), get()) }
 
-    single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(CoroutineDispatcherQualifier)) }
+        viewModel { FolderViewModel(get(), get(), get(), get(), it.get(), it.getOrNull() ?: longArrayOf()) }
 
-}
+        viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
-val localDataSourceModule = module {
+        viewModel { AppViewModel(get(), get(), get()) }
 
-    single<LocalFolderDataSource> { NotoDatabase.getInstance(androidContext()).folderDao }
+        viewModel { SettingsViewModel(get()) }
 
-    single<LocalNoteDataSource> { NotoDatabase.getInstance(androidContext()).noteDao }
+        viewModel { LabelViewModel(get(), get(), it[0], it[1]) }
 
-    single<LocalLabelDataSource> { NotoDatabase.getInstance(androidContext()).labelDao }
+        viewModel { FolderListWidgetConfigViewModel(it.get(), get(), get()) }
 
-    single<LocalNoteLabelDataSource> { NotoDatabase.getInstance(androidContext()).noteLabelDao }
+        viewModel { NoteListWidgetConfigViewModel(it.get(), get(), get(), get(), get()) }
 
-    single<DataStore<Preferences>> { androidContext().dataStore }
+        viewModel { NotePagerViewModel(get(), get(), get(), it[0], it[1], it[2], it[3]) }
 
-}
+        viewModel { FilteredViewModel(get(), get(), get(), it.get()) }
 
-@OptIn(SupabaseInternal::class)
-val remoteDataSourceModule = module {
+        viewModel { LoginViewModel(get(), get()) }
 
-    single<SupabaseClient> {
-        createSupabaseClient(SupabaseConstants.URLs.SupabaseUrl, BuildConfig.SupabaseApiKey) {
-            defaultSerializer = KotlinXSerializer(JsonConfigs.Remote)
-            httpConfig {
-                if (BuildConfig.DEBUG) {
-                    Logging {
-                        level = LogLevel.ALL
-                        logger = Logger.SIMPLE
+        viewModel { CreateAccountViewModel(get()) }
+
+        viewModel { VerifyEmailViewModel(get(), get(), it.get()) }
+
+        viewModel { NewFolderViewModel(get(), get()) }
+
+        viewModel { NewLabelViewModel(get(), get(), it[0], it[1]) }
+
+        viewModel { VaultSettingsViewModel(get(), get()) }
+
+        viewModel { VaultPasscodeViewModel(get()) }
+
+        viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get(), get()) }
+
+        viewModel { ReadingModeSettingsViewModel(get()) }
+
+        viewModel { GeneralSettingsViewModel(get(), get()) }
+
+        viewModel { WhatsNewViewModel(get()) }
+
+        viewModel { BackupViewModel(get(), androidApplication()) }
+
+    }
+
+    val Repository = module {
+
+        single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
+        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
+        single<LabelRepository> { LabelRepositoryImpl(get()) }
+
+        single<SettingsRepository> {
+            SettingsRepositoryImpl(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                JsonConfigs.ExportImportData,
+                get(Qualifiers.CoroutineDispatcher)
+            )
+        }
+
+        single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get(), keyStoreManager = get()) }
+
+        single<CoroutineDispatcher>(Qualifiers.CoroutineDispatcher) { Dispatchers.IO }
+
+        single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
+    }
+
+    val LocalDataSource = module {
+
+        single<LocalFolderDataSource> { NotoDatabase.getInstance(androidContext()).folderDao }
+
+        single<LocalNoteDataSource> { NotoDatabase.getInstance(androidContext()).noteDao }
+
+        single<LocalLabelDataSource> { NotoDatabase.getInstance(androidContext()).labelDao }
+
+        single<LocalNoteLabelDataSource> { NotoDatabase.getInstance(androidContext()).noteLabelDao }
+
+        single<DataStore<Preferences>> { androidContext().dataStore }
+
+    }
+
+    @OptIn(SupabaseInternal::class)
+    val RemoteDataSource = module {
+
+        single<SupabaseClient> {
+            createSupabaseClient(SupabaseConstants.URLs.SupabaseUrl, BuildConfig.SupabaseApiKey) {
+                defaultSerializer = KotlinXSerializer(JsonConfigs.Remote)
+                httpConfig {
+                    if (BuildConfig.DEBUG) {
+                        Logging {
+                            level = LogLevel.ALL
+                            logger = Logger.SIMPLE
+                        }
                     }
                 }
+                install(GoTrue) {
+                    scheme = URLProtocol.HTTPS.name
+                    host = SupabaseConstants.URLs.NotoHost
+                }
+                install(Postgrest)
             }
-            install(GoTrue) {
-                scheme = URLProtocol.HTTPS.name
-                host = SupabaseConstants.URLs.NotoHost
-            }
-            install(Postgrest)
         }
+
+        single<RemoteAuthDataSource> { SupabaseAuthClient(get()) }
+
+        single<RemoteUserDataSource> { SupabaseUserClient(get()) }
+
+        single<DeepLinksHandler> { SupabaseDeepLinksHandler(get()) }
+
+        single<RemoteFolderDataSource> { SupabaseFolderClient(get()) }
+
+        single<RemoteNoteDataSource> { SupabaseNoteClient(get()) }
+
     }
 
-    single<RemoteAuthDataSource> { SupabaseAuthClient(get()) }
+    val Crypto = module {
 
-    single<RemoteUserDataSource> { SupabaseUserClient(get()) }
+        single<PasswordTransformer> { PasswordTransformerImpl() }
 
-    single<DeepLinksHandler> { SupabaseDeepLinksHandler(get()) }
+        single<EncryptionHandler> { TinkEncryptionHandler() }
 
-    single<RemoteFolderDataSource> { SupabaseFolderClient(get()) }
+        single<Json>(Qualifiers.CryptoJson) { JsonConfigs.Crypto }
 
-    single<RemoteNoteDataSource> { SupabaseNoteClient(get()) }
+        single<KeyStoreManager> {
+            val keyStore = KeyStore.getInstance(AndroidKeyStore).apply { load(null) }
+            AndroidKeyStoreManager(keyStore, androidContext().dataStore)
+        }
 
-}
-
-val cryptoModule = module {
-
-    single<PasswordTransformer> { PasswordTransformerImpl() }
-
-    single<EncryptionHandler> { TinkEncryptionHandler() }
-
-    single<Json>(CryptoJsonQualifier) { JsonConfigs.Crypto }
-
-    single<KeyStoreManager> {
-        val keyStore = KeyStore.getInstance(AndroidKeyStore).apply { load(null) }
-        AndroidKeyStoreManager(keyStore, androidContext().dataStore)
     }
 
-}
+    val RemoteService = module {
 
-val remoteServiceModule = module {
+        single<RemoteFolderService> { AndroidRemoteFolderService(androidContext().applicationContext) }
 
-    single<RemoteFolderService> { AndroidRemoteFolderService(androidContext().applicationContext) }
+        single<RemoteNoteService> { AndroidRemoteNoteService(androidContext().applicationContext) }
 
-    single<RemoteNoteService> { AndroidRemoteNoteService(androidContext().applicationContext) }
+    }
 
 }

@@ -7,7 +7,7 @@ import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.remote.RemoteNoteDataSource
-import com.noto.app.util.CryptoJsonQualifier
+import com.noto.app.util.KoinModules
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -24,7 +24,7 @@ sealed interface RemoteNoteWorker : RemoteItemWorker {
 
     private val encryptionHandler get() = get<EncryptionHandler>()
 
-    private val json get() = get<Json>(CryptoJsonQualifier)
+    private val json get() = get<Json>(KoinModules.Qualifiers.CryptoJson)
 
     suspend fun LocalNote.toRemoteNote(): RemoteNote {
         val localFolder = localFolderDataSource.getLocalFolderById(folderId).first()!!

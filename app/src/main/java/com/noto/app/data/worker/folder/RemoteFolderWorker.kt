@@ -6,7 +6,7 @@ import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
-import com.noto.app.util.CryptoJsonQualifier
+import com.noto.app.util.KoinModules
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.core.component.get
@@ -20,7 +20,7 @@ sealed interface RemoteFolderWorker : RemoteItemWorker {
 
     private val encryptionHandler get() = get<EncryptionHandler>()
 
-    private val json get() = get<Json>(CryptoJsonQualifier)
+    private val json get() = get<Json>(KoinModules.Qualifiers.CryptoJson)
 
     fun RemoteFolder.toLocalFolder(): LocalFolder {
         val decryptedContent = encryptionHandler.decryptData(encryptedKey, encryptedContent)
