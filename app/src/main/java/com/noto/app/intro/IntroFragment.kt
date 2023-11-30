@@ -1,4 +1,4 @@
-package com.noto.app
+package com.noto.app.intro
 
 import android.Manifest
 import android.content.Intent
@@ -13,9 +13,12 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -27,20 +30,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.noto.app.components.*
+import com.noto.app.*
+import com.noto.app.R
 import com.noto.app.components.material.IntroPageDescription
 import com.noto.app.components.material.IntroPageImage
 import com.noto.app.components.material.IntroPageTitle
+import com.noto.app.components.material.NotoButton
 import com.noto.app.components.screen.IntroScreen
 import com.noto.app.components.screen.animatePageAlpha
-import com.noto.app.components.material.NotoButton
 import com.noto.app.components.util.EmptyPainter
 import com.noto.app.components.util.Group
-import com.noto.app.domain.model.NotoColor
 import com.noto.app.domain.model.UserStatus
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.theme.toColor
 import com.noto.app.util.*
@@ -48,7 +50,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class IntroFragment : Fragment() {
 
-    private val viewModel by viewModel<AppViewModel>()
+    private val viewModel by viewModel<IntroViewModel>()
 
     private val notificationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         viewModel.setNotificationPermissionResult(isGranted)
@@ -65,8 +67,8 @@ class IntroFragment : Fragment() {
         ComposeView(context).apply {
             isTransitionGroup = true
             setContent {
-                val pagerState = rememberPagerState(initialPage = Page.Initial.ordinal) { Page.Count }
-                val currentPage by remember { derivedStateOf { Page.ofOrdinal(pagerState.currentPage) } }
+                val pagerState = rememberPagerState(initialPage = IntroPage.Initial.ordinal) { IntroPage.Count }
+                val currentPage by remember { derivedStateOf { IntroPage.ofOrdinal(pagerState.currentPage) } }
                 val currentPageColor by animateColorAsState(targetValue = currentPage.color)
                 var currentPageScrollState by remember { mutableStateOf(ScrollState(initial = 0)) }
 
@@ -77,7 +79,7 @@ class IntroFragment : Fragment() {
                     scrollState = currentPageScrollState,
                     bottomAppBarContent = bottomAppBarContent(page = currentPage, color = currentPageColor),
                 ) { pageOrdinal ->
-                    val page = remember(pageOrdinal) { Page.ofOrdinal(pageOrdinal) }
+                    val page = remember(pageOrdinal) { IntroPage.ofOrdinal(pageOrdinal) }
                     val scrollState = rememberScrollState()
                     val scrollStateValue by remember { derivedStateOf { scrollState.value } }
 
@@ -94,15 +96,15 @@ class IntroFragment : Fragment() {
         }
     }
 
-    private fun bottomAppBarContent(page: Page, color: Color): @Composable (() -> Unit)? {
+    private fun bottomAppBarContent(page: IntroPage, color: Color): @Composable (() -> Unit)? {
         return when (page) {
-            Page.OpenSource -> {
+            IntroPage.OpenSource -> {
                 {
                     BottomAppBarSourceCodeContent(color = color)
                 }
             }
 
-            Page.Reminders -> {
+            IntroPage.Reminders -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     {
                         BottomAppBarRemindersContent(color = color)
@@ -112,19 +114,19 @@ class IntroFragment : Fragment() {
                 }
             }
 
-            Page.Vault -> {
+            IntroPage.Vault -> {
                 {
                     BottomAppBarVaultContent(color = color)
                 }
             }
 
-            Page.Cloud -> {
+            IntroPage.Cloud -> {
                 {
                     BottomAppBarAccountContent(color = color)
                 }
             }
 
-            Page.Setup -> {
+            IntroPage.Setup -> {
                 {
                     BottomAppBarSetupContent(color = color)
                 }
@@ -255,212 +257,95 @@ class IntroFragment : Fragment() {
             contentColor = Color.White,
         )
     }
-}
 
-@Composable
-private fun Fragment.PageItem(
-    page: Page,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(NotoTheme.dimensions.medium),
-        verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        IntroPageImage(painter = painterResource(id = page.imageDrawableId), contentDescription = stringResource(id = page.titleStringId))
-        Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
-        IntroPageTitle(text = stringResource(id = page.titleStringId), color = page.color)
-        IntroPageDescription(text = stringResource(id = page.descriptionStringId))
-        PageContent(page = page)
-    }
-}
 
-@Composable
-private fun Fragment.PageContent(page: Page, modifier: Modifier = Modifier) {
-    Group(modifier) {
-        when (page) {
-            Page.Setup -> {
-                val settingsViewModel by viewModel<SettingsViewModel>()
-                val theme by settingsViewModel.theme.collectAsState()
-                val themeId = remember(theme) { theme.toStringResourceId() }
-                val themeText = stringResource(id = themeId)
-                val language = remember { AppCompatDelegate.getApplicationLocales().toLanguages().first() }
-                val languageId = remember(language) { language.toStringResourceId() }
-                val languageText = stringResource(id = languageId)
-                val rememberScrollingPositionEnabled by settingsViewModel.isRememberScrollingPosition.collectAsState()
-                val notesCountEnabled by settingsViewModel.isShowNotesCount.collectAsState()
-                val quickExit by settingsViewModel.quickExit.collectAsState()
-                SettingsItem(
-                    title = stringResource(id = R.string.theme),
-                    type = SettingsItemType.Text(themeText),
-                    onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToThemeDialogFragment()) },
-                    painter = painterResource(id = R.drawable.ic_round_theme_24),
-                )
-
-                SettingsItem(
-                    title = stringResource(id = R.string.language),
-                    type = SettingsItemType.Text(languageText),
-                    onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToLanguageDialogFragment()) },
-                    painter = painterResource(id = R.drawable.ic_round_language_24),
-                )
-
-                SettingsItem(
-                    title = stringResource(id = R.string.show_notes_count),
-                    type = SettingsItemType.Switch(notesCountEnabled),
-                    onClick = { settingsViewModel.toggleShowNotesCount() },
-                    description = stringResource(id = R.string.show_notes_count_description),
-                    painter = painterResource(id = R.drawable.ic_round_tag_24),
-                )
-
-                SettingsItem(
-                    title = stringResource(id = R.string.remember_scrolling_position),
-                    type = SettingsItemType.Switch(rememberScrollingPositionEnabled),
-                    onClick = { settingsViewModel.toggleRememberScrollingPosition() },
-                    description = stringResource(id = R.string.remember_scrolling_position_description),
-                    painter = EmptyPainter,
-                )
-
-                SettingsItem(
-                    title = stringResource(id = R.string.quick_exit),
-                    type = SettingsItemType.Switch(quickExit),
-                    onClick = { settingsViewModel.toggleQuickExit() },
-                    description = stringResource(id = R.string.quick_exit_description),
-                    painter = painterResource(id = R.drawable.ic_round_quick_exit_24),
-                )
-            }
-
-            else -> {
-                page.extrasStringIds.forEach { extraStringId ->
+    @Composable
+    private fun PageContent(page: IntroPage, modifier: Modifier = Modifier) {
+        Group(modifier) {
+            when (page) {
+                IntroPage.Setup -> {
+                    val theme by viewModel.theme.collectAsState()
+                    val themeId = remember(theme) { theme.toStringResourceId() }
+                    val themeText = stringResource(id = themeId)
+                    val language = remember { AppCompatDelegate.getApplicationLocales().toLanguages().first() }
+                    val languageId = remember(language) { language.toStringResourceId() }
+                    val languageText = stringResource(id = languageId)
+                    val rememberScrollingPositionEnabled by viewModel.isRememberScrollingPosition.collectAsState()
+                    val notesCountEnabled by viewModel.isShowNotesCount.collectAsState()
+                    val quickExit by viewModel.quickExit.collectAsState()
                     SettingsItem(
-                        title = stringResource(id = extraStringId),
-                        type = SettingsItemType.None,
-                        painter = painterResource(id = R.drawable.ic_round_check_24),
+                        title = stringResource(id = R.string.theme),
+                        type = SettingsItemType.Text(themeText),
+                        onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToThemeDialogFragment()) },
+                        painter = painterResource(id = R.drawable.ic_round_theme_24),
                     )
+
+                    SettingsItem(
+                        title = stringResource(id = R.string.language),
+                        type = SettingsItemType.Text(languageText),
+                        onClick = { navController?.navigateSafely(IntroFragmentDirections.actionIntroFragmentToLanguageDialogFragment()) },
+                        painter = painterResource(id = R.drawable.ic_round_language_24),
+                    )
+
+                    SettingsItem(
+                        title = stringResource(id = R.string.show_notes_count),
+                        type = SettingsItemType.Switch(notesCountEnabled),
+                        onClick = { viewModel.toggleShowNotesCount() },
+                        description = stringResource(id = R.string.show_notes_count_description),
+                        painter = painterResource(id = R.drawable.ic_round_tag_24),
+                    )
+
+                    SettingsItem(
+                        title = stringResource(id = R.string.remember_scrolling_position),
+                        type = SettingsItemType.Switch(rememberScrollingPositionEnabled),
+                        onClick = { viewModel.toggleRememberScrollingPosition() },
+                        description = stringResource(id = R.string.remember_scrolling_position_description),
+                        painter = EmptyPainter,
+                    )
+
+                    SettingsItem(
+                        title = stringResource(id = R.string.quick_exit),
+                        type = SettingsItemType.Switch(quickExit),
+                        onClick = { viewModel.toggleQuickExit() },
+                        description = stringResource(id = R.string.quick_exit_description),
+                        painter = painterResource(id = R.drawable.ic_round_quick_exit_24),
+                    )
+                }
+
+                else -> {
+                    page.extrasStringIds.forEach { extraStringId ->
+                        SettingsItem(
+                            title = stringResource(id = extraStringId),
+                            type = SettingsItemType.None,
+                            painter = painterResource(id = R.drawable.ic_round_check_24),
+                        )
+                    }
                 }
             }
         }
     }
-}
 
-private enum class Page(
-    val titleStringId: Int,
-    val descriptionStringId: Int,
-    val imageDrawableId: Int,
-    val notoColor: NotoColor,
-    val extrasStringIds: List<Int> = emptyList(),
-) {
-    Start(
-        R.string.intro_discover_features_title,
-        R.string.intro_discover_features_description,
-        R.drawable.illustration_features,
-        NotoColor.General,
-    ),
-    AdFree(
-        R.string.intro_ad_free_title,
-        R.string.intro_ad_free_description,
-        R.drawable.illustration_ads,
-        NotoColor.Pink,
-    ),
-    OpenSource(
-        R.string.intro_open_source_title,
-        R.string.intro_open_source_description,
-        R.drawable.illustration_open_source,
-        NotoColor.Green,
-    ),
-    Organization(
-        R.string.intro_organization_title,
-        R.string.intro_organization_description,
-        R.drawable.illustration_organization,
-        NotoColor.Blue,
-        listOf(
-            R.string.intro_labels,
-            R.string.intro_archiving,
-            R.string.intro_colorful_folders,
-            R.string.intro_label_filtering,
-            R.string.intro_pinning,
-            R.string.intro_grouping,
-            R.string.intro_sorting,
-            R.string.intro_manual_ordering,
-            R.string.intro_layouts,
-            R.string.intro_actions,
-        ),
-    ),
-    MultiSelection(
-        R.string.intro_multi_selection_title,
-        R.string.intro_multi_selection_description,
-        R.drawable.illustration_multi_selection,
-        NotoColor.Yellow,
-    ),
-    Search(
-        R.string.intro_search_title,
-        R.string.intro_search_description,
-        R.drawable.illustration_search,
-        NotoColor.BlueGray,
-    ),
-    ReadingMode(
-        R.string.intro_reading_mode_title,
-        R.string.intro_reading_mode_description,
-        R.drawable.illustration_reading_mode,
-        NotoColor.ReadingMode,
-    ),
-    UndoRedo(
-        R.string.intro_undo_redo_title,
-        R.string.intro_undo_redo_description,
-        R.drawable.illustration_undo_redo,
-        NotoColor.Cyan,
-    ),
-    Reminders(
-        R.string.intro_reminders_title,
-        R.string.intro_reminders_description,
-        R.drawable.illustration_reminders,
-        NotoColor.Red,
-    ),
-    Vault(
-        R.string.intro_vault_title,
-        R.string.intro_vault_description,
-        R.drawable.illustration_vault,
-        NotoColor.Vault,
-    ),
-    Other(
-        R.string.intro_other_title,
-        R.string.intro_other_description,
-        R.drawable.illustration_other,
-        NotoColor.DeepGreen,
-        listOf(
-            R.string.intro_widgets,
-            R.string.intro_auto_save,
-            R.string.intro_quick_note,
-            R.string.intro_custom_app_icons,
-            R.string.intro_nested_folders,
-            R.string.intro_shortcuts,
-            R.string.intro_design,
-            R.string.intro_private_secure,
-            R.string.intro_telegram_community,
-            R.string.intro_auto_backup,
-        ),
-    ),
-    Cloud(
-        R.string.intro_cloud_title,
-        R.string.intro_cloud_description,
-        R.drawable.illustration_cloud,
-        NotoColor.Account,
-    ),
-    Setup(
-        R.string.intro_setup,
-        R.string.intro_setup_description,
-        R.drawable.illustration_setup,
-        NotoColor.General,
-    );
-
-    companion object {
-        val Initial = Start
-        val Count = entries.count()
-        fun ofOrdinal(ordinal: Int) = entries.first { it.ordinal == ordinal }
+    @Composable
+    private fun PageItem(
+        page: IntroPage,
+        modifier: Modifier = Modifier,
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(NotoTheme.dimensions.medium),
+            verticalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            IntroPageImage(painter = painterResource(id = page.imageDrawableId), contentDescription = stringResource(id = page.titleStringId))
+            Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
+            IntroPageTitle(text = stringResource(id = page.titleStringId), color = page.color)
+            IntroPageDescription(text = stringResource(id = page.descriptionStringId))
+            PageContent(page = page)
+        }
     }
 }
 
-private val Page.color: Color
+private val IntroPage.color: Color
     @Composable
     get() = notoColor.toColor()

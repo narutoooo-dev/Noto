@@ -791,7 +791,7 @@
         app:destination="@id/mainVaultFragment" />
     <fragment
         android:id="@+id/introFragment"
-        android:name="com.noto.app.IntroFragment"
+        android:name="com.noto.app.intro.IntroFragment"
         android:label="IntroFragment">
         <action
             android:id="@+id/action_introFragment_to_themeDialogFragment"

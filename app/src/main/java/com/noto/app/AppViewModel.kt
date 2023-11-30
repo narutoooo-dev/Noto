@@ -58,12 +58,6 @@ class AppViewModel(
     val mainInterfaceId = settingsRepository.mainInterfaceId
         .stateIn(viewModelScope, SharingStarted.Eagerly, AllFoldersId)
 
-    val vaultPasscode = settingsRepository.vaultPasscode
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val mutableIsNotificationPermissionGranted = MutableStateFlow<Boolean?>(null)
-    val isNotificationPermissionGranted get() = mutableIsNotificationPermissionGranted.asStateFlow()
-
     var shouldNavigateToMainFragment = true
         private set
 
@@ -127,15 +121,6 @@ class AppViewModel(
 
     fun setQuickNote(noteId: Long) = viewModelScope.launch {
         mutableQuickNote.value = noteRepository.getNoteById(noteId).first()
-    }
-
-    fun setNotificationPermissionResult(isGranted: Boolean?) {
-        mutableIsNotificationPermissionGranted.value = isGranted
-    }
-
-    fun finishIntro() = viewModelScope.launch {
-        val currentUserStatus = settingsRepository.userStatus.first()
-        if (currentUserStatus == UserStatus.New) settingsRepository.updateUserStatus(UserStatus.NotLoggedIn)
     }
 
 }

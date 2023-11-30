@@ -28,6 +28,7 @@ import com.noto.app.domain.source.remote.RemoteUserDataSource
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
 import com.noto.app.folder.NewFolderViewModel
+import com.noto.app.intro.IntroViewModel
 import com.noto.app.label.LabelViewModel
 import com.noto.app.label.NewLabelViewModel
 import com.noto.app.login.CreateAccountViewModel
@@ -123,6 +124,8 @@ object KoinModules {
         viewModel { WhatsNewViewModel(get()) }
 
         viewModel { BackupViewModel(get(), androidApplication()) }
+
+        viewModel { IntroViewModel(get()) }
 
     }
 
