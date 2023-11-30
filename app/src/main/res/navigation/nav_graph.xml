@@ -460,7 +460,7 @@
         android:label="LanguageDialogFragment" />
     <dialog
         android:id="@+id/exportImportDialogFragment"
-        android:name="com.noto.app.settings.ExportImportDialogFragment"
+        android:name="com.noto.app.settings.backup.ExportImportDialogFragment"
         android:label="ExportImportDialogFragment">
         <action
             android:id="@+id/action_exportImportDialogFragment_to_progressIndicatorDialogFragment"

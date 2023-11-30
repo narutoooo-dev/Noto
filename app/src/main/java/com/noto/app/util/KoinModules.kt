@@ -38,6 +38,7 @@ import com.noto.app.note.NotePagerViewModel
 import com.noto.app.note.NoteViewModel
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.settings.account.AccountSettingsViewModel
+import com.noto.app.settings.backup.BackupViewModel
 import com.noto.app.settings.general.GeneralSettingsViewModel
 import com.noto.app.settings.readingmode.ReadingModeSettingsViewModel
 import com.noto.app.settings.vault.VaultSettingsViewModel
@@ -82,7 +83,7 @@ val appModule = module {
 
     viewModel { AppViewModel(get(), get(), get()) }
 
-    viewModel { SettingsViewModel(get(), androidApplication()) }
+    viewModel { SettingsViewModel(get()) }
 
     viewModel { LabelViewModel(get(), get(), it[0], it[1]) }
 
@@ -115,6 +116,8 @@ val appModule = module {
     viewModel { GeneralSettingsViewModel(get(), get()) }
 
     viewModel { WhatsNewViewModel(get()) }
+
+    viewModel { BackupViewModel(get(), androidApplication()) }
 
 }
 

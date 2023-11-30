@@ -1,4 +1,4 @@
-package com.noto.app.settings
+package com.noto.app.settings.backup
 
 import android.content.Context
 import android.net.Uri
@@ -30,7 +30,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ExportImportDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<BackupViewModel>()
 
     private val parentView by lazy { parentFragment?.view }
 
@@ -61,7 +61,7 @@ class ExportImportDialogFragment : BaseDialogFragment() {
 
                         BottomSheetDialogItem(
                             text = stringResource(id = R.string.import_data),
-                            onClick = { importDataLauncher.launch(SettingsViewModel.FileTypes) },
+                            onClick = { importDataLauncher.launch(BackupViewModel.FileTypes) },
                             painter = painterResource(id = R.drawable.ic_round_file_download_24),
                         )
                     }
