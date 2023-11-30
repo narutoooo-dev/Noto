@@ -4,97 +4,120 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.databinding.VaultPasscodeDialogFragmentBinding
-import com.noto.app.settings.SettingsViewModel
-import com.noto.app.util.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import com.noto.app.components.*
+import com.noto.app.domain.model.NotoException
+import com.noto.app.fold
+import com.noto.app.theme.NotoTheme
+import com.noto.app.util.Constants
+import com.noto.app.util.navController
+import com.noto.app.util.snackbar
+import com.noto.app.util.stringResource
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VaultPasscodeDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<VaultPasscodeViewModel>()
+
+    private val parentView by lazy { parentFragment?.view }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = VaultPasscodeDialogFragmentBinding.inflate(inflater, container, false).withBinding {
-        setupState()
-        setupListeners()
-    }
+    ): View? = context?.let { context ->
+        ComposeView(context).apply {
+            setContent {
+                val state by viewModel.state.collectAsState()
+                val vaultPasscode by viewModel.vaultPasscode.collectAsState()
+                val vaultPasscodeStatus by viewModel.vaultPasscodeStatus.collectAsState()
+                val vaultPasscodeKeyboardOptions = remember { KeyboardOptions(imeAction = ImeAction.Done) }
+                val vaultPasscodeFocusRequester = remember { FocusRequester() }
+                val focusManager = LocalFocusManager.current
+                val enableVaultMessage = stringResource(R.string.enable_vault_message)
+                val vaultPasscodeMessage = stringResource(R.string.vault_passcode_message)
+                val combinedVaultMessage = remember { enableVaultMessage.plus("\n\n").plus(vaultPasscodeMessage) }
 
-    private fun VaultPasscodeDialogFragmentBinding.setupState() {
-        viewModel.vaultPasscode
-            .onEach { passcode ->
-                val enableVaultMessage = context?.stringResource(R.string.enable_vault_message)
-                val vaultPasscodeMessage = context?.stringResource(R.string.vault_passcode_message)
-                if (passcode == null) {
-                    tvCurrentPasscode.isVisible = false
-                    tilCurrentPasscode.isVisible = false
-                    etNewPasscode.requestFocus()
-                    activity?.showKeyboard(root)
-                    tb.tvDialogTitle.text = context?.stringResource(R.string.vault_setup)
-                    btnEnable.text = context?.stringResource(R.string.enable_vault)
-                    tvConfirmation.text = enableVaultMessage?.plus("\n\n")?.plus(vaultPasscodeMessage)
-                    etNewPasscode.imeOptions = EditorInfo.IME_ACTION_DONE
-                } else {
-                    tvCurrentPasscode.isVisible = true
-                    tilCurrentPasscode.isVisible = true
-                    etCurrentPasscode.requestFocus()
-                    activity?.showKeyboard(etCurrentPasscode)
-                    tb.tvDialogTitle.text = context?.stringResource(R.string.change_passcode)
-                    btnEnable.text = context?.stringResource(R.string.update_passcode)
-                    tvConfirmation.text = vaultPasscodeMessage
-                    etCurrentPasscode.imeOptions = EditorInfo.IME_ACTION_NEXT
-                    etNewPasscode.imeOptions = EditorInfo.IME_ACTION_DONE
-                }
-            }
-            .launchIn(lifecycleScope)
-    }
+                BottomSheetDialog(title = stringResource(id = R.string.vault_setup)) {
 
-    private fun VaultPasscodeDialogFragmentBinding.setupListeners() {
-        btnEnable.setOnClickListener {
-            val newPasscode = etNewPasscode.text.toString()
-            when {
-                newPasscode.isBlank() -> tilNewPasscode.error = context?.stringResource(R.string.passcode_empty_message)
-                newPasscode.length < 6 -> tilNewPasscode.error = context?.stringResource(R.string.passcode_length_message)
-                else -> {
-                    tilNewPasscode.error = null
-                    if (viewModel.vaultPasscode.value == null) {
-                        setVaultPasscodeAndDismiss(newPasscode, isNew = true)
-                    } else {
-                        val currentPasscode = etCurrentPasscode.text.toString()
-                        when {
-                            currentPasscode.isBlank() -> tilCurrentPasscode.error = context?.stringResource(R.string.passcode_empty_message)
-                            currentPasscode.hash() != viewModel.vaultPasscode.value -> tilCurrentPasscode.error =
-                                context?.stringResource(R.string.passcode_doesnt_match)
-                            else -> setVaultPasscodeAndDismiss(newPasscode, isNew = false)
-                        }
+                    Surface {
+                        Text(
+                            text = combinedVaultMessage,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(NotoTheme.dimensions.medium),
+                        )
                     }
+
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
+
+                    NotoPasswordTextField(
+                        value = vaultPasscode,
+                        onValueChange = viewModel::setVaultPasscode,
+                        placeholder = stringResource(id = R.string.new_passcode),
+                        status = vaultPasscodeStatus,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(vaultPasscodeFocusRequester),
+                        keyboardOptions = vaultPasscodeKeyboardOptions,
+                    )
+
+                    LaunchedEffect(Unit) {
+                        vaultPasscodeFocusRequester.requestFocus()
+                    }
+
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
+
+                    Button(
+                        text = stringResource(id = R.string.enable_vault),
+                        onClick = viewModel::enableVault,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                }
+
+                LaunchedEffect(state) {
+                    state.fold(
+                        onSuccess = {
+                            focusManager.clearFocus()
+                            parentView?.snackbar(context.stringResource(R.string.vault_is_enabled), R.drawable.ic_round_vault_enabled_24)
+                            navController?.previousBackStackEntry?.savedStateHandle?.set(Constants.IsPasscodeValid, true)
+                        },
+                        onFailure = { exception ->
+                            when (exception) {
+                                NotoException.Vault.PasscodeIsRequired -> {
+                                    viewModel.setVaultPasscodeStatus(TextFieldStatus.Error(R.string.passcode_is_required))
+                                }
+
+                                NotoException.Vault.PasscodeRequirements -> {
+                                    viewModel.setVaultPasscodeStatus(TextFieldStatus.Error(R.string.passcode_length_message))
+                                }
+
+                                else -> {}
+                            }
+                        },
+                    )
                 }
             }
         }
     }
 
-    private fun VaultPasscodeDialogFragmentBinding.setVaultPasscodeAndDismiss(passcode: String, isNew: Boolean) {
-        viewModel.setVaultPasscode(passcode)
-            .invokeOnCompletion {
-                val parentView = parentFragment?.view
-                context?.let { context ->
-                    val stringId = if (isNew) R.string.vault_is_enabled else R.string.vault_passcode_has_changed
-                    val drawableId = if (isNew) R.drawable.ic_round_vault_enabled_24 else R.drawable.ic_round_key_24
-                    parentView?.snackbar(context.stringResource(stringId), drawableId)
-                }
-                activity?.hideKeyboard(etNewPasscode)
-                activity?.hideKeyboard(etCurrentPasscode)
-                if (isNew) navController?.previousBackStackEntry?.savedStateHandle?.set(Constants.IsPasscodeValid, true)
-                dismiss()
-            }
-    }
 }

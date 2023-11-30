@@ -219,9 +219,9 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">The time it takes to close the vault after being opened.</string>
     <string name="vault_timeout">Vault timeout</string>
-    <string name="invalid_passcode">Invalid passcode</string>
+    <string name="passcode_is_invalid">Passcode is invalid.</string>
     <string name="passcode_length_message">Passcode must contain at least 6 numbers</string>
-    <string name="passcode_empty_message">Passcode can\'t be empty</string>
+    <string name="passcode_is_required">Passcode is required.</string>
     <string name="passcode_doesnt_match">Passcode doesn\'t match the current one</string>
     <string name="vault_passcode_has_changed">Vault passcode has been updated.</string>
     <string name="enable_vault_message">To enable the vault, please provide a passcode.</string>

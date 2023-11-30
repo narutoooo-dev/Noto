@@ -591,11 +591,11 @@
             android:id="@+id/action_vaultSettingsFragment_to_vaultTimeoutDialogFragment"
             app:destination="@id/vaultTimeoutDialogFragment" />
         <action
-            android:id="@+id/action_vaultSettingsFragment_to_vaultPasscodeDialogFragment"
-            app:destination="@id/vaultPasscodeDialogFragment" />
-        <action
             android:id="@+id/action_vaultSettingsFragment_to_confirmationDialogFragment"
             app:destination="@id/confirmationDialogFragment" />
+        <action
+            android:id="@+id/action_vaultSettingsFragment_to_changeVaultPasscodeDialogFragment"
+            app:destination="@id/changeVaultPasscodeDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/readingModeSettingsFragment"
@@ -910,4 +910,8 @@
     <action
         android:id="@+id/action_global_progressIndicatorDialogFragment"
         app:destination="@id/progressIndicatorDialogFragment" />
+    <dialog
+        android:id="@+id/changeVaultPasscodeDialogFragment"
+        android:name="com.noto.app.settings.vault.ChangeVaultPasscodeDialogFragment"
+        android:label="ChangeVaultPasscodeDialogFragment" />
 </navigation>

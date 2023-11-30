@@ -19,14 +19,13 @@ import com.noto.app.domain.model.VaultTimeout
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
-import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.warning
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VaultSettingsFragment : Fragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<VaultSettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,7 +67,7 @@ class VaultSettingsFragment : Fragment() {
                         SettingsItem(
                             title = stringResource(id = R.string.change_passcode),
                             type = SettingsItemType.None,
-                            onClick = { navController?.navigateSafely(VaultSettingsFragmentDirections.actionVaultSettingsFragmentToVaultPasscodeDialogFragment()) },
+                            onClick = { navController?.navigateSafely(VaultSettingsFragmentDirections.actionVaultSettingsFragmentToChangeVaultPasscodeDialogFragment()) },
                             painter = painterResource(id = R.drawable.ic_round_key_24)
                         )
 

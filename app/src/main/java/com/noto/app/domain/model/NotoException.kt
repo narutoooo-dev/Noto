@@ -20,7 +20,7 @@ sealed class NotoException(message: String? = null) : RuntimeException(message) 
 
     sealed class Model : NotoException() {
         data object TitleIsRequired : Model()
-        data object NameIsRequired: Model()
+        data object NameIsRequired : Model()
     }
 
     sealed class Export : NotoException() {
@@ -32,6 +32,14 @@ sealed class NotoException(message: String? = null) : RuntimeException(message) 
     sealed class Import : NotoException() {
         data object ImportFailed : Import()
         data object NoFileSelected : Import()
+    }
+
+    sealed class Vault : NotoException() {
+        data object PasscodeIsRequired : Vault()
+        data object NewPasscodeIsRequired : Vault()
+        data object InvalidPasscode : Vault()
+        data object PasscodeRequirements : Vault()
+        data object MismatchedPasscodes : Vault()
     }
 
     data object TryAgainLater : NotoException(message = null)

@@ -37,6 +37,8 @@ import com.noto.app.main.MainViewModel
 import com.noto.app.note.NotePagerViewModel
 import com.noto.app.note.NoteViewModel
 import com.noto.app.settings.SettingsViewModel
+import com.noto.app.settings.vault.VaultSettingsViewModel
+import com.noto.app.vault.VaultPasscodeViewModel
 import com.noto.app.widget.FolderListWidgetConfigViewModel
 import com.noto.app.widget.NoteListWidgetConfigViewModel
 import io.github.jan.supabase.SupabaseClient
@@ -97,6 +99,10 @@ val appModule = module {
     viewModel { NewFolderViewModel(get(), get()) }
 
     viewModel { NewLabelViewModel(get(), get(), it[0], it[1]) }
+
+    viewModel { VaultSettingsViewModel(get(), get()) }
+
+    viewModel { VaultPasscodeViewModel(get()) }
 
 }
 

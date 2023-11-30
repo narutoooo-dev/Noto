@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.TextFieldStatus
 import com.noto.app.domain.model.*
@@ -13,7 +12,6 @@ import com.noto.app.domain.repository.*
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.toUiState
 import com.noto.app.util.Constants
-import com.noto.app.util.hash
 import com.noto.app.util.readText
 import com.noto.app.util.writeText
 import kotlinx.coroutines.flow.*
@@ -62,12 +60,6 @@ class SettingsViewModel(
 
     val vaultPasscode = settingsRepository.vaultPasscode
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    val vaultTimeout = settingsRepository.vaultTimeout
-        .stateIn(viewModelScope, SharingStarted.Lazily, VaultTimeout.Immediately)
-
-    val isBioAuthEnabled = settingsRepository.isBioAuthEnabled
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val mainInterfaceId = settingsRepository.mainInterfaceId
         .stateIn(viewModelScope, SharingStarted.Eagerly, Folder.GeneralFolderId)
@@ -182,18 +174,6 @@ class SettingsViewModel(
         }
     }
 
-    fun setVaultPasscode(passcode: String) = viewModelScope.launch {
-        settingsRepository.updateVaultPasscode(passcode.hash())
-    }
-
-    fun updateVaultTimeout(timeout: VaultTimeout) = viewModelScope.launch {
-        settingsRepository.updateVaultTimeout(timeout)
-    }
-
-    fun toggleIsBioAuthEnabled() = viewModelScope.launch {
-        settingsRepository.updateIsBioAuthEnabled(!isBioAuthEnabled.value)
-    }
-
     fun updateLastVersion() = viewModelScope.launch {
         settingsRepository.updateLastVersion(Release.Version.Current.format())
     }
@@ -238,17 +218,6 @@ class SettingsViewModel(
 
     fun setQuickNoteFolderId(folderId: Long) = viewModelScope.launch {
         settingsRepository.updateQuickNoteFolderId(folderId)
-    }
-
-    fun disableVault() = viewModelScope.launch {
-        folderRepository.getVaultedFolders().first()
-            .map { it.copy(isVaulted = false) }
-            .forEach { folderRepository.updateFolder(it) }
-        settingsRepository.updateVaultPasscode(passcode = null)
-        settingsRepository.updateVaultTimeout(timeout = VaultTimeout.Immediately)
-        settingsRepository.updateScheduledVaultTimeout(timeout = null)
-        settingsRepository.updateIsBioAuthEnabled(isEnabled = false)
-        settingsRepository.updateIsVaultOpen(isOpen = false)
     }
 
     fun setName(name: String) {

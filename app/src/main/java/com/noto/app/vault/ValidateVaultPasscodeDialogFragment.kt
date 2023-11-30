@@ -4,108 +4,129 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import com.noto.app.R
-import com.noto.app.components.BaseDialogFragment
-import com.noto.app.databinding.ValidateVaultPasscodeDialogFragmentBinding
-import com.noto.app.settings.SettingsViewModel
-import com.noto.app.util.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import com.noto.app.components.*
+import com.noto.app.domain.model.NotoException
+import com.noto.app.fold
+import com.noto.app.theme.NotoTheme
+import com.noto.app.util.Constants
+import com.noto.app.util.navController
+import com.noto.app.util.stringResource
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ValidateVaultPasscodeDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel by viewModel<VaultPasscodeViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = ValidateVaultPasscodeDialogFragmentBinding.inflate(inflater, container, false).withBinding {
-        setupState()
-        setupListeners()
-    }
+    ): View? = context?.let { context ->
 
-    private fun ValidateVaultPasscodeDialogFragmentBinding.setupState() {
-        tb.tvDialogTitle.text = context?.stringResource(R.string.enter_vault_passcode)
+        val biometricPromptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(context.stringResource(R.string.validate))
+            .setNegativeButtonText(context.stringResource(R.string.use_passcode))
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+            .build()
 
-        viewModel.isBioAuthEnabled
-            .onEach { isBioAuthEnabled ->
-                if (isBioAuthEnabled) {
-                    btnUseBio.isVisible = true
-                    validateUsingBio()
-                } else {
-                    btnUseBio.isVisible = false
-                    et.requestFocus()
-                    activity?.showKeyboard(et)
+        val biometricPrompt = BiometricPrompt(
+            this,
+            ContextCompat.getMainExecutor(context),
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    passcodeIsValid()
                 }
             }
-            .launchIn(lifecycleScope)
+        )
 
-        nsv.isScrollingAsFlow()
-            .onEach { isScrolling -> tb.ll.isSelected = isScrolling }
-            .launchIn(lifecycleScope)
-    }
+        ComposeView(context).apply {
+            setContent {
+                val state by viewModel.state.collectAsState()
+                val isBioAuthEnabled by viewModel.isBioAuthEnabled.collectAsState()
+                val vaultPasscode by viewModel.vaultPasscode.collectAsState()
+                val vaultPasscodeStatus by viewModel.vaultPasscodeStatus.collectAsState()
+                val focusRequester = remember { FocusRequester() }
 
-    private fun ValidateVaultPasscodeDialogFragmentBinding.setupListeners() {
-        et.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                validateUsingPasscode()
-                true
-            } else {
-                false
-            }
-        }
+                BottomSheetDialog(title = stringResource(id = R.string.enter_vault_passcode)) {
 
-        btnValidate.setOnClickListener {
-            validateUsingPasscode()
-        }
+                    NotoPasswordTextField(
+                        value = vaultPasscode,
+                        onValueChange = viewModel::setVaultPasscode,
+                        placeholder = stringResource(id = R.string.passcode),
+                        status = vaultPasscodeStatus,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
+                    )
 
-        btnUseBio.setOnClickListener {
-            validateUsingBio()
-        }
-    }
+                    LaunchedEffect(Unit) {
+                        if (!isBioAuthEnabled) focusRequester.requestFocus()
+                    }
 
-    private fun ValidateVaultPasscodeDialogFragmentBinding.validateUsingPasscode() {
-        val passcode = et.text.toString()
-        when {
-            passcode.isBlank() -> til.error = context?.stringResource(R.string.passcode_empty_message)
-            passcode.hash() == viewModel.vaultPasscode.value -> passcodeIsValid()
-            else -> til.error = context?.stringResource(R.string.invalid_passcode)
-        }
-    }
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.extraLarge))
 
-    private fun ValidateVaultPasscodeDialogFragmentBinding.validateUsingBio() {
-        context?.let { context ->
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle(context.stringResource(R.string.validate))
-                .setNegativeButtonText(context.stringResource(R.string.use_passcode))
-                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK)
-                .build()
+                    Button(
+                        text = stringResource(id = R.string.validate),
+                        onClick = viewModel::validatePasscode,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-            val biometricPrompt = BiometricPrompt(
-                this@ValidateVaultPasscodeDialogFragment,
-                ContextCompat.getMainExecutor(requireContext()),
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-                        passcodeIsValid()
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
+
+                    if (isBioAuthEnabled) {
+                        TextButton(
+                            text = stringResource(id = R.string.use_bio),
+                            onClick = { biometricPrompt.authenticate(biometricPromptInfo) },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+
+                        LaunchedEffect(Unit) {
+                            biometricPrompt.authenticate(biometricPromptInfo)
+                        }
                     }
                 }
-            )
 
-            biometricPrompt.authenticate(promptInfo)
+                LaunchedEffect(state) {
+                    state.fold(
+                        onSuccess = { passcodeIsValid() },
+                        onFailure = { exception ->
+                            when (exception) {
+                                NotoException.Vault.PasscodeIsRequired -> {
+                                    viewModel.setVaultPasscodeStatus(TextFieldStatus.Error(R.string.passcode_is_required))
+                                }
+
+                                NotoException.Vault.InvalidPasscode -> {
+                                    viewModel.setVaultPasscodeStatus(TextFieldStatus.Error(R.string.passcode_is_invalid))
+                                }
+
+                                else -> {}
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 
-    private fun ValidateVaultPasscodeDialogFragmentBinding.passcodeIsValid() {
-        activity?.hideKeyboard(et)
+    private fun passcodeIsValid() {
         navController?.previousBackStackEntry?.savedStateHandle?.set(Constants.IsPasscodeValid, true)
     }
+
 }

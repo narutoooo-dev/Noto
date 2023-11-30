@@ -36,6 +36,7 @@ object Constants {
 
     const val NameMaxLength = 32
     const val OtpMaxLength = 6
+    const val VaultPasscodeMinLength = 6
 
     object Regex {
         val Email = Regex(".+@.+\\..+")
