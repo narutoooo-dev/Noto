@@ -102,7 +102,13 @@ class FilteredViewModel(
                         .filter { note -> note.isRecent }
                         .mapToNoteItemModel()
                         .filterBySearchTerm(searchTerm)
-                        .map { model -> folders.first { it.id == model.note.folderId } to model }
+                        .mapNotNull { model ->
+                            val folder = folders.firstOrNull { it.id == model.note.folderId }
+                            if (folder != null)
+                                folder to model
+                            else
+                                null
+                        }
                         .groupBy { pair -> pair.second.note.accessDate.toLocalDate() }
                         .filterValues { it.isNotEmpty() }
                         .mapValues { it.value.sortedByDescending { it.second.note.accessDate } }
@@ -118,7 +124,13 @@ class FilteredViewModel(
                         .filter { note -> note.reminderDate != null }
                         .mapToNoteItemModel()
                         .filterBySearchTerm(searchTerm)
-                        .map { model -> folders.first { it.id == model.note.folderId } to model }
+                        .mapNotNull { model ->
+                            val folder = folders.firstOrNull { it.id == model.note.folderId }
+                            if (folder != null)
+                                folder to model
+                            else
+                                null
+                        }
                         .groupBy { pair -> pair.second.note.accessDate.toLocalDate() }
                         .filterValues { it.isNotEmpty() }
                         .mapValues { it.value.sortedByDescending { it.second.note.accessDate } }
