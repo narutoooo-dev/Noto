@@ -30,7 +30,7 @@ fun Fragment.LazyScreen(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     content: LazyListScope.() -> Unit,
 ) {
-    val viewModel by viewModel<SettingsViewModel>()
+    val viewModel by remember { viewModel<SettingsViewModel>() }
     val theme by viewModel.theme.collectAsState()
     val scope = rememberCoroutineScope()
     val isScrolling by remember { derivedStateOf { state.firstVisibleItemIndex > 0 } }

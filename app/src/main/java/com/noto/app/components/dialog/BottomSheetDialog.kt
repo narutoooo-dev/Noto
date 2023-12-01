@@ -43,7 +43,7 @@ fun BaseDialogFragment.LazyBottomSheetDialog(
     val lazyListState = rememberLazyListState()
     val headerScrollState = rememberScrollState()
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
-    val viewModel by viewModel<SettingsViewModel>()
+    val viewModel by remember { viewModel<SettingsViewModel>() }
     val theme by viewModel.theme.collectAsState()
     val isScrolling by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
     val elevation by animateDpAsState(
@@ -91,7 +91,7 @@ fun BaseDialogFragment.BottomSheetDialog(
     val contentScrollState = rememberScrollState()
     val headerScrollState = rememberScrollState()
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
-    val viewModel by viewModel<SettingsViewModel>()
+    val viewModel by remember { viewModel<SettingsViewModel>() }
     val theme by viewModel.theme.collectAsState()
     val isContentScrolling by remember { derivedStateOf { contentScrollState.value > 0 } }
     val elevation by animateDpAsState(

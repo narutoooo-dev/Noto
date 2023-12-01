@@ -45,7 +45,7 @@ fun Fragment.IntroScreen(
     bottomAppBarContent: @Composable (() -> Unit)? = null,
     content: @Composable PagerScope.(page: Int) -> Unit,
 ) {
-    val viewModel by viewModel<SettingsViewModel>()
+    val viewModel by remember { viewModel<SettingsViewModel>() }
     val theme by viewModel.theme.collectAsState()
     val scope = rememberCoroutineScope()
     val isScrolling by remember(scrollState) { derivedStateOf { scrollState.value > 0 } }

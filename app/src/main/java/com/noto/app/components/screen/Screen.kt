@@ -33,7 +33,7 @@ fun Fragment.Screen(
     scrollState: ScrollState = rememberScrollState(),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val viewModel by viewModel<SettingsViewModel>()
+    val viewModel by remember { viewModel<SettingsViewModel>() }
     val theme by viewModel.theme.collectAsState()
     val scope = rememberCoroutineScope()
     val isScrolling by remember { derivedStateOf { scrollState.value > 0 } }
