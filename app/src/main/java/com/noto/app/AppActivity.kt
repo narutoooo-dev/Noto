@@ -19,7 +19,7 @@ import com.noto.app.components.activity.BaseActivity
 import com.noto.app.databinding.AppActivityBinding
 import com.noto.app.domain.model.*
 import com.noto.app.filtered.FilteredItemModel
-import com.noto.app.main.MainVaultFragment
+import com.noto.app.main.MainFragment
 import com.noto.app.util.*
 import com.noto.app.vault.VaultTimeoutWorker
 import kotlinx.coroutines.flow.combine
@@ -168,8 +168,8 @@ class AppActivity : BaseActivity() {
             }
 
             Constants.Intent.ActionOpenVault -> {
-                if (navController.currentDestination?.id != R.id.mainVaultFragment)
-                    navController.navigateSafely(NavGraphDirections.actionGlobalMainVaultFragment())
+                if (navController.currentDestination?.id != R.id.mainFragment)
+                    navController.navigateSafely(NavGraphDirections.actionGlobalMainFragment())
             }
 
             Constants.Intent.ActionSettings -> {
@@ -199,6 +199,8 @@ class AppActivity : BaseActivity() {
                 NavGraphDirections.actionGlobalSelectFolderDialogFragment(
                     filteredFolderIds = longArrayOf(),
                     title = stringResource(R.string.select_folder),
+                    isMainFoldersEnabled = true,
+                    isChildFoldersEnabled = true,
                 )
             )
         }
@@ -261,7 +263,7 @@ class AppActivity : BaseActivity() {
                 object : FragmentManager.FragmentLifecycleCallbacks() {
                     override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
                         super.onFragmentDestroyed(fm, f)
-                        if (f is MainVaultFragment)
+                        if (f is MainFragment)
                             if (viewModel.vaultTimeout.value == VaultTimeout.Immediately) {
                                 viewModel.closeVault()
                                 notificationManager.cancelVaultNotification()

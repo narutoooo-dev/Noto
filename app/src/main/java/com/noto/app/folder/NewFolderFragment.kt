@@ -142,6 +142,10 @@ class NewFolderFragment : Fragment() {
                                         selectedFolderId = (folder.parentFolder?.id ?: 0L),
                                         isNoneEnabled = true,
                                         title = context.stringResource(R.string.parent_folder),
+                                        isMainFoldersEnabled = !folder.isVaulted && !folder.isArchived,
+                                        isVaultedFoldersEnabled = folder.isVaulted,
+                                        isArchivedFoldersEnabled = folder.isArchived,
+                                        isChildFoldersEnabled = false,
                                     )
                                 )
                             }

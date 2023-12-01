@@ -166,6 +166,18 @@
         <item quantity="one">%d Folder</item>
         <item quantity="other">%d Folders</item>
     </plurals>
+    <plurals name="folders_archived_count">
+        <item quantity="one">%1$d Folder • %2$d Archived</item>
+        <item quantity="other">%1$d Folders • %2$d Archived</item>
+    </plurals>
+    <plurals name="folders_vaulted_count">
+        <item quantity="one">%1$d Folder • %2$d Vaulted</item>
+        <item quantity="other">%1$d Folders • %2$d Vaulted</item>
+    </plurals>
+    <plurals name="folders_vaulted_archived_count">
+        <item quantity="one">%1$d Folder • %2$d Vaulted • %3$d Archived</item>
+        <item quantity="other">%1$d Folders • %2$d Vaulted • %3$d Archived</item>
+    </plurals>
     <string name="create_folder">Create folder</string>
     <string name="update_folder">Update folder</string>
     <string name="archive_folder">Archive folder</string>
@@ -229,6 +241,7 @@
     <string name="use_bio">Use biometrics</string>
     <string name="validate">Validate</string>
     <string name="vault">Vault</string>
+    <string name="vaulted">Vaulted</string>
     <!-- An option to disable the vault in vault settings. -->
     <string name="disable_vault">Disable vault</string>
     <!-- A message shown when "Disable vault" is being clicked. -->

@@ -70,7 +70,9 @@ class FilteredFragment : Fragment() {
                 navController?.navigateSafely(
                     FilteredFragmentDirections.actionFilteredFragmentToSelectFolderDialogFragment(
                         filteredFolderIds = longArrayOf(),
-                        title = context.stringResource(R.string.select_folder)
+                        title = context.stringResource(R.string.select_folder),
+                        isMainFoldersEnabled = true,
+                        isChildFoldersEnabled = true,
                     )
                 )
             }

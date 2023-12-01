@@ -235,7 +235,11 @@ class NoteDialogFragment : BaseDialogFragment() {
                 navController?.navigateSafely(
                     NoteDialogFragmentDirections.actionNoteDialogFragmentToSelectFolderDialogFragment(
                         filteredFolderIds = longArrayOf(args.folderId),
-                        title = context.stringResource(R.string.copy_to).removeSuffix("…")
+                        title = context.stringResource(R.string.copy_to).removeSuffix("…"),
+                        isMainFoldersEnabled = true,
+                        isVaultedFoldersEnabled = true,
+                        isArchivedFoldersEnabled = true,
+                        isChildFoldersEnabled = true,
                     )
                 )
             }
@@ -270,7 +274,11 @@ class NoteDialogFragment : BaseDialogFragment() {
                 navController?.navigateSafely(
                     NoteDialogFragmentDirections.actionNoteDialogFragmentToSelectFolderDialogFragment(
                         filteredFolderIds = longArrayOf(args.folderId),
-                        title = context.stringResource(R.string.move_to).removeSuffix("…")
+                        title = context.stringResource(R.string.move_to).removeSuffix("…"),
+                        isMainFoldersEnabled = true,
+                        isVaultedFoldersEnabled = true,
+                        isArchivedFoldersEnabled = true,
+                        isChildFoldersEnabled = true,
                     )
                 )
             }

@@ -14,10 +14,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
-import com.noto.app.components.model.FolderItem
 import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.components.dialog.LazyBottomSheetDialog
+import com.noto.app.components.material.ScreenCircularProgressIndicator
 import com.noto.app.components.model.FilteredItem
+import com.noto.app.components.model.FolderItem
+import com.noto.app.components.util.HeaderItem
 import com.noto.app.components.util.NoneItem
 import com.noto.app.components.util.NoneItemId
 import com.noto.app.components.util.PlaceholderItem
@@ -51,24 +53,32 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
 
         ComposeView(context).apply {
             setContent {
-                val state by viewModel.folders.collectAsState()
+                val state by viewModel.allFolders.collectAsState()
                 val isShowNotesCount by viewModel.isShowNotesCount.collectAsState()
                 val notesCount by viewModel.notesCount.collectAsState()
+                val isVaultOpen by viewModel.isVaultOpen.collectAsState()
 
                 LazyBottomSheetDialog(title = args.title) {
                     state.fold(
-                        onSuccess = { folders ->
-                            val mainItems = folders.mapRecursivelyToFolderItem { folder, depth, childItems ->
+                        onLoading = { item { ScreenCircularProgressIndicator() } },
+                        onSuccess = { allFolders ->
+                            val allFoldersItems = allFolders.mapRecursivelyToFolderItem { folder, depth, childItems ->
+                                val isEnabled = if (args.filteredFolderIds.isEmpty()) true else folder.id !in args.filteredFolderIds
                                 FolderItem(
                                     folder = folder,
                                     isSelected = folder.id == args.selectedFolderId,
-                                    isEnabled = if (args.filteredFolderIds.isEmpty()) true else folder.id !in args.filteredFolderIds,
+                                    isEnabled = isEnabled,
                                     depth = depth,
-                                    childItems = childItems,
+                                    childItems = childItems.mapRecursively {
+                                        it.copy(isEnabled = if (isEnabled) it.isEnabled else args.isChildFoldersEnabled)
+                                    },
                                 )
                             }
-                            val mainFolderItems = mainItems.filterNot { it.folder.isGeneral }
-                            val generalFolderItem = mainItems.firstOrNull { it.folder.isGeneral }
+                            val nonGeneralFoldersItem = allFoldersItems.filterNot { it.folder.isGeneral }
+                            val mainFoldersItems = nonGeneralFoldersItem.filter { !it.folder.isVaulted && !it.folder.isArchived }
+                            val vaultedFoldersItems = nonGeneralFoldersItem.filter { it.folder.isVaulted }
+                            val archivedFoldersItems = nonGeneralFoldersItem.filter { it.folder.isArchived }
+                            val generalFolderItem = allFoldersItems.firstOrNull { it.folder.isGeneral }
 
                             if (args.isNoneEnabled) {
                                 item {
@@ -79,7 +89,7 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
                                 }
                             }
 
-                            if (args.isMainInterface) {
+                            if (args.isFilteredEnabled) {
                                 item {
                                     Column(
                                         modifier = Modifier
@@ -155,22 +165,52 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
                                 }
                             }
 
-                            if (folders.isEmpty() && generalFolderItem == null && !args.isNoneEnabled) {
+                            if (allFoldersItems.isEmpty() && generalFolderItem == null && !args.isNoneEnabled) {
                                 item {
                                     PlaceholderItem(
-                                        placeholder = if (folders.isEmpty())
+                                        placeholder = if (allFoldersItems.isEmpty())
                                             stringResource(id = R.string.no_folders_found)
                                         else
                                             stringResource(id = R.string.no_relevant_folders_found)
                                     )
                                 }
                             } else {
-                                items(mainFolderItems) { item ->
-                                    FolderItem(
-                                        item = item,
-                                        isShowNotesCount = isShowNotesCount,
-                                        onClick = { returnResult(it.folder.id, it.folder.getTitle(context)) },
-                                    )
+                                if (args.isMainFoldersEnabled) {
+                                    items(mainFoldersItems) { item ->
+                                        FolderItem(
+                                            item = item,
+                                            isShowNotesCount = isShowNotesCount,
+                                            onClick = { returnResult(it.folder.id, it.folder.getTitle(context)) },
+                                        )
+                                    }
+                                }
+
+                                if (args.isVaultedFoldersEnabled && vaultedFoldersItems.isNotEmpty() && isVaultOpen) {
+                                    item {
+                                        HeaderItem(title = stringResource(id = R.string.vaulted))
+                                    }
+
+                                    items(vaultedFoldersItems) { item ->
+                                        FolderItem(
+                                            item = item,
+                                            isShowNotesCount = isShowNotesCount,
+                                            onClick = { returnResult(it.folder.id, it.folder.getTitle(context)) },
+                                        )
+                                    }
+                                }
+
+                                if (args.isArchivedFoldersEnabled && archivedFoldersItems.isNotEmpty()) {
+                                    item {
+                                        HeaderItem(title = stringResource(id = R.string.archived))
+                                    }
+
+                                    items(archivedFoldersItems) { item ->
+                                        FolderItem(
+                                            item = item,
+                                            isShowNotesCount = isShowNotesCount,
+                                            onClick = { returnResult(it.folder.id, it.folder.getTitle(context)) },
+                                        )
+                                    }
                                 }
                             }
                         }

@@ -244,6 +244,12 @@ fun List<Folder>.mapRecursivelyToFolderItem(depth: Int = 0, transform: (Folder, 
     }
 }
 
+fun List<FolderItem>.mapRecursively(transform: (FolderItem) -> FolderItem): List<FolderItem> {
+    return map {
+        transform(it.copy(childItems = it.childItems.mapRecursively(transform)))
+    }
+}
+
 fun List<Folder>.findRecursively(predicate: (Folder) -> Boolean): Folder? {
     val item: Folder? = firstOrNull(predicate)
     if (item != null)

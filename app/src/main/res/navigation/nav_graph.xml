@@ -22,11 +22,6 @@
             app:destination="@id/folderDialogFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainFragment_to_mainDialogFragment"
-            app:destination="@id/mainDialogFragment"
-            app:popUpTo="@id/mainFragment"
-            app:popUpToInclusive="true" />
         <argument
             android:name="exit"
             android:defaultValue="false"
@@ -40,6 +35,12 @@
         <action
             android:id="@+id/action_mainFragment_to_filteredFragment"
             app:destination="@id/filteredFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_validateVaultPasscodeDialogFragment"
+            app:destination="@id/validateVaultPasscodeDialogFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_vaultPasscodeDialogFragment"
+            app:destination="@id/vaultPasscodeDialogFragment" />
     </dialog>
     <fragment
         android:id="@+id/folderFragment"
@@ -332,14 +333,6 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="is_none_enabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
-            android:name="is_main_interface"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="title"
             app:argType="string" />
         <argument
@@ -347,6 +340,30 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="is_none_enabled"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="is_filtered_enabled"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="is_main_folders_enabled"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="is_vaulted_folders_enabled"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="is_archived_folders_enabled"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="is_child_folders_enabled"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </dialog>
     <dialog
         android:id="@+id/folderListSortingDialogFragment"
@@ -356,19 +373,6 @@
         android:id="@+id/fontDialogFragment"
         android:name="com.noto.app.settings.general.FontDialogFragment"
         android:label="FontDialogFragment" />
-    <dialog
-        android:id="@+id/mainArchiveFragment"
-        android:name="com.noto.app.main.MainArchiveFragment"
-        android:label="MainArchiveFragment">
-        <action
-            android:id="@+id/action_mainArchiveFragment_to_folderDialogFragment"
-            app:destination="@id/folderDialogFragment"
-            app:popUpTo="@id/mainArchiveFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainArchiveFragment_to_folderFragment"
-            app:destination="@id/folderFragment" />
-    </dialog>
     <dialog
         android:id="@+id/noteListSortingDialogFragment"
         android:name="com.noto.app.folder.NoteListSortingDialogFragment"
@@ -475,19 +479,6 @@
             app:argType="string" />
     </dialog>
     <dialog
-        android:id="@+id/mainVaultFragment"
-        android:name="com.noto.app.main.MainVaultFragment"
-        android:label="MainVaultFragment">
-        <action
-            android:id="@+id/action_mainVaultFragment_to_folderDialogFragment"
-            app:destination="@id/folderDialogFragment"
-            app:popUpTo="@id/mainVaultFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainVaultFragment_to_folderFragment"
-            app:destination="@id/folderFragment" />
-    </dialog>
-    <dialog
         android:id="@+id/vaultPasscodeDialogFragment"
         android:name="com.noto.app.vault.VaultPasscodeDialogFragment"
         android:label="VaultPasscodeDialogFragment" />
@@ -499,34 +490,6 @@
         android:id="@+id/whatsNewDialogFragment"
         android:name="com.noto.app.settings.whatsnew.WhatsNewDialogFragment"
         android:label="WhatsNewDialogFragment" />
-    <dialog
-        android:id="@+id/mainDialogFragment"
-        android:name="com.noto.app.main.MainDialogFragment"
-        android:label="MainDialogFragment">
-        <action
-            android:id="@+id/action_mainDialogFragment_to_mainVaultFragment"
-            app:destination="@id/mainVaultFragment"
-            app:popUpTo="@id/mainDialogFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainDialogFragment_to_mainArchiveFragment"
-            app:destination="@id/mainArchiveFragment"
-            app:popUpTo="@id/mainDialogFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainDialogFragment_to_vaultPasscodeDialogFragment"
-            app:destination="@id/vaultPasscodeDialogFragment"
-            app:popUpTo="@id/mainDialogFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainDialogFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment"
-            app:popUpTo="@id/mainDialogFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_mainDialogFragment_to_validateVaultPasscodeDialogFragment"
-            app:destination="@id/validateVaultPasscodeDialogFragment" />
-    </dialog>
     <dialog
         android:id="@+id/undoRedoDialogFragment"
         android:name="com.noto.app.note.UndoRedoDialogFragment"
@@ -786,9 +749,6 @@
     <action
         android:id="@+id/action_global_mainFragment"
         app:destination="@id/mainFragment" />
-    <action
-        android:id="@+id/action_global_mainVaultFragment"
-        app:destination="@id/mainVaultFragment" />
     <fragment
         android:id="@+id/introFragment"
         android:name="com.noto.app.intro.IntroFragment"
@@ -825,7 +785,7 @@
     <dialog
         android:id="@+id/verifyEmailDialogFragment"
         android:name="com.noto.app.login.VerifyEmailDialogFragment"
-        android:label="VerifyEmailDialogFragment" >
+        android:label="VerifyEmailDialogFragment">
         <argument
             android:name="email"
             app:argType="string" />

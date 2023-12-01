@@ -237,6 +237,8 @@ class NoteListWidgetConfigActivity : BaseActivity() {
             Constants.IsDismissible to isDismissible,
             Constants.SelectedFolderId to viewModel.folder.value.id,
             Constants.Title to stringResource(R.string.select_folder),
+            Constants.IsMainFoldersEnabled to true,
+            Constants.IsChildFoldersEnabled to true,
         )
         selectFolderDialogFragment = SelectFolderDialogFragment { folderId, _ -> viewModel.getWidgetData(folderId) }
             .apply {

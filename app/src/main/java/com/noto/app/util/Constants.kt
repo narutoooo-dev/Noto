@@ -33,6 +33,8 @@ object Constants {
     const val QuickNote = "quick_note"
     const val LogOut = "log_out"
     const val DeleteAccount = "delete_account"
+    const val IsMainFoldersEnabled = "is_main_folders_enabled"
+    const val IsChildFoldersEnabled = "is_child_folders_enabled"
 
     const val NameMaxLength = 32
     const val OtpMaxLength = 6
