@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
 import com.noto.app.components.dialog.BaseDialogFragment
@@ -50,7 +51,7 @@ class NewLabelDialogFragment : BaseDialogFragment() {
                 val label by viewModel.label.collectAsState()
                 val titleStatus by viewModel.titleStatus.collectAsState()
                 val state by viewModel.state.collectAsState()
-                val keyboardOptions = remember { KeyboardOptions(imeAction = ImeAction.Done) }
+                val keyboardOptions = remember { KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done) }
                 val focusRequester = remember { FocusRequester() }
                 val focusManager = LocalFocusManager.current
 

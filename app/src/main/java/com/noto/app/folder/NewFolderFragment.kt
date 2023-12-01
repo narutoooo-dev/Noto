@@ -25,14 +25,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
 import com.noto.app.components.android.AndroidViewSlider
+import com.noto.app.components.material.*
 import com.noto.app.components.model.NotoColorItem
 import com.noto.app.components.screen.Screen
-import com.noto.app.components.material.*
 import com.noto.app.domain.model.*
 import com.noto.app.fold
 import com.noto.app.settings.SettingsItem
@@ -67,7 +68,7 @@ class NewFolderFragment : Fragment() {
                 val folder by viewModel.folder.collectAsState()
                 val folderTitle = remember(folder.title) { folder.getTitle(context) }
                 val titleStatus by viewModel.titleStatus.collectAsState()
-                val keyboardOptions = remember { KeyboardOptions(imeAction = ImeAction.Done) }
+                val keyboardOptions = remember { KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done) }
                 val notoColorsState = rememberLazyListState()
                 val notoColors = remember { NotoColor.entries.toList() }
                 val parentFolderTitle = remember(folder.parentFolder) { folder.parentFolder?.getTitle(context) }
