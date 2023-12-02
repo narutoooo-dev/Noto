@@ -6,10 +6,7 @@ import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
-import com.noto.app.util.AllFoldersId
-import com.noto.app.util.firstLineOrEmpty
-import com.noto.app.util.isGeneral
-import com.noto.app.util.takeAfterFirstLineOrEmpty
+import com.noto.app.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
@@ -56,7 +53,7 @@ class AppViewModel(
         .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
     val mainInterfaceId = settingsRepository.mainInterfaceId
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AllFoldersId)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.AllFoldersId)
 
     var shouldNavigateToMainFragment = true
         private set

@@ -12,7 +12,7 @@ import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.filtered.FilteredItemModel
-import com.noto.app.util.AllFoldersId
+import com.noto.app.util.Constants
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -67,7 +67,7 @@ class SettingsRepositoryImpl(
 
     override val isShowNotesCount: Flow<Boolean> = storage.getNullable(SettingsKeys.ShowNotesCount, null).map { it?.toBoolean() ?: true }
 
-    override val mainInterfaceId: Flow<Long> = storage[SettingsKeys.MainInterfaceId, AllFoldersId]
+    override val mainInterfaceId: Flow<Long> = storage[SettingsKeys.MainInterfaceId, Constants.AllFoldersId]
 
     override val isRememberScrollingPosition: Flow<Boolean> = storage[SettingsKeys.IsRememberScrollingPosition, true]
 

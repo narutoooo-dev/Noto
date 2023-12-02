@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.noto.app.components.material.ElevationAnimationDuration
+import com.noto.app.components.material.NotoFilledIconButton
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.theme.NotoTheme
 import com.noto.app.theme.dialog
@@ -38,6 +39,8 @@ fun BaseDialogFragment.LazyBottomSheetDialog(
     modifier: Modifier = Modifier,
     headerColor: Color? = null,
     painter: Painter? = null,
+    iconContentDescription: String = title,
+    onIconClick: (() -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
@@ -61,6 +64,8 @@ fun BaseDialogFragment.LazyBottomSheetDialog(
                 Header(
                     title = title,
                     painter = painter,
+                    onIconClick = onIconClick,
+                    iconContentDescription = iconContentDescription,
                     headerColor = headerColor,
                     elevation = elevation,
                     modifier = Modifier
@@ -86,6 +91,8 @@ fun BaseDialogFragment.BottomSheetDialog(
     modifier: Modifier = Modifier,
     headerColor: Color? = null,
     painter: Painter? = null,
+    iconContentDescription: String = title,
+    onIconClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val contentScrollState = rememberScrollState()
@@ -109,6 +116,8 @@ fun BaseDialogFragment.BottomSheetDialog(
                 Header(
                     title = title,
                     painter = painter,
+                    onIconClick = onIconClick,
+                    iconContentDescription = iconContentDescription,
                     headerColor = headerColor,
                     elevation = elevation,
                     modifier = Modifier
@@ -133,6 +142,8 @@ fun BaseDialogFragment.BottomSheetDialog(
 private fun Header(
     title: String,
     painter: Painter?,
+    iconContentDescription: String,
+    onIconClick: (() -> Unit)?,
     headerColor: Color?,
     elevation: Dp,
     modifier: Modifier = Modifier,
@@ -148,11 +159,22 @@ private fun Header(
                 .padding(NotoTheme.dimensions.medium),
             contentAlignment = Alignment.Center
         ) {
-            if (painter != null) Icon(
-                painter = painter,
-                contentDescription = title,
-                modifier = Modifier.align(Alignment.TopStart)
-            )
+            if (painter != null) {
+                if (onIconClick == null) {
+                    Icon(
+                        painter = painter,
+                        contentDescription = iconContentDescription,
+                        modifier = Modifier.align(Alignment.TopStart),
+                    )
+                } else {
+                    NotoFilledIconButton(
+                        painter = painter,
+                        contentDescription = iconContentDescription,
+                        onClick = onIconClick,
+                        modifier = Modifier.align(Alignment.TopEnd),
+                    )
+                }
+            }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Tip(headerColor ?: MaterialTheme.colorScheme.primary)
                 Title(title, headerColor ?: MaterialTheme.colorScheme.primary)

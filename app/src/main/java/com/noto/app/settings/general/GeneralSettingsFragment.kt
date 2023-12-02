@@ -54,12 +54,12 @@ class GeneralSettingsFragment : Fragment() {
                 val noneText = stringResource(id = R.string.none)
                 val mainInterfaceId by viewModel.mainInterfaceId.collectAsState()
                 val filteredItemModelId = remember(mainInterfaceId) {
-                    FilteredItemModel.entries.firstOrNull { it.id == mainInterfaceId }?.toStringResourceId() ?: R.string.all_folders
+                    FilteredItemModel.entries.firstOrNull { it.id == mainInterfaceId }?.toStringResourceId() ?: R.string.default_main_interface
                 }
                 val filteredItemModelText = stringResource(id = filteredItemModelId)
                 val mainInterfaceText by produceState(initialValue = filteredItemModelText, mainInterfaceId) {
                     value = when (mainInterfaceId) {
-                        in FilteredItemModel.Ids.plus(AllFoldersId) -> filteredItemModelText
+                        in FilteredItemModel.Ids.plus(Constants.AllFoldersId) -> filteredItemModelText
                         else -> viewModel.getFolderById(mainInterfaceId).filterNotNull().firstOrNull()?.getTitle(context) ?: noneText
                     }
                 }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.fragment.navArgs
 import com.noto.app.R
@@ -58,7 +59,18 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
                 val notesCount by viewModel.notesCount.collectAsState()
                 val isVaultOpen by viewModel.isVaultOpen.collectAsState()
 
-                LazyBottomSheetDialog(title = args.title) {
+                LazyBottomSheetDialog(
+                    title = args.title,
+                    painter = if (args.isFilteredEnabled) painterResource(id = R.drawable.ic_round_reset_24) else null,
+                    iconContentDescription = if (args.isFilteredEnabled) stringResource(id = R.string.reset) else args.title,
+                    onIconClick = if (args.isFilteredEnabled) {
+                        {
+                            returnResult(Constants.AllFoldersId, context.stringResource(R.string.default_main_interface))
+                        }
+                    } else {
+                        null
+                    },
+                ) {
                     state.fold(
                         onLoading = { item { ScreenCircularProgressIndicator() } },
                         onSuccess = { allFolders ->

@@ -1,7 +1,7 @@
 package com.noto.app.data.model.local
 
 import com.noto.app.domain.model.*
-import com.noto.app.util.AllFoldersId
+import com.noto.app.util.Constants
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -21,7 +21,7 @@ data class LocalSettingsConfig(
     val isShowNotesCount: Boolean = false,
     val isDoNotDisturb: Boolean = false,
     val isScreenOn: Boolean = true,
-    val mainInterfaceId: Long = AllFoldersId,
+    val mainInterfaceId: Long = Constants.AllFoldersId,
     val isRememberScrollingPosition: Boolean = true,
     val allNotesScrollingPosition: Int = 0,
     val recentNotesScrollingPosition: Int = 0,

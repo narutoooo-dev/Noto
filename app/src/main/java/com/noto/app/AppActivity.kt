@@ -84,7 +84,7 @@ class AppActivity : BaseActivity() {
                                     inflateGraphAndSetStartDestination(R.id.filteredFragment, args)
                                 }
 
-                                AllFoldersId -> { // MainFragment + General folder
+                                Constants.AllFoldersId -> { // MainFragment + General folder
                                     val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
                                     inflateGraphAndSetStartDestination(R.id.folderFragment, args)
                                     if (navController.currentDestination?.id != R.id.mainFragment && viewModel.shouldNavigateToMainFragment) {

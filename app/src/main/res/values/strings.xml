@@ -121,6 +121,7 @@
     <string name="general">General</string>
     <string name="all_notes">All notes</string>
     <string name="all_folders">All folders</string>
+    <string name="default_main_interface">Default</string>
     <string name="clear">Clear</string>
     <!-- Replacement for Recent Notes filtered view. -->
     <string name="recent">Recent</string>
@@ -265,6 +266,7 @@
     <!-- Description of the "Enable biometric authentication" settings option. -->
     <string name="bio_auth_description">Whether to allow accessing the vault using biometric authentications methods, such as Facial Recognition or Fingerprint.</string>
     <string name="use_passcode">Use passcode</string>
+    <string name="reset">Reset</string>
 
     <!-- Note -->
     <string name="all">All</string>

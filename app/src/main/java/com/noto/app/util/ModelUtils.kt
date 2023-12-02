@@ -23,7 +23,6 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import kotlin.time.Duration.Companion.days
 
-const val AllFoldersId = -4L
 val LabelDefaultStrokeWidth = 2.dp
 const val LineSeparator = "\n\n"
 val SelectedLabelsComparator = compareByDescending<LabelItemModel> { it.isSelected }.thenBy { it.label.position }
