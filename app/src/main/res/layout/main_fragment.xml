@@ -8,26 +8,26 @@
 
     <LinearLayout
         android:id="@+id/tb"
-        android:orientation="horizontal"
-        android:stateListAnimator="@animator/elevation_animator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/dialog_shape"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:orientation="vertical"
+        android:stateListAnimator="@animator/elevation_animator">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_normal"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content">
+            android:padding="@dimen/spacing_normal">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_dialog_title"
                 style="@style/DialogTitle"
-                android:gravity="start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:text="@string/app_name" />
 
             <com.robinhood.ticker.TickerView
@@ -42,39 +42,49 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_folders_count_rtl"
                 style="@style/SubtitleTextView"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:fontFamily="@font/nunito_semibold"
                 tools:text="7 notes" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/ib_sorting"
-            android:background="@drawable/round_btn_surface_shape"
-            android:padding="@dimen/spacing_normal"
-            android:src="@drawable/ic_round_view_24"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/folders_view" />
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/ib_settings"
-            android:background="@drawable/round_btn_surface_shape"
-            android:padding="@dimen/spacing_normal"
-            android:src="@drawable/ic_round_settings_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/settings" />
+            <ImageButton
+                android:id="@+id/ib_vault"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/round_btn_surface_shape"
+                android:contentDescription="@string/folders_view"
+                android:padding="@dimen/spacing_normal"
+                android:src="@drawable/ic_round_vault_24" />
 
-        <ImageButton
-            android:id="@+id/ib_more"
-            android:background="@drawable/round_btn_surface_shape"
-            android:padding="@dimen/spacing_normal"
-            android:src="@drawable/ic_round_more_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/more_options" />
+            <ImageButton
+                android:id="@+id/ib_sorting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/round_btn_surface_shape"
+                android:contentDescription="@string/folders_view"
+                android:padding="@dimen/spacing_normal"
+                android:src="@drawable/ic_round_view_24" />
+
+            <ImageButton
+                android:id="@+id/ib_settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/round_btn_surface_shape"
+                android:contentDescription="@string/settings"
+                android:padding="@dimen/spacing_normal"
+                android:src="@drawable/ic_round_settings_24" />
+        </LinearLayout>
     </LinearLayout>
 
     <FrameLayout
@@ -85,10 +95,10 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
             android:clipChildren="false"
-            android:paddingTop="@dimen/spacing_small"
+            android:clipToPadding="false"
             android:paddingHorizontal="@dimen/spacing_small"
+            android:paddingTop="@dimen/spacing_small"
             android:paddingBottom="@dimen/padding_bottom"
             tools:listitem="@layout/folder_item" />
 
@@ -96,8 +106,8 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_normal"
             android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/spacing_normal"
             android:contentDescription="@string/create_folder"
             android:src="@drawable/ic_round_new_folder_24"
             app:backgroundTint="?attr/notoPrimaryColor"

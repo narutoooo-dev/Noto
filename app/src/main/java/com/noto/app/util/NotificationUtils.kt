@@ -59,7 +59,7 @@ fun NotificationManager.sendVaultNotification(context: Context) {
         .setContentIntent(pendingIntent)
         .addAction(action)
         .setCategory(Notification.CATEGORY_STATUS)
-        .setSmallIcon(R.drawable.ic_round_shield_24)
+        .setSmallIcon(R.drawable.ic_round_vault_24)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true)
         .build()

@@ -113,7 +113,7 @@ inline fun EpoxyController.buildFoldersModels(
 
         if (notPinnedFolders.isNotEmpty())
             headerItem {
-                id("libraries")
+                id("folders")
                 title(context.stringResource(R.string.folders))
             }
     }

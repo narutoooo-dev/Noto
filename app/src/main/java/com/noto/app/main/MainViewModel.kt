@@ -30,32 +30,17 @@ class MainViewModel(
     val sortingOrder = settingsRepository.sortingOrder
         .stateIn(viewModelScope, SharingStarted.Lazily, SortingOrder.Descending)
 
-    val folders = combine(
+    val allFolders = combine(
         folderRepository.getMainFolders(),
-        sortingType,
-        sortingOrder,
-    ) { folders, sortingType, sortingOrder ->
-        folders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
-    }
-        .map { UiState.Success(it) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
-
-    val archivedFolders = combine(
+        folderRepository.getVaultedFolders(),
         folderRepository.getArchivedFolders(),
         sortingType,
         sortingOrder,
-    ) { folders, sortingType, sortingOrder ->
-        folders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
-    }
-        .map { UiState.Success(it) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
-
-    val vaultedFolders = combine(
-        folderRepository.getVaultedFolders(),
-        sortingType,
-        sortingOrder,
-    ) { folders, sortingType, sortingOrder ->
-        folders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
+    ) { mainFolders, vaultedFolders, archivedFolders, sortingType, sortingOrder ->
+        val sortedMainFolders = mainFolders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
+        val sortedVaultedFolders = vaultedFolders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
+        val sortedArchivedFolders = archivedFolders.sortedWith(Folder.Comparator(sortingOrder, sortingType))
+        sortedMainFolders + sortedVaultedFolders + sortedArchivedFolders
     }
         .map { UiState.Success(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
