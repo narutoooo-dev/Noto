@@ -176,7 +176,29 @@ class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsabl
                                 }
                             } else {
                                 if (args.isMainFoldersEnabled) {
-                                    items(mainFoldersItems) { item ->
+                                    val (pinnedMainFoldersItems, notPinnedFolderItems) = mainFoldersItems.partition { it.folder.isPinned }
+
+                                    if (pinnedMainFoldersItems.isNotEmpty()) {
+                                        item {
+                                            HeaderItem(title = stringResource(id = R.string.pinned))
+                                        }
+
+                                        items(pinnedMainFoldersItems) { item ->
+                                            FolderItem(
+                                                item = item,
+                                                isShowNotesCount = isShowNotesCount,
+                                                onClick = { returnResult(it.folder.id, it.folder.getTitle(context)) },
+                                            )
+                                        }
+
+                                        if (notPinnedFolderItems.isNotEmpty()) {
+                                            item {
+                                                HeaderItem(title = stringResource(id = R.string.folders))
+                                            }
+                                        }
+                                    }
+
+                                    items(notPinnedFolderItems) { item ->
                                         FolderItem(
                                             item = item,
                                             isShowNotesCount = isShowNotesCount,
