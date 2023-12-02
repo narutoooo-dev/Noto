@@ -101,7 +101,6 @@
     <string name="drag">இழுக்கவும்</string>
     <string name="nunito">Nunito (இயல்புநிலை)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">கோப்புறை காப்பகம்</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Main interface</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Folder options</string>
     <string name="add_new_note_shortcut">New note shortcut</string>
     <string name="delete_folder_description">This action can\'t be undone and will delete the folder and all of its content permanently.</string>
-    <string name="folder_title">Folder title</string>
     <!-- Folder color -->
     <string name="color">Color</string>
     <string name="delete_folder">Delete</string>
     <string name="delete_folder_confirmation">Are you sure you want to delete this folder?</string>
-    <string name="empty_title">தலைப்பு காலியாக இருக்கக்கூடாது.</string>
     <string name="folder_is_deleted">Folder has been deleted.</string>
     <string name="folder_is_archived">Folder has been archived.</string>
     <string name="folder_is_unarchived">Folder has been unarchived.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">No relevant folders found.</string>
     <string name="select_folder">Select folder</string>
     <string name="folder">Folder</string>
-    <string name="select_folder_archive">Select folder archive</string>
     <string name="pinned">Pin செய்யப்பட்டது</string>
     <!-- Vault -->
-    <string name="folders_vault">Folders vault</string>
     <string name="update_passcode">Update passcode</string>
     <string name="enable_vault">Enable vault</string>
     <string name="enter_vault_passcode">Enter vault passcode</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Remove from vault</string>
     <string name="folder_is_vaulted">Folder has been added to the vault.</string>
     <string name="folder_is_unvaulted">Folder has been removed from the vault.</string>
-    <string name="vault_is_empty">Vault is empty.</string>
     <string name="archive_vaulted_folder_confirmation">Are you sure you want to archive this folder?</string>
     <string name="archive_vaulted_folder_description">Archiving this folder will also remove it from the vault.</string>
     <string name="passcode">Passcode</string>
-    <string name="new_vault_passcode">New vault passcode</string>
     <string name="new_passcode">New passcode</string>
     <string name="current_passcode">Current passcode</string>
     <string name="vault_setup">Vault setup</string>
-    <string name="current_vault_passcode">Current vault passcode</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Change passcode</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">The time it takes to close the vault after being opened.</string>
     <string name="vault_timeout">Vault timeout</string>
-    <string name="invalid_passcode">Invalid passcode</string>
     <string name="passcode_length_message">Passcode must contain at least 6 numbers</string>
-    <string name="passcode_empty_message">Passcode can\'t be empty</string>
     <string name="passcode_doesnt_match">Passcode doesn\'t match the current one</string>
     <string name="vault_passcode_has_changed">Vault passcode has been updated.</string>
     <string name="enable_vault_message">To enable the vault, please provide a passcode.</string>

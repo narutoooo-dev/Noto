@@ -101,7 +101,6 @@
     <string name="drag">Arrastar</string>
     <string name="nunito">Nunito (padrão)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Arquivo de pastas</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Interface principal</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Opções de pasta</string>
     <string name="add_new_note_shortcut">Novo atalho de notas</string>
     <string name="delete_folder_description">Esta ação não pode ser desfeita e irá apagar permanentemente a pasta e todo o seu conteúdo.</string>
-    <string name="folder_title">Título da pasta</string>
     <!-- Folder color -->
     <string name="color">Cor</string>
     <string name="delete_folder">Eliminar</string>
     <string name="delete_folder_confirmation">Tem a certeza de que quer apagar esta pasta?</string>
-    <string name="empty_title">O título não pode estar vazio.</string>
     <string name="folder_is_deleted">A pasta foi eliminada.</string>
     <string name="folder_is_archived">A pasta foi arquivada.</string>
     <string name="folder_is_unarchived">A pasta foi desarquivada.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">Nenhuma pasta relevante encontrada.</string>
     <string name="select_folder">Selecionar pasta</string>
     <string name="folder">Pasta</string>
-    <string name="select_folder_archive">Selecionar arquivo de pastas</string>
     <string name="pinned">Afixado</string>
     <!-- Vault -->
-    <string name="folders_vault">Caixa-forte de pastas</string>
     <string name="update_passcode">Atualização do código de acesso</string>
     <string name="enable_vault">Ativar Cofre</string>
     <string name="enter_vault_passcode">Introduza o código de acesso ao cofre</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Remover do cofre</string>
     <string name="folder_is_vaulted">A pasta foi adicionada ao cofre.</string>
     <string name="folder_is_unvaulted">A pasta foi retirada do cofre.</string>
-    <string name="vault_is_empty">A caixa-forte está vazia.</string>
     <string name="archive_vaulted_folder_confirmation">Tem a certeza de que quer arquivar esta pasta?</string>
     <string name="archive_vaulted_folder_description">O arquivamento desta pasta também a removerá do cofre.</string>
     <string name="passcode">Código de Acesso</string>
-    <string name="new_vault_passcode">Novo código de acesso ao cofre</string>
     <string name="new_passcode">Novo Código</string>
     <string name="current_passcode">Código atual</string>
     <string name="vault_setup">Configuração do Cofre</string>
-    <string name="current_vault_passcode">Código de acesso ao cofre atual</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Alterar código de acesso</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">O tempo necessário para fechar o cofre após ser aberto.</string>
     <string name="vault_timeout">Expiração do cofre</string>
-    <string name="invalid_passcode">Código de Acesso Inválido</string>
     <string name="passcode_length_message">O código de acesso deve conter pelo menos 6 números</string>
-    <string name="passcode_empty_message">O código de acesso não pode estar vazio</string>
     <string name="passcode_doesnt_match">O código de acesso não corresponde ao atual</string>
     <string name="vault_passcode_has_changed">O código de acesso ao cofre foi atualizado.</string>
     <string name="enable_vault_message">Para ativar o cofre, por favor forneça uma senha.</string>

@@ -101,7 +101,6 @@
     <string name="drag">Tarik</string>
     <string name="nunito">Nunito (bawaan)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Arsip map</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Antarmuka utama</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -166,12 +165,10 @@
     <string name="folder_options">Opsi map</string>
     <string name="add_new_note_shortcut">Tambah pintasan catatan</string>
     <string name="delete_folder_description">Tindakan ini tidak dapat diurungkan dan akan menghapus map dan semua kontennya secara permanen.</string>
-    <string name="folder_title">Judul map</string>
     <!-- Folder color -->
     <string name="color">Warna</string>
     <string name="delete_folder">Hapus</string>
     <string name="delete_folder_confirmation">Apakah Anda yakin ingin menghapus map ini?</string>
-    <string name="empty_title">Judul tidak boleh kosong.</string>
     <string name="folder_is_deleted">Map telah dihapus.</string>
     <string name="folder_is_archived">Map telah diarsipkan.</string>
     <string name="folder_is_unarchived">Map telah dikeluarkan dari arsip.</string>
@@ -182,10 +179,8 @@
     <string name="no_relevant_folders_found">Folder relevan tidak ditemukan.</string>
     <string name="select_folder">Pilih map</string>
     <string name="folder">Folder</string>
-    <string name="select_folder_archive">Pilih map arsip</string>
     <string name="pinned">Disematkan</string>
     <!-- Vault -->
-    <string name="folders_vault">Brankas map</string>
     <string name="update_passcode">Perbarui kode akses</string>
     <string name="enable_vault">Aktifkan brankas</string>
     <string name="enter_vault_passcode">Masukkan kode akses brankas</string>
@@ -193,15 +188,12 @@
     <string name="remove_from_vault">Keluarkan dari brankas</string>
     <string name="folder_is_vaulted">Map telah ditambahkan ke brankas.</string>
     <string name="folder_is_unvaulted">Map telah dikeluarkan dari brankas.</string>
-    <string name="vault_is_empty">Brankas kosong.</string>
     <string name="archive_vaulted_folder_confirmation">Apakah Anda yakin ingin menghapus map ini?</string>
     <string name="archive_vaulted_folder_description">Mengarsipkan map ini juga akan menghapusnya dari brankas.</string>
     <string name="passcode">Kode akses</string>
-    <string name="new_vault_passcode">Kode akses brankas baru</string>
     <string name="new_passcode">Kode akses baru</string>
     <string name="current_passcode">Kode akses sekarang</string>
     <string name="vault_setup">Atur brankas</string>
-    <string name="current_vault_passcode">Kode akses brankas saat ini</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Ubah kode sandi</string>
     <!-- Vault timeout. -->
@@ -209,9 +201,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Waktu yang dibutuhkan untuk menutup brankas setelah dibuka.</string>
     <string name="vault_timeout">Batas waktu brankas</string>
-    <string name="invalid_passcode">Kode akses tidak valid</string>
     <string name="passcode_length_message">Kode akses harus berisi setidaknya 6 angka</string>
-    <string name="passcode_empty_message">Kode akses tidak boleh kosong</string>
     <string name="passcode_doesnt_match">Kode akses tidak cocok dengan kode yang sekarang</string>
     <string name="vault_passcode_has_changed">Kode akses brankans telah diperbarui.</string>
     <string name="enable_vault_message">Untuk mengaktifkan berankas, berikan kode sandi.</string>

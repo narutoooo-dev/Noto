@@ -101,7 +101,6 @@
     <string name="drag">Ziehen</string>
     <string name="nunito">Nunito (Standard)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Ordnerarchiv</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Standard-Sammlung</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Ordneroptionen</string>
     <string name="add_new_note_shortcut">Verknüpfung für neue Notiz</string>
     <string name="delete_folder_description">Diese Aktion kann nicht rückgängig gemacht werden und wird den Ordner und all seine Inhalte dauerhaft löschen.</string>
-    <string name="folder_title">Ordnername</string>
     <!-- Folder color -->
     <string name="color">Farbe</string>
     <string name="delete_folder">Löschen</string>
     <string name="delete_folder_confirmation">Soll dieser Ordner wirklich gelöscht werden?</string>
-    <string name="empty_title">Der Titel darf nicht leer sein.</string>
     <string name="folder_is_deleted">Ordner wurde gelöscht.</string>
     <string name="folder_is_archived">Ordner wurde archiviert.</string>
     <string name="folder_is_unarchived">Ordner wurde dearchiviert.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">Keine passenden Ordner gefunden.</string>
     <string name="select_folder">Ordner auswählen</string>
     <string name="folder">Ordner</string>
-    <string name="select_folder_archive">Ordner des Zielarchivs wählen</string>
     <string name="pinned">Angepinnt</string>
     <!-- Vault -->
-    <string name="folders_vault">Ordnerschutz</string>
     <string name="update_passcode">Zugangscode aktualisieren</string>
     <string name="enable_vault">Ordnerschutz aktivieren</string>
     <string name="enter_vault_passcode">Zugangscode eingeben</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Vom Ordnerschutz ausnehmen</string>
     <string name="folder_is_vaulted">Ordner wurde zum Ordnerschutz hinzugefügt.</string>
     <string name="folder_is_unvaulted">Ordner wurde vom Ordnerschutz ausgenommen.</string>
-    <string name="vault_is_empty">Keine Ordner enthalten.</string>
     <string name="archive_vaulted_folder_confirmation">Soll dieser Ordner wirklich archiviert werden?</string>
     <string name="archive_vaulted_folder_description">Das Archivieren dieses Ordners entfernt auch den Ordnerschutz.</string>
     <string name="passcode">Zugangscode</string>
-    <string name="new_vault_passcode">Neuer Zugangscode</string>
     <string name="new_passcode">Neuer Zugangscode</string>
     <string name="current_passcode">Aktueller Zugangscode</string>
     <string name="vault_setup">Ordnerschutz einrichten</string>
-    <string name="current_vault_passcode">Momentaner Zugangscode</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Zugangscode ändern</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Die Zeitspanne, die Ordner nach Aufheben des Ordnerschutzes noch zugängig sind.</string>
     <string name="vault_timeout">Ablaufzeit für Ordnerschutz</string>
-    <string name="invalid_passcode">Ungültiger Zugangscode</string>
     <string name="passcode_length_message">Zugangscode muss mindestens sechs Ziffern enthalten</string>
-    <string name="passcode_empty_message">Zugangscode darf nicht leer bleiben</string>
     <string name="passcode_doesnt_match">Zugangscode stimmt nicht mit dem aktuellen überein</string>
     <string name="vault_passcode_has_changed">Zugangscode wurde aktualisiert.</string>
     <string name="enable_vault_message">Um den Ordnerschutz zu aktivieren, gib bitte einen Zugangscode an.</string>

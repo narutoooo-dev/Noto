@@ -101,7 +101,6 @@
     <string name="drag">Arrastrar</string>
     <string name="nunito">Nunito (predeterminado)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Archivo de carpetas</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Interfaz principal</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Opciones de carpeta</string>
     <string name="add_new_note_shortcut">Nuevo acceso directo</string>
     <string name="delete_folder_description">Esta acción no se puede deshacer y eliminará la carpeta y todo su contenido de forma permanente.</string>
-    <string name="folder_title">Título de la carpeta</string>
     <!-- Folder color -->
     <string name="color">Color</string>
     <string name="delete_folder">Borrar</string>
     <string name="delete_folder_confirmation">¿Está seguro de que desea eliminar esta carpeta?</string>
-    <string name="empty_title">El título no puede estar vacío.</string>
     <string name="folder_is_deleted">Se ha eliminado la carpeta.</string>
     <string name="folder_is_archived">La carpeta se ha archivado.</string>
     <string name="folder_is_unarchived">La carpeta ha sido desarchivada.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">No se han encontrado carpetas relevantes.</string>
     <string name="select_folder">Seleccionar carpeta</string>
     <string name="folder">Carpeta</string>
-    <string name="select_folder_archive">Seleccione archivo de carpeta</string>
     <string name="pinned">Anclado</string>
     <!-- Vault -->
-    <string name="folders_vault">Bóveda de carpetas</string>
     <string name="update_passcode">Actualizar contraseña</string>
     <string name="enable_vault">Habilitar bóveda</string>
     <string name="enter_vault_passcode">Introduzca contraseña de bóveda</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Eliminar de la bóveda</string>
     <string name="folder_is_vaulted">La carpeta ha sido añadida a la bóveda.</string>
     <string name="folder_is_unvaulted">La carpeta ha sido eliminada de la bóveda.</string>
-    <string name="vault_is_empty">Bóveda vacía.</string>
     <string name="archive_vaulted_folder_confirmation">¿Está seguro que desea archivar este elemento?</string>
     <string name="archive_vaulted_folder_description">Archivar esta biblioteca también la eliminará de la bóveda.</string>
     <string name="passcode">Clave de Acceso</string>
-    <string name="new_vault_passcode">Introduzca contraseña de bóveda</string>
     <string name="new_passcode">Nueva contraseña</string>
     <string name="current_passcode">Contraseña actual</string>
     <string name="vault_setup">Configuración de bóveda</string>
-    <string name="current_vault_passcode">Contraseña actual de bóveda</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Cambiar código de acceso</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">El tiempo que se tarda en cerrar la bóveda después de ser abierta.</string>
     <string name="vault_timeout">Tiempo de espera de bóveda</string>
-    <string name="invalid_passcode">Contraseña no válida</string>
     <string name="passcode_length_message">La contraseña debe contener al menos 6 números</string>
-    <string name="passcode_empty_message">La contraseña no puede estar vacía</string>
     <string name="passcode_doesnt_match">La contraseña no coincide con la actual</string>
     <string name="vault_passcode_has_changed">La contraseña de bóveda ha sido actualizada.</string>
     <string name="enable_vault_message">Para habilitar la bóveda, por favor proporcione un código de acceso.</string>

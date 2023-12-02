@@ -101,7 +101,6 @@
     <string name="drag">Drag</string>
     <string name="nunito">Nunito (numatytasis)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Aplankų archyvas</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Pagrindinė sąsaja</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -169,12 +168,10 @@
     <string name="folder_options">Aplanko parinktys</string>
     <string name="add_new_note_shortcut">Naujo užrašo nuoroda</string>
     <string name="delete_folder_description">Šis veiksmas yra negrįžtamas ir panaikins aplanką su visu jo turiniu visam laikui.</string>
-    <string name="folder_title">Aplanko antraštė</string>
     <!-- Folder color -->
     <string name="color">Spalva</string>
     <string name="delete_folder">Naikinti</string>
     <string name="delete_folder_confirmation">Tikrai norite panaikinti šį aplanką?</string>
-    <string name="empty_title">Antraštė negali būti tuščia.</string>
     <string name="folder_is_deleted">Aplankas panaikintas.</string>
     <string name="folder_is_archived">Aplankas suarchyvuotas.</string>
     <string name="folder_is_unarchived">Aplankas išarchyvuotas.</string>
@@ -185,10 +182,8 @@
     <string name="no_relevant_folders_found">Nerasta aktualių aplankų.</string>
     <string name="select_folder">Pasirinkti aplanką</string>
     <string name="folder">Aplankas</string>
-    <string name="select_folder_archive">Pasirinkti aplanko archyvą</string>
     <string name="pinned">Prisegti</string>
     <!-- Vault -->
-    <string name="folders_vault">Aplankų saugykla</string>
     <string name="update_passcode">Naujinti slaptažodį</string>
     <string name="enable_vault">Įjungti saugyklą</string>
     <string name="enter_vault_passcode">Įveskite saugyklos slaptažodį</string>
@@ -196,15 +191,12 @@
     <string name="remove_from_vault">Šalinti iš saugyklos</string>
     <string name="folder_is_vaulted">Aplankas pridėtas į saugyklą.</string>
     <string name="folder_is_unvaulted">Aplankas pašalintas iš saugyklos.</string>
-    <string name="vault_is_empty">Saugykla tuščia.</string>
     <string name="archive_vaulted_folder_confirmation">Tikrai norite suarchyvuoti šį aplanką?</string>
     <string name="archive_vaulted_folder_description">Šio aplanko archyvinimas taip pat pašalins jį iš saugyklos.</string>
     <string name="passcode">Slaptažodis</string>
-    <string name="new_vault_passcode">Naujas saugyklos slaptažodis</string>
     <string name="new_passcode">Naujas slaptažodis</string>
     <string name="current_passcode">Dabartinis slaptažodis</string>
     <string name="vault_setup">Saugyklos sąranka</string>
-    <string name="current_vault_passcode">Dabartinis saugyklos slaptažodis</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Keisti slaptažodį</string>
     <!-- Vault timeout. -->
@@ -212,9 +204,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Laikas, per kurį saugykla yra uždaroma po jos atidarymo.</string>
     <string name="vault_timeout">Saugyklos skirtasis laikas</string>
-    <string name="invalid_passcode">Netinkamas slaptažodis</string>
     <string name="passcode_length_message">Slaptažodį turi sudaryti bent 6 skaičiai</string>
-    <string name="passcode_empty_message">Slaptažodis negali būti tuščias</string>
     <string name="passcode_doesnt_match">Slaptažodis neatitinka dabartinio</string>
     <string name="vault_passcode_has_changed">Saugyklos slaptažodis atnaujintas.</string>
     <string name="enable_vault_message">Įveskite slaptažodį, kad įjungtumėte saugyklą.</string>

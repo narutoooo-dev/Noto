@@ -176,7 +176,7 @@ class NoteRepositoryImpl(
             isArchived = isArchived,
             reminderDate = reminderDate?.let(DomainMappers.Instant::map),
             isVaulted = isVaulted,
-            accessDate = DomainMappers.Instant.map(accessDate)!!,
+            accessDate = DomainMappers.Instant.map(accessDate),
             scrollingPosition = scrollingPosition,
         )
     }

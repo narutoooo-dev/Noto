@@ -101,7 +101,6 @@
     <string name="drag">拖动</string>
     <string name="nunito">Nunito (默认)</string>
     <string name="monospace">等宽字体</string>
-    <string name="folders_archive">文件夹存档</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">主界面</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -166,12 +165,10 @@
     <string name="folder_options">文件夹选项</string>
     <string name="add_new_note_shortcut">新建笔记（桌面快捷方式）</string>
     <string name="delete_folder_description">此操作不能撤消，并且将永久删除文件夹及其所有内容。</string>
-    <string name="folder_title">文件夹标题</string>
     <!-- Folder color -->
     <string name="color">颜色</string>
     <string name="delete_folder">删除</string>
     <string name="delete_folder_confirmation">您确定要删除此文件夹吗？</string>
-    <string name="empty_title">标题不能留空。</string>
     <string name="folder_is_deleted">文件夹已删除。</string>
     <string name="folder_is_archived">文件夹已归档。</string>
     <string name="folder_is_unarchived">文件夹已解除归档。</string>
@@ -182,10 +179,8 @@
     <string name="no_relevant_folders_found">没有找到相关文件夹。</string>
     <string name="select_folder">选择文件夹</string>
     <string name="folder">文件夹</string>
-    <string name="select_folder_archive">选择文件夹存档</string>
     <string name="pinned">已固定</string>
     <!-- Vault -->
-    <string name="folders_vault">文件夹私密库</string>
     <string name="update_passcode">更新密码</string>
     <string name="enable_vault">启用私密库</string>
     <string name="enter_vault_passcode">请输入密码</string>
@@ -193,15 +188,12 @@
     <string name="remove_from_vault">从私密库中移出</string>
     <string name="folder_is_vaulted">文件夹已添加到私密库。</string>
     <string name="folder_is_unvaulted">文件夹已从私密库中移出。</string>
-    <string name="vault_is_empty">私密库为空。</string>
     <string name="archive_vaulted_folder_confirmation">您确定要归档所选文件夹吗？</string>
     <string name="archive_vaulted_folder_description">归档此文件夹也会从私密库中移出。</string>
     <string name="passcode">密码</string>
-    <string name="new_vault_passcode">新的私密库密码</string>
     <string name="new_passcode">新的密码</string>
     <string name="current_passcode">当前密码</string>
     <string name="vault_setup">私密库设置</string>
-    <string name="current_vault_passcode">当前私密库密码</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">更改密码</string>
     <!-- Vault timeout. -->
@@ -209,9 +201,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">退出私密库后，保持多久才上锁</string>
     <string name="vault_timeout">私密库打开时间超时</string>
-    <string name="invalid_passcode">密码无效</string>
     <string name="passcode_length_message">密码必须包含至少 6 位数字</string>
-    <string name="passcode_empty_message">密码不能为空</string>
     <string name="passcode_doesnt_match">密码不匹配</string>
     <string name="vault_passcode_has_changed">私密库密码已更新。</string>
     <string name="enable_vault_message">要启用私密库，请提供密码。</string>

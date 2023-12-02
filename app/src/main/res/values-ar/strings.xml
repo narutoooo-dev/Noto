@@ -101,7 +101,6 @@
     <string name="drag">أسحب</string>
     <string name="nunito">Nunito (الافتراضي)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">أرشيف المجلدات</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">الواجهة الرئيسية</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -171,12 +170,10 @@
     <string name="folder_options">خيارات المجلد</string>
     <string name="add_new_note_shortcut">اختصار ملاحظة جديدة</string>
     <string name="delete_folder_description">لا يمكن التراجع عن هذا الإجراء وسيتم حذف المجلد وجميع محتوياته بشكل دائم.</string>
-    <string name="folder_title">عنوان المجلد</string>
     <!-- Folder color -->
     <string name="color">اللون</string>
     <string name="delete_folder">حذف</string>
     <string name="delete_folder_confirmation">هل أنت متأكد من حذف هذا المجلد؟</string>
-    <string name="empty_title">العنوان لا يمكن أن يكون فارغاً.</string>
     <string name="folder_is_deleted">تم حذف المجلد.</string>
     <string name="folder_is_archived">تم أرشفة المجلد.</string>
     <string name="folder_is_unarchived">تم إلغاء أرشفة المجلد.</string>
@@ -187,10 +184,8 @@
     <string name="no_relevant_folders_found">لم يتم العثور على المجلدات ذات الصلة.</string>
     <string name="select_folder">اختر مجلدا</string>
     <string name="folder">المجلد</string>
-    <string name="select_folder_archive">اختر أرشيف المجلد</string>
     <string name="pinned">مثبت</string>
     <!-- Vault -->
-    <string name="folders_vault">مخزن المجلدات</string>
     <string name="update_passcode">تحديث رمز المرور</string>
     <string name="enable_vault">تفعيل المخزن</string>
     <string name="enter_vault_passcode">أدخل رمز المرور</string>
@@ -198,15 +193,12 @@
     <string name="remove_from_vault">إزالة من المخزن</string>
     <string name="folder_is_vaulted">تم إضافة المجلد إلى المخزن.</string>
     <string name="folder_is_unvaulted">تم إزالة المجلد من المخزن.</string>
-    <string name="vault_is_empty">الخزينة فارغة.</string>
     <string name="archive_vaulted_folder_confirmation">هل أنت متأكد من أنك تريد أرشفة هذا المجلد؟</string>
     <string name="archive_vaulted_folder_description">أرشفة هذا المجلد سيؤدي أيضا إلى إزالته من الخزانة.</string>
     <string name="passcode">رمز المرور</string>
-    <string name="new_vault_passcode">رمز مرور الخزينة الجديد</string>
     <string name="new_passcode">رمز المرور الجديد</string>
     <string name="current_passcode">رمز المرور الحالي</string>
     <string name="vault_setup">إعداد المخزن</string>
-    <string name="current_vault_passcode">رمز مرور الخزينة الحالي</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">تغيير رمز المرور</string>
     <!-- Vault timeout. -->
@@ -214,9 +206,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">الوقت الذي يستغرقه لإغلاق المخزن بعد فتحه.</string>
     <string name="vault_timeout">مهلة المخزن</string>
-    <string name="invalid_passcode">رمز مرور غير صالح</string>
     <string name="passcode_length_message">يجب أن يحتوي رمز المرور على 6 أرقام على الأقل</string>
-    <string name="passcode_empty_message">رمز المرور لا يمكن أن يكون فارغاً</string>
     <string name="passcode_doesnt_match">رمز المرور لا يتطابق مع الرمز الحالي</string>
     <string name="vault_passcode_has_changed">تم تحديث رمز مرور الخزينة.</string>
     <string name="enable_vault_message">لتمكين المخزن، يرجى توفير رمز المرور.</string>

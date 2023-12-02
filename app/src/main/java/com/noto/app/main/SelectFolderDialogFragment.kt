@@ -30,7 +30,7 @@ import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SelectFolderDialogFragment constructor() : BaseDialogFragment(isCollapsable = true) {
+class SelectFolderDialogFragment() : BaseDialogFragment(isCollapsable = true) {
 
     private var onClick: (Long, String) -> Unit = { _, _ -> }
 

@@ -101,7 +101,6 @@
     <string name="drag">Trascina</string>
     <string name="nunito">Nunito (predefinito)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Archivio cartelle</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Interfaccia principale</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Opzioni cartella</string>
     <string name="add_new_note_shortcut">Scorciatoia nuova nota</string>
     <string name="delete_folder_description">Questa azione non può essere annullata ed eliminerà la cartella con tutti i suoi contenuti permanentemente.</string>
-    <string name="folder_title">Titolo cartella</string>
     <!-- Folder color -->
     <string name="color">Colore</string>
     <string name="delete_folder">Elimina</string>
     <string name="delete_folder_confirmation">Sei sicuro di voler eliminare questa cartella?</string>
-    <string name="empty_title">Il titolo non può essere vuoto.</string>
     <string name="folder_is_deleted">La cartella è stata eliminata.</string>
     <string name="folder_is_archived">La cartella è stata archiviata.</string>
     <string name="folder_is_unarchived">La cartella è stata spostata dall\'archivio.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">Nessuna cartella idonea trovata.</string>
     <string name="select_folder">Seleziona cartella</string>
     <string name="folder">Cartella</string>
-    <string name="select_folder_archive">Seleziona cartella di archivio</string>
     <string name="pinned">Fissati</string>
     <!-- Vault -->
-    <string name="folders_vault">Cassaforte</string>
     <string name="update_passcode">Aggiorna codice</string>
     <string name="enable_vault">Abilita cassaforte</string>
     <string name="enter_vault_passcode">Inserisci codice cassaforte</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Rimuovi dalla cassaforte</string>
     <string name="folder_is_vaulted">La cartella è stata spostata nella cassaforte.</string>
     <string name="folder_is_unvaulted">La cartella è stata rimossa dalla cassaforte.</string>
-    <string name="vault_is_empty">La cassaforte è vuota.</string>
     <string name="archive_vaulted_folder_confirmation">Sei sicuro di voler archiviare questa cartella?</string>
     <string name="archive_vaulted_folder_description">Archiviare questa cartella la rimuoverà dalla cassaforte.</string>
     <string name="passcode">Codice di accesso</string>
-    <string name="new_vault_passcode">Nuovo codice della cassaforte</string>
     <string name="new_passcode">Nuovo codice di accesso</string>
     <string name="current_passcode">Codice di accesso attuale</string>
     <string name="vault_setup">Configurazione cassaforte</string>
-    <string name="current_vault_passcode">Attuale codice della cassaforte</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Cambia codice della cassaforte</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Il tempo necessario per chiudere la cassaforte dopo essere stata aperta.</string>
     <string name="vault_timeout">Timeout cassaforte</string>
-    <string name="invalid_passcode">Codice non valido</string>
     <string name="passcode_length_message">Il codice deve contenere almeno 6 numeri</string>
-    <string name="passcode_empty_message">Il codice non può essere vuoto</string>
     <string name="passcode_doesnt_match">Il codice non corrisponde con quello attuale</string>
     <string name="vault_passcode_has_changed">Il codice della cassaforte è stato aggiornato.</string>
     <string name="enable_vault_message">Per abilitare la cassaforte, fornisci un codice di accesso.</string>

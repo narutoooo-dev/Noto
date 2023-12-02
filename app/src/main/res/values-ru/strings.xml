@@ -101,7 +101,6 @@
     <string name="drag">Перетащить</string>
     <string name="nunito">Nunito (по умолчанию)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Архив папок</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Главный экран</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -169,12 +168,10 @@
     <string name="folder_options">Опции папки</string>
     <string name="add_new_note_shortcut">Новый ярлык</string>
     <string name="delete_folder_description">Это действие нельзя отменить, и папка и все ее содержимое будут удалены навсегда.</string>
-    <string name="folder_title">Название</string>
     <!-- Folder color -->
     <string name="color">Цвет</string>
     <string name="delete_folder">Удалить</string>
     <string name="delete_folder_confirmation">Вы уверены, что хотите удалить эту папку?</string>
-    <string name="empty_title">Название не может быть пустым.</string>
     <string name="folder_is_deleted">Папка удалена.</string>
     <string name="folder_is_archived">Папка архивирована.</string>
     <string name="folder_is_unarchived">Папка разархивирована.</string>
@@ -185,10 +182,8 @@
     <string name="no_relevant_folders_found">Не найдено подходящих папок.</string>
     <string name="select_folder">Выбрать папку</string>
     <string name="folder">Папка</string>
-    <string name="select_folder_archive">Выбрать архив папок</string>
     <string name="pinned">Закреплено</string>
     <!-- Vault -->
-    <string name="folders_vault">Хранилище папок</string>
     <string name="update_passcode">Обновить пароль</string>
     <string name="enable_vault">Включить хранилище</string>
     <string name="enter_vault_passcode">Введите код</string>
@@ -196,15 +191,12 @@
     <string name="remove_from_vault">Удалить из хранилища</string>
     <string name="folder_is_vaulted">Папка добавлена в хранилище.</string>
     <string name="folder_is_unvaulted">Папка удалена из хранилища.</string>
-    <string name="vault_is_empty">Хранилище пусто.</string>
     <string name="archive_vaulted_folder_confirmation">Вы уверены, что хотите архивировать эту папку?</string>
     <string name="archive_vaulted_folder_description">Архивирование этой папки также удалит ее из хранилища.</string>
     <string name="passcode">Код доступа</string>
-    <string name="new_vault_passcode">Новый код</string>
     <string name="new_passcode">Новый Код доступа</string>
     <string name="current_passcode">Текущий код доступа</string>
     <string name="vault_setup">Настройка хранилища</string>
-    <string name="current_vault_passcode">Текущий код</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Изменить пароль</string>
     <!-- Vault timeout. -->
@@ -212,9 +204,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Время закрытия хранилища после его открытия.</string>
     <string name="vault_timeout">Таймаут хранилища</string>
-    <string name="invalid_passcode">Неверный код</string>
     <string name="passcode_length_message">Код должен содержать не менее 6 цифр</string>
-    <string name="passcode_empty_message">Код не может быть пустым</string>
     <string name="passcode_doesnt_match">Код не совпадает с текущим</string>
     <string name="vault_passcode_has_changed">Код хранилища обновлён.</string>
     <string name="enable_vault_message">Для включения хранилища укажите пароль.</string>

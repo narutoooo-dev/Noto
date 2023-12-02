@@ -25,11 +25,6 @@ import com.noto.app.util.DefaultAnimationDuration
 
 private val NotoColorItemSize = 50.dp
 
-data class NotoColorItem(
-    val notoColor: NotoColor,
-    val isSelected: Boolean,
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotoColorItem(notoColor: NotoColor, isSelected: Boolean, onClick: (NotoColor) -> Unit, modifier: Modifier = Modifier) {

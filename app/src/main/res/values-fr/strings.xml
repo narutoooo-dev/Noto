@@ -101,7 +101,6 @@
     <string name="drag">Faire glisser</string>
     <string name="nunito">Nunito (par défaut)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Archive des dossiers</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Interface principale</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Options du dossier</string>
     <string name="add_new_note_shortcut">Nouveau raccourci de note</string>
     <string name="delete_folder_description">Cette action ne peut pas être annulée et supprimera définitivement le dossier et son contenu.</string>
-    <string name="folder_title">Titre du dossier</string>
     <!-- Folder color -->
     <string name="color">Couleur </string>
     <string name="delete_folder">Supprimer</string>
     <string name="delete_folder_confirmation">Êtes-vous sûr de vouloir supprimer ce dossier ?</string>
-    <string name="empty_title">Le titre ne peut être vide.</string>
     <string name="folder_is_deleted">Le dossier a bien été supprimé.</string>
     <string name="folder_is_archived">Le dossier a bien été archivé.</string>
     <string name="folder_is_unarchived">Le dossier a bien été désarchivé.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">Aucun dossier pertinent n\'a été trouvé.</string>
     <string name="select_folder">Sélectionnez un dossier</string>
     <string name="folder">Dossier</string>
-    <string name="select_folder_archive">Sélectionner le dossier d\'archive</string>
     <string name="pinned">Épinglé</string>
     <!-- Vault -->
-    <string name="folders_vault">Coffre-fort des dossiers</string>
     <string name="update_passcode">Mettre à jour le code d\'accès</string>
     <string name="enable_vault">Activer le coffre-fort</string>
     <string name="enter_vault_passcode">Saisissez le code d\'accès du coffre-fort</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Retirer du coffre</string>
     <string name="folder_is_vaulted">Le dossier a été ajouté au coffre.</string>
     <string name="folder_is_unvaulted">Le dossier a été retiré du coffre.</string>
-    <string name="vault_is_empty">Le coffre-fort est vide.</string>
     <string name="archive_vaulted_folder_confirmation">Êtes-vous sûr de vouloir archiver ce dossier ?</string>
     <string name="archive_vaulted_folder_description">Archiver ce dossier le supprimera également du coffre-fort.</string>
     <string name="passcode">Code d\'accès</string>
-    <string name="new_vault_passcode">Nouveau code d\'accès du coffre-fort</string>
     <string name="new_passcode">Nouveau code d\'accès</string>
     <string name="current_passcode">Code d\'accès actuel</string>
     <string name="vault_setup">Configuration du coffre-fort</string>
-    <string name="current_vault_passcode">Code d\'accès actuel du coffre-fort</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Modifier le code d\'accès</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Le temps qu\'il faut pour fermer le coffre-fort après avoir été ouvert.</string>
     <string name="vault_timeout">Délai d\'expiration du coffre-fort</string>
-    <string name="invalid_passcode">Code d’accès invalide</string>
     <string name="passcode_length_message">Le code d\'accès doit contenir au moins 6 chiffres</string>
-    <string name="passcode_empty_message">Le code d\'accès ne peut être vide</string>
     <string name="passcode_doesnt_match">Le code d\'accès ne correspond pas au code actuel</string>
     <string name="vault_passcode_has_changed">Le code d\'accès au coffre-fort a été mis à jour.</string>
     <string name="enable_vault_message">Pour activer le coffre, veuillez fournir un code d\'accès.</string>

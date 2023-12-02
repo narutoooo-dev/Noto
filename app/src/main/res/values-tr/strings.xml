@@ -101,7 +101,6 @@
     <string name="drag">Sürükle</string>
     <string name="nunito">Nunito (varsayılan)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Klasör arşivi</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Ana sayfa</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -167,12 +166,10 @@
     <string name="folder_options">Klasör seçenekleri</string>
     <string name="add_new_note_shortcut">Yeni not kısayolu</string>
     <string name="delete_folder_description">Bu işlem geri alınamaz. Klasör ve içindeki her şey kalıcı olarak silinecektir.</string>
-    <string name="folder_title">Klasör başlığı</string>
     <!-- Folder color -->
     <string name="color">Renk</string>
     <string name="delete_folder">Sil</string>
     <string name="delete_folder_confirmation">Bu klasörü silmek istediğinizden emin misiniz?</string>
-    <string name="empty_title">Başlık boş bırakılamaz.</string>
     <string name="folder_is_deleted">Klasör silindi.</string>
     <string name="folder_is_archived">Klasör arşivlendi.</string>
     <string name="folder_is_unarchived">Klasör arşivden çıkarıldı.</string>
@@ -183,10 +180,8 @@
     <string name="no_relevant_folders_found">İlgili klasör bulunamadı.</string>
     <string name="select_folder">Klasör seç</string>
     <string name="folder">Klasör</string>
-    <string name="select_folder_archive">Klasör arşivini seç</string>
     <string name="pinned">Sabitlenmiş</string>
     <!-- Vault -->
-    <string name="folders_vault">Klasör kasası</string>
     <string name="update_passcode">Şifreyi güncelle</string>
     <string name="enable_vault">Kasa özelliğini etkinleştir</string>
     <string name="enter_vault_passcode">Kasa şifresini gir</string>
@@ -194,15 +189,12 @@
     <string name="remove_from_vault">Kasadan çıkar</string>
     <string name="folder_is_vaulted">Klasör kasaya yerleştirildi.</string>
     <string name="folder_is_unvaulted">Klasör kasadan çıkarıldı.</string>
-    <string name="vault_is_empty">Kasa boş.</string>
     <string name="archive_vaulted_folder_confirmation">Bu klasörü arşivlemek istediğinizden emin misiniz?</string>
     <string name="archive_vaulted_folder_description">Arşivlenen klasörler kasadan çıkartılır.</string>
     <string name="passcode">Şifre</string>
-    <string name="new_vault_passcode">Yeni kasa şifresi</string>
     <string name="new_passcode">Yeni şifre</string>
     <string name="current_passcode">Mevcut şifre</string>
     <string name="vault_setup">Kasa kurulumu</string>
-    <string name="current_vault_passcode">Mevcut kasa şifresi</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Şifreyi değiştir</string>
     <!-- Vault timeout. -->
@@ -210,9 +202,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Kasanın otomatik olarak tekrar kilitlenmesi için geçmesi gereken süreyi belirleyin.</string>
     <string name="vault_timeout">Kasa zaman aşımı</string>
-    <string name="invalid_passcode">Geçersiz şifre</string>
     <string name="passcode_length_message">Şifre en az 6 rakamdan oluşmalıdır</string>
-    <string name="passcode_empty_message">Şifre boş bırakılamaz</string>
     <string name="passcode_doesnt_match">Girdiğiniz şifre mevcut şifreyle uyuşmuyor</string>
     <string name="vault_passcode_has_changed">Kasa şifresi güncellendi.</string>
     <string name="enable_vault_message">Kasa özelliğini etkinkeştirmek için lütfen bir şifre girin.</string>

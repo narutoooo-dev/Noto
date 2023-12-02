@@ -24,7 +24,7 @@ import com.noto.app.util.toAnnotatedString
 import com.noto.app.util.toDescriptionResourceId
 import com.noto.app.util.toStringResourceId
 
-class NoteListFilteringWidgetDialogFragment constructor() : BaseDialogFragment() {
+class NoteListFilteringWidgetDialogFragment() : BaseDialogFragment() {
     private var onClick: (FilteringType) -> Unit = {}
     private var filteringType: FilteringType? = null
 

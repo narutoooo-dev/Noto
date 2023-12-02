@@ -101,7 +101,6 @@
     <string name="drag">Táhnout</string>
     <string name="nunito">Nunito (výchozí)</string>
     <string name="monospace">Monospace</string>
-    <string name="folders_archive">Archive složek</string>
     <!-- The first screen user sees when opening the app. -->
     <string name="main_interface">Hlavní rozhraní</string>
     <!-- Description of the "Main interface" settings option. -->
@@ -169,12 +168,10 @@
     <string name="folder_options">Možnosti složky</string>
     <string name="add_new_note_shortcut">Nová zkratka pro složku</string>
     <string name="delete_folder_description">Tuto akci nelze vrátit zpět a odstraní složku a veškerý její obsah trvale.</string>
-    <string name="folder_title">Titulek složky</string>
     <!-- Folder color -->
     <string name="color">Barva</string>
     <string name="delete_folder">Odstranit</string>
     <string name="delete_folder_confirmation">Opravdu chcete smazat tuto složku?</string>
-    <string name="empty_title">Titulek nesmí být prázdný.</string>
     <string name="folder_is_deleted">Složka byla odstraněna.</string>
     <string name="folder_is_archived">Složka byla archivována.</string>
     <string name="folder_is_unarchived">Složka byla dearchivována.</string>
@@ -185,10 +182,8 @@
     <string name="no_relevant_folders_found">Nebyly nalezeny odpovídající složky.</string>
     <string name="select_folder">Vybrat složku</string>
     <string name="folder">Složka</string>
-    <string name="select_folder_archive">Vybrat archivní složku</string>
     <string name="pinned">Připnuto</string>
     <!-- Vault -->
-    <string name="folders_vault">Trezor složek</string>
     <string name="update_passcode">Aktualizovat přístupový kód</string>
     <string name="enable_vault">Povolit trezor</string>
     <string name="enter_vault_passcode">Zadejte svůj přístupový kód</string>
@@ -196,15 +191,12 @@
     <string name="remove_from_vault">Odebrat z trezoru</string>
     <string name="folder_is_vaulted">Složka byla přidána do trezoru.</string>
     <string name="folder_is_unvaulted">Složka byla přidána do trezoru.</string>
-    <string name="vault_is_empty">Trezor je prázdný.</string>
     <string name="archive_vaulted_folder_confirmation">Opravdu chcete odstranit tuto složku?</string>
     <string name="archive_vaulted_folder_description">Archivací této složky ji také odebere z trezoru.</string>
     <string name="passcode">Přístupový kód</string>
-    <string name="new_vault_passcode">Nové heslo trezoru</string>
     <string name="new_passcode">Nový přístupový kód</string>
     <string name="current_passcode">Současný přístupový kód</string>
     <string name="vault_setup">Nastavení trezoru</string>
-    <string name="current_vault_passcode">Aktuální kód trezoru</string>
     <!-- Change vault passcode option. -->
     <string name="change_passcode">Změnit přístupový kód</string>
     <!-- Vault timeout. -->
@@ -212,9 +204,7 @@
     <!-- Description of the "Timeout" settings option. -->
     <string name="timeout_description">Doba, po kterou bude trezor po otevření trvat.</string>
     <string name="vault_timeout">Časový limit trezoru</string>
-    <string name="invalid_passcode">Neplatný přístupový kód</string>
     <string name="passcode_length_message">Heslo musí obsahovat nejméně 6 čísel</string>
-    <string name="passcode_empty_message">Heslo nesmí být prázdné</string>
     <string name="passcode_doesnt_match">Heslo se neshoduje se stávajícím heslem</string>
     <string name="vault_passcode_has_changed">Kód trezoru byl aktualizován.</string>
     <string name="enable_vault_message">Abyste povolili trezor, je potřeba zadat přístupový kód.</string>
