@@ -197,7 +197,7 @@ class NotePagerFragment : Fragment() {
         }
 
         tb.setOnClickListener {
-            navController?.currentBackStackEntry?.savedStateHandle?.set(Constants.ClickListener, 0)
+            navController?.currentBackStackEntry?.savedStateHandle?.set(Constants.IsConfirmed, true)
         }
 
         vp.registerOnPageChangeCallback(
@@ -264,7 +264,7 @@ class NotePagerFragment : Fragment() {
                 val confirmationText = context.quantityStringResource(R.plurals.delete_note_confirmation, 1)
                 val descriptionText = context.quantityStringResource(R.plurals.delete_note_description, 1)
                 val btnText = context.quantityStringResource(R.plurals.delete_note, 1)
-                val liveData = navController?.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(Constants.ClickListener)
+                val liveData = navController?.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(Constants.IsConfirmed)
                 liveData?.observe(viewLifecycleOwner) {
                     if (it != null) {
                         liveData.value = null

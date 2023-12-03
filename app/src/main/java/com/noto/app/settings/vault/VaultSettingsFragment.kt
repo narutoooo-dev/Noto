@@ -40,7 +40,7 @@ class VaultSettingsFragment : Fragment() {
             isTransitionGroup = true
 
             navController?.currentBackStackEntry?.savedStateHandle
-                ?.getLiveData<Int>(Constants.ClickListener)
+                ?.getLiveData<Boolean>(Constants.IsConfirmed)
                 ?.observe(viewLifecycleOwner) {
                     viewModel.disableVault()
                         .invokeOnCompletion {

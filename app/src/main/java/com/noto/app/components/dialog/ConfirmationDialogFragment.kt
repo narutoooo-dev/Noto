@@ -4,12 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,7 +51,7 @@ class ConfirmationDialogFragment : BaseDialogFragment() {
                     NotoButton(
                         text = args.btnText,
                         onClick = {
-                            navController?.previousBackStackEntry?.savedStateHandle?.set(args.key ?: Constants.ClickListener, 0)
+                            navController?.previousBackStackEntry?.savedStateHandle?.set(args.key ?: Constants.IsConfirmed, true)
                             dismiss()
                         },
                         modifier = Modifier.fillMaxWidth(),

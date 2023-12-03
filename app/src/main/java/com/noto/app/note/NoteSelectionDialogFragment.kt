@@ -373,7 +373,7 @@ class NoteSelectionDialogFragment : BaseDialogFragment() {
                 val confirmationText = context.quantityStringResource(R.plurals.delete_note_confirmation, selectedNotes.count())
                 val descriptionText = context.quantityStringResource(R.plurals.delete_note_description, selectedNotes.count())
                 val btnText = context.quantityStringResource(R.plurals.delete_note, selectedNotes.count())
-                savedStateHandle?.getLiveData<Int>(Constants.ClickListener)
+                savedStateHandle?.getLiveData<Boolean>(Constants.IsConfirmed)
                     ?.observe(viewLifecycleOwner) {
                         viewModel.deleteSelectedNotes().invokeOnCompletion {
                             val text = context.quantityStringResource(R.plurals.note_is_deleted, selectedNotes.count(), selectedNotes.count())

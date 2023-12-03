@@ -296,7 +296,7 @@ class NoteDialogFragment : BaseDialogFragment() {
                 val confirmationText = context.quantityStringResource(R.plurals.delete_note_confirmation, DefaultQuantity)
                 val descriptionText = context.quantityStringResource(R.plurals.delete_note_description, DefaultQuantity)
                 val btnText = context.quantityStringResource(R.plurals.delete_note, DefaultQuantity)
-                savedStateHandle?.getLiveData<Int>(Constants.ClickListener)
+                savedStateHandle?.getLiveData<Boolean>(Constants.IsConfirmed)
                     ?.observe(viewLifecycleOwner) {
                         val stringId = R.plurals.note_is_deleted
                         val drawableId = R.drawable.ic_round_delete_24

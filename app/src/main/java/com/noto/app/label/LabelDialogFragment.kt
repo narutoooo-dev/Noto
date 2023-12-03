@@ -77,7 +77,7 @@ class LabelDialogFragment : BaseDialogFragment() {
                 val btnText = context.stringResource(R.string.delete_label)
                 navController?.currentBackStackEntry
                     ?.savedStateHandle
-                    ?.getLiveData<Int>(Constants.ClickListener)
+                    ?.getLiveData<Boolean>(Constants.IsConfirmed)
                     ?.observe(viewLifecycleOwner) {
                         val parentView = parentFragment?.view
                         val stringId = R.string.label_is_deleted

@@ -124,7 +124,7 @@ class FolderArchiveFragment : Fragment() {
                 val confirmationText = context.quantityStringResource(R.plurals.delete_note_confirmation, selectedNotes.count())
                 val descriptionText = context.quantityStringResource(R.plurals.delete_note_description, selectedNotes.count())
                 val btnText = context.quantityStringResource(R.plurals.delete_note, selectedNotes.count())
-                val liveData = savedStateHandle?.getLiveData<Int>(Constants.ClickListener)
+                val liveData = savedStateHandle?.getLiveData<Boolean>(Constants.IsConfirmed)
                 liveData?.observe(viewLifecycleOwner) {
                     if (it != null) {
                         liveData.value = null

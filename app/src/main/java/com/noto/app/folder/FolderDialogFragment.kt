@@ -208,7 +208,7 @@ class FolderDialogFragment : BaseDialogFragment() {
     private fun setupDeleteFolderConfirmationDialog() {
         navController?.currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<Int>(Constants.ClickListener)
+            ?.getLiveData<Boolean>(Constants.IsConfirmed)
             ?.observe(viewLifecycleOwner) {
                 navController?.navigateUp() // Dismiss ConfirmationDialogFragment
                 val stringId = R.string.folder_is_deleted
@@ -242,7 +242,7 @@ class FolderDialogFragment : BaseDialogFragment() {
     private fun setupArchiveVaultedFolderConfirmationDialog() {
         navController?.currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<Int>(Constants.ClickListener)
+            ?.getLiveData<Boolean>(Constants.IsConfirmed)
             ?.observe(viewLifecycleOwner) {
                 val parentView = parentFragment?.view
                 val isArchived = viewModel.folder.value.isArchived
