@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
@@ -24,12 +25,12 @@ import com.noto.app.components.dialog.BottomSheetDialog
 import com.noto.app.components.material.NotoButton
 import com.noto.app.components.material.NotoTextField
 import com.noto.app.components.material.TextFieldStatus
+import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.navController
-import com.noto.app.util.navigateSafely
-import com.noto.app.util.snackbar
+import com.noto.app.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeEmailDialogFragment : BaseDialogFragment() {
@@ -46,6 +47,10 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                 val email by viewModel.email.collectAsState()
                 val emailStatus by viewModel.emailStatus.collectAsState()
                 val emailState by viewModel.emailState.collectAsState()
+                val isOtpVerified by remember {
+                    navController?.currentBackStackEntry?.savedStateHandle
+                        ?.getStateFlow<Boolean?>(Constants.VerifyOtp, null) ?: MutableStateFlow(null)
+                }.collectAsState()
 
                 BottomSheetDialog(title = stringResource(id = R.string.change_email)) {
                     NotoTextField(
@@ -77,47 +82,64 @@ class ChangeEmailDialogFragment : BaseDialogFragment() {
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                emailState.fold(
-                    onEmpty = {},
-                    onLoading = {
-                        navController?.navigateSafely(
-                            ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToProgressIndicatorDialogFragment(
-                                stringResource(id = R.string.updating_email)
+
+                LaunchedEffect(emailState) {
+                    emailState.fold(
+                        onEmpty = {},
+                        onLoading = {
+                            navController?.navigateSafely(
+                                ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToProgressIndicatorDialogFragment(
+                                    context.stringResource(id = R.string.updating_email)
+                                )
                             )
-                        )
-                    },
-                    onSuccess = {
-                        if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
-                            navController?.navigateUp()
+                        },
+                        onSuccess = {
+                            if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
+                                navController?.navigateUp()
 
-                        navController?.navigateSafely(
-                            ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToVerifyEmailDialogFragment(
-                                email
+                            navController?.navigateSafely(
+                                ChangeEmailDialogFragmentDirections.actionChangeEmailDialogFragmentToVerifyOtpDialogFragment(
+                                    email = email,
+                                    title = context.stringResource(id = R.string.verify_email),
+                                    primaryButtonText = context.stringResource(id = R.string.verify_email),
+                                    secondaryButtonText = context.stringResource(id = R.string.edit_email),
+                                    progressIndicatorText = context.stringResource(id = R.string.verifying_email),
+                                    type = OtpType.ChangeEmail,
+                                    destinationId = R.id.changeEmailDialogFragment,
+                                    sendOtp = false,
+                                )
                             )
-                        )
-                    },
-                    onFailure = { exception ->
-                        if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
-                            navController?.navigateUp()
+                        },
+                        onFailure = { exception ->
+                            if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
+                                navController?.navigateUp()
 
-                        when (exception) {
-                            NotoException.Auth.UserAlreadyExists -> {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_exists))
-                            }
-
-                            NotoException.Auth.InvalidEmail -> {
-                                viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
-                            }
-
-                            else -> {
-                                SideEffect {
-                                    navController?.navigateUp()
+                            when (exception) {
+                                NotoException.Auth.UserAlreadyExists -> {
+                                    viewModel.setEmailStatus(TextFieldStatus.Error(R.string.user_already_exists))
                                 }
-                                parentFragment?.view?.snackbar(stringResource(id = R.string.something_went_wrong))
+
+                                NotoException.Auth.InvalidEmail -> {
+                                    viewModel.setEmailStatus(TextFieldStatus.Error(R.string.email_is_invalid))
+                                }
+
+                                else -> {
+                                    navController?.navigateUp()
+                                    parentFragment?.view?.snackbar(context.stringResource(id = R.string.something_went_wrong))
+                                }
                             }
                         }
+                    )
+                }
+
+                LaunchedEffect(isOtpVerified) {
+                    if (isOtpVerified == true) {
+                        navController?.popBackStack(R.id.changeEmailDialogFragment, true)
+                        parentFragment?.view?.snackbar(context.stringResource(id = R.string.email_is_updated))
+                    } else {
+                        // TODO
                     }
-                )
+                }
             }
         }
     }

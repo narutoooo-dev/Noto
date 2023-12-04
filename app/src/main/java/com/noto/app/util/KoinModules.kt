@@ -33,7 +33,7 @@ import com.noto.app.label.LabelViewModel
 import com.noto.app.label.NewLabelViewModel
 import com.noto.app.login.CreateAccountViewModel
 import com.noto.app.login.LoginViewModel
-import com.noto.app.login.VerifyEmailViewModel
+import com.noto.app.login.VerifyOtpViewModel
 import com.noto.app.main.MainViewModel
 import com.noto.app.note.NotePagerViewModel
 import com.noto.app.note.NoteViewModel
@@ -53,10 +53,6 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -103,9 +99,9 @@ object KoinModules {
 
         viewModel { LoginViewModel(get(), get()) }
 
-        viewModel { CreateAccountViewModel(get()) }
+        viewModel { CreateAccountViewModel(get(), get()) }
 
-        viewModel { VerifyEmailViewModel(get(), get(), it.get()) }
+        viewModel { VerifyOtpViewModel(get(), it[0], it[1], it[2]) }
 
         viewModel { NewFolderViewModel(get(), get()) }
 
@@ -177,14 +173,14 @@ object KoinModules {
         single<SupabaseClient> {
             createSupabaseClient(SupabaseConstants.URLs.SupabaseUrl, BuildConfig.SupabaseApiKey) {
                 defaultSerializer = KotlinXSerializer(JsonConfigs.Remote)
-                httpConfig {
-                    if (BuildConfig.DEBUG) {
-                        Logging {
-                            level = LogLevel.ALL
-                            logger = Logger.SIMPLE
-                        }
-                    }
-                }
+//                httpConfig {
+//                    if (BuildConfig.DEBUG) {
+//                        Logging {
+//                            level = LogLevel.ALL
+//                            logger = Logger.SIMPLE
+//                        }
+//                    }
+//                }
                 install(GoTrue) {
                     scheme = URLProtocol.HTTPS.name
                     host = SupabaseConstants.URLs.NotoHost

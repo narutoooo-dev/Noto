@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.material.TextFieldStatus
+import com.noto.app.domain.model.UserStatus
+import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
 import com.noto.app.toUiState
 import com.noto.app.util.Constants
@@ -12,7 +14,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CreateAccountViewModel(private val userRepository: UserRepository) : ViewModel() {
+class CreateAccountViewModel(
+    private val userRepository: UserRepository,
+    private val settingsRepository: SettingsRepository,
+) : ViewModel() {
 
     private val mutableState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val state get() = mutableState.asStateFlow()
@@ -116,6 +121,10 @@ class CreateAccountViewModel(private val userRepository: UserRepository) : ViewM
 
     fun setPasswordStatus(status: TextFieldStatus) {
         mutablePasswordStatus.value = status
+    }
+
+    fun markEmailAsVerified() = viewModelScope.launch {
+        settingsRepository.updateUserStatus(UserStatus.LoggedIn)
     }
 
     fun validateEmail() {

@@ -278,6 +278,11 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </dialog>
     <fragment
         android:id="@+id/settingsFragment"
@@ -350,20 +355,20 @@
             app:argType="boolean" />
         <argument
             android:name="is_main_folders_enabled"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
         <argument
             android:name="is_vaulted_folders_enabled"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
         <argument
             android:name="is_archived_folders_enabled"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
         <argument
             android:name="is_child_folders_enabled"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/folderListSortingDialogFragment"
@@ -779,16 +784,38 @@
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_loginFragment_to_verifyEmailDialogFragment"
-            app:destination="@id/verifyEmailDialogFragment" />
+            android:id="@+id/action_loginFragment_to_verifyOtpDialogFragment"
+            app:destination="@id/verifyOtpDialogFragment" />
     </fragment>
     <dialog
-        android:id="@+id/verifyEmailDialogFragment"
-        android:name="com.noto.app.login.VerifyEmailDialogFragment"
-        android:label="VerifyEmailDialogFragment">
+        android:id="@+id/verifyOtpDialogFragment"
+        android:name="com.noto.app.login.VerifyOtpDialogFragment"
+        android:label="VerifyOtpDialogFragment">
         <argument
             android:name="email"
             app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="primary_button_text"
+            app:argType="string" />
+        <argument
+            android:name="secondary_button_text"
+            app:argType="string" />
+        <argument
+            android:name="progress_indicator_text"
+            app:argType="string" />
+        <argument
+            android:name="type"
+            app:argType="com.noto.app.domain.OtpType" />
+        <argument
+            android:name="destination_id"
+            app:argType="reference" />
+        <argument
+            android:name="send_otp"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </dialog>
     <fragment
         android:id="@+id/startFragment"
@@ -820,6 +847,9 @@
         <action
             android:id="@+id/action_accountSettingsFragment_to_changeEmailDialogFragment"
             app:destination="@id/changeEmailDialogFragment" />
+        <action
+            android:id="@+id/action_accountSettingsFragment_to_verifyOtpDialogFragment"
+            app:destination="@id/verifyOtpDialogFragment" />
     </fragment>
     <dialog
         android:id="@+id/changeEmailDialogFragment"
@@ -829,8 +859,8 @@
             android:id="@+id/action_changeEmailDialogFragment_to_progressIndicatorDialogFragment"
             app:destination="@id/progressIndicatorDialogFragment" />
         <action
-            android:id="@+id/action_changeEmailDialogFragment_to_verifyEmailDialogFragment"
-            app:destination="@id/verifyEmailDialogFragment" />
+            android:id="@+id/action_changeEmailDialogFragment_to_verifyOtpDialogFragment"
+            app:destination="@id/verifyOtpDialogFragment" />
     </dialog>
     <dialog
         android:id="@+id/editNameDialogFragment"
@@ -856,8 +886,8 @@
             android:id="@+id/action_createAccountFragment_to_progressIndicatorDialogFragment"
             app:destination="@id/progressIndicatorDialogFragment" />
         <action
-            android:id="@+id/action_createAccountFragment_to_verifyEmailDialogFragment"
-            app:destination="@id/verifyEmailDialogFragment" />
+            android:id="@+id/action_createAccountFragment_to_verifyOtpDialogFragment"
+            app:destination="@id/verifyOtpDialogFragment" />
         <action
             android:id="@+id/action_createAccountFragment_to_passwordRequirementsDialogFragment"
             app:destination="@id/passwordRequirementsDialogFragment" />

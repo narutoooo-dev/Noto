@@ -1,5 +1,6 @@
 package com.noto.app.login
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,15 +33,23 @@ import com.noto.app.components.material.TextFieldStatus
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.*
+import com.noto.app.util.Constants
+import com.noto.app.util.navController
+import com.noto.app.util.navigateSafely
+import com.noto.app.util.surface
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class VerifyEmailDialogFragment : BaseDialogFragment() {
+@SuppressLint("RestrictedApi")
+class VerifyOtpDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<VerifyEmailViewModel> { parametersOf(args.email) }
+    private val viewModel by viewModel<VerifyOtpViewModel> { parametersOf(args.email, args.type, args.sendOtp) }
 
-    private val args by navArgs<VerifyEmailDialogFragmentArgs>()
+    private val args by navArgs<VerifyOtpDialogFragmentArgs>()
+
+    private val navBackStackEntry by lazy {
+        navController?.currentBackStack?.value?.lastOrNull { it.destination.id == args.destinationId }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,7 +66,7 @@ class VerifyEmailDialogFragment : BaseDialogFragment() {
                 val otpStatus by viewModel.otpStatus.collectAsState()
                 val focusRequester = remember { FocusRequester() }
 
-                BottomSheetDialog(title = stringResource(id = R.string.verify_email)) {
+                BottomSheetDialog(title = args.title) {
                     Text(
                         text = stringResource(id = R.string.verify_email_info),
                         style = MaterialTheme.typography.bodyLarge,
@@ -93,53 +102,48 @@ class VerifyEmailDialogFragment : BaseDialogFragment() {
                     Spacer(Modifier.height(NotoTheme.dimensions.extraLarge))
 
                     NotoButton(
-                        text = stringResource(id = R.string.verify_email),
-                        onClick = viewModel::verifyEmail,
+                        text = args.primaryButtonText,
+                        onClick = viewModel::verifyOtp,
                         modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(Modifier.height(NotoTheme.dimensions.medium))
 
                     NotoTextButton(
-                        text = stringResource(id = R.string.edit_email),
-                        onClick = { dismiss() },
+                        text = args.secondaryButtonText,
+                        onClick = ::dismiss,
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally),
                     )
                 }
 
-
-                state.fold(
-                    onLoading = {
-                        navController?.navigateSafely(
-                            VerifyEmailDialogFragmentDirections.actionGlobalProgressIndicatorDialogFragment(
-                                stringResource(id = R.string.verifying_email)
+                LaunchedEffect(state) {
+                    state.fold(
+                        onLoading = {
+                            navController?.navigateSafely(
+                                VerifyOtpDialogFragmentDirections.actionGlobalProgressIndicatorDialogFragment(args.progressIndicatorText)
                             )
-                        )
-                    },
-                    onSuccess = {
-                        SideEffect {
-                            navController?.popBackStack(R.id.verifyEmailDialogFragment, true)
-                            if (navController?.currentDestination?.id == R.id.changeEmailDialogFragment) {
+                        },
+                        onSuccess = {
+                            navBackStackEntry?.savedStateHandle?.set(Constants.VerifyOtp, true)
+                            navController?.popBackStack(R.id.verifyOtpDialogFragment, true)
+                        },
+                        onFailure = { exception ->
+                            if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                                 navController?.navigateUp()
-                                parentFragment?.view?.snackbar(context.stringResource(id = R.string.email_is_updated))
+                            when (exception) {
+                                is NotoException.Auth.InvalidOtp -> {
+                                    viewModel.setOtpStatus(TextFieldStatus.Error(R.string.one_time_passcode_is_invalid))
+                                }
+
+                                else -> {
+                                    // TODO
+                                }
                             }
-                        }
-                    },
-                    onFailure = { exception ->
-                        if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
-                            navController?.navigateUp()
-                        when (exception) {
-                            is NotoException.Auth.InvalidOtp -> {
-                                viewModel.setOtpStatus(TextFieldStatus.Error(R.string.one_time_passcode_is_invalid))
-                            }
-                            else -> {
-                                TODO()
-                            }
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
         }
     }

@@ -84,7 +84,27 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
         }
     }
 
-    override suspend fun verifySignUpOtp(email: String, otp: String) {
+    override suspend fun sendLogInOtp(email: String) {
+        tryCatching {
+            client.gotrue.resendEmail(OtpType.Email.SIGNUP, email)
+        }
+    }
+
+    override suspend fun sendChangeEmailOtp(email: String) {
+        tryCatching {
+            client.gotrue.resendEmail(OtpType.Email.EMAIL_CHANGE, email)
+        }
+    }
+
+    override suspend fun sendDeleteAccountOtp(email: String) {
+        tryCatching {
+            client.gotrue.sendOtpTo(Email) {
+                this.email = email
+            }
+        }
+    }
+
+    override suspend fun verifyLogInOtp(email: String, otp: String) {
         tryCatching(
             onException = { exception ->
                 when (exception) {
@@ -97,7 +117,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
         }
     }
 
-    override suspend fun verifyEmailChangeOtp(email: String, otp: String) {
+    override suspend fun verifyChangeEmailOtp(email: String, otp: String) {
         tryCatching(
             onException = { exception ->
                 when (exception) {
@@ -110,15 +130,16 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
         }
     }
 
-    override suspend fun sendSignUpOtp(email: String) {
-        tryCatching {
-            client.gotrue.resendEmail(OtpType.Email.SIGNUP, email)
-        }
-    }
-
-    override suspend fun sendEmailChangeOtp(email: String) {
-        tryCatching {
-            client.gotrue.resendEmail(OtpType.Email.EMAIL_CHANGE, email)
+    override suspend fun verifyDeleteAccountOtp(email: String, otp: String) {
+        tryCatching(
+            onException = { exception ->
+                when (exception) {
+                    is RestException -> NotoException.Auth.InvalidOtp()
+                    else -> unknownException(exception.message)
+                }
+            }
+        ) {
+            client.gotrue.verifyEmailOtp(OtpType.Email.MAGIC_LINK, email, otp)
         }
     }
 

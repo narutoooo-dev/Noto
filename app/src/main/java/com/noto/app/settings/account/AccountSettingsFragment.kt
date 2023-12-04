@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -20,12 +17,14 @@ import androidx.fragment.app.Fragment
 import com.noto.app.R
 import com.noto.app.components.material.ScreenCircularProgressIndicator
 import com.noto.app.components.screen.Screen
+import com.noto.app.domain.OtpType
 import com.noto.app.fold
 import com.noto.app.settings.SettingsItem
 import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
 import com.noto.app.theme.warning
 import com.noto.app.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -43,11 +42,11 @@ class AccountSettingsFragment : Fragment() {
         }
 
         navController?.currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<Int>(Constants.LogOut)
+            ?.getLiveData<Boolean>(Constants.LogOut)
             ?.observe(viewLifecycleOwner) { logOut() }
 
         navController?.currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<Int>(Constants.DeleteAccount)
+            ?.getLiveData<Boolean>(Constants.DeleteAccount)
             ?.observe(viewLifecycleOwner) { deleteUser() }
 
         setupMixedTransitions()
@@ -57,6 +56,16 @@ class AccountSettingsFragment : Fragment() {
                 val userState by viewModel.userState.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
+                val isOtpVerified by remember {
+                    navController?.currentBackStackEntry?.savedStateHandle
+                        ?.getStateFlow<Boolean?>(Constants.VerifyOtp, null) ?: MutableStateFlow(null)
+                }.collectAsState()
+
+                val isRequestConfirmed by remember {
+                    navController?.currentBackStackEntry?.savedStateHandle
+                        ?.getStateFlow(Constants.IsConfirmed, false) ?: MutableStateFlow(false)
+                }.collectAsState()
+
                 Screen(
                     title = stringResource(id = R.string.account),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -102,19 +111,22 @@ class AccountSettingsFragment : Fragment() {
                             Spacer(Modifier.weight(1F))
 
                             SettingsSection {
-                                val confirmationText = stringResource(id = R.string.delete_account_confirmation)
-                                val descriptionText = stringResource(id = R.string.delete_account_description)
-                                val deleteText = stringResource(id = R.string.delete_account)
+                                val title = stringResource(id = R.string.confirm_your_request)
+                                val confirmation = stringResource(id = R.string.delete_account_confirmation)
+                                val description = stringResource(id = R.string.delete_account_email_verification_description)
+                                val btnText = stringResource(id = R.string.send_one_time_passcode)
+
                                 SettingsItem(
-                                    title = deleteText,
+                                    title = stringResource(id = R.string.delete_account),
                                     type = SettingsItemType.None,
                                     onClick = {
                                         navController?.navigateSafely(
                                             AccountSettingsFragmentDirections.actionAccountSettingsFragmentToConfirmationDialogFragment(
-                                                confirmation = confirmationText,
-                                                description = descriptionText,
-                                                btnText = deleteText,
-                                                key = Constants.DeleteAccount,
+                                                confirmation = confirmation,
+                                                description = description,
+                                                btnText = btnText,
+                                                title = title,
+                                                key = Constants.IsConfirmed,
                                             )
                                         )
                                     },
@@ -127,6 +139,45 @@ class AccountSettingsFragment : Fragment() {
                             scope.launch { snackbarHostState.showSnackbar(text) }
                         },
                     )
+                }
+
+                LaunchedEffect(isRequestConfirmed, userState) {
+                    userState.fold(
+                        onSuccess = { user ->
+                            if (isRequestConfirmed) {
+                                navController?.navigateSafely(
+                                    AccountSettingsFragmentDirections.actionAccountSettingsFragmentToVerifyOtpDialogFragment(
+                                        email = user.email,
+                                        title = context.stringResource(R.string.confirm_one_time_passcode),
+                                        primaryButtonText = context.stringResource(R.string.confirm),
+                                        secondaryButtonText = context.stringResource(R.string.cancel),
+                                        progressIndicatorText = context.stringResource(R.string.confirming_one_time_passcode),
+                                        type = OtpType.DeleteAccount,
+                                        destinationId = R.id.accountSettingsFragment,
+                                    )
+                                )
+                            }
+                        }
+                    )
+                }
+
+                val confirmationText = stringResource(id = R.string.delete_account_confirmation)
+                val descriptionText = stringResource(id = R.string.delete_account_description)
+                val deleteText = stringResource(id = R.string.delete_account)
+
+                LaunchedEffect(isOtpVerified) {
+                    if (isOtpVerified == true) {
+                        navController?.navigateSafely(
+                            AccountSettingsFragmentDirections.actionAccountSettingsFragmentToConfirmationDialogFragment(
+                                confirmation = confirmationText,
+                                description = descriptionText,
+                                btnText = deleteText,
+                                key = Constants.DeleteAccount,
+                            )
+                        )
+                    } else {
+                        // TODO
+                    }
                 }
             }
         }

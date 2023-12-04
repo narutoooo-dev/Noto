@@ -29,13 +29,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.noto.app.R
-import com.noto.app.components.*
-import com.noto.app.components.screen.Screen
 import com.noto.app.components.material.*
+import com.noto.app.components.screen.Screen
+import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateAccountFragment : Fragment() {
@@ -69,6 +70,10 @@ class CreateAccountFragment : Fragment() {
                     context.getText(R.string.password_requirements).toSpannable().toAnnotatedString()
                 }
                 val uriHandler = LocalUriHandler.current
+                val isOtpVerified by remember {
+                    navController?.currentBackStackEntry?.savedStateHandle
+                        ?.getStateFlow<Boolean?>(Constants.VerifyOtp, null) ?: MutableStateFlow(null)
+                }.collectAsState()
 
                 Screen(
                     title = stringResource(id = R.string.create_account),
@@ -234,7 +239,18 @@ class CreateAccountFragment : Fragment() {
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
                             navController?.navigateUp()
 
-                        navController?.navigateSafely(CreateAccountFragmentDirections.actionCreateAccountFragmentToVerifyEmailDialogFragment(email))
+                        navController?.navigateSafely(
+                            CreateAccountFragmentDirections.actionCreateAccountFragmentToVerifyOtpDialogFragment(
+                                email = email,
+                                title = stringResource(id = R.string.verify_email),
+                                primaryButtonText = stringResource(id = R.string.verify_email),
+                                secondaryButtonText = stringResource(id = R.string.edit_email),
+                                progressIndicatorText = stringResource(id = R.string.verifying_email),
+                                type = OtpType.LogIn,
+                                destinationId = R.id.createAccountFragment,
+                                sendOtp = false,
+                            )
+                        )
                     },
                     onFailure = { exception ->
                         if (navController?.currentDestination?.id == R.id.progressIndicatorDialogFragment)
@@ -278,6 +294,14 @@ class CreateAccountFragment : Fragment() {
                         }
                     }
                 )
+
+                LaunchedEffect(isOtpVerified) {
+                    if (isOtpVerified == true) {
+                        viewModel.markEmailAsVerified()
+                    } else {
+                        // TODO
+                    }
+                }
             }
         }
     }

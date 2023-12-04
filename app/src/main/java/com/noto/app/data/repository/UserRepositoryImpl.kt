@@ -2,6 +2,7 @@ package com.noto.app.data.repository
 
 import com.noto.app.crypto.KeyStoreManager
 import com.noto.app.crypto.PasswordTransformer
+import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.User
 import com.noto.app.domain.repository.SettingsRepository
@@ -55,22 +56,31 @@ class UserRepositoryImpl(
             keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
             finishLogin()
         }
-    }.recoverCatching { exception ->
-        withContext(dispatcher) {
-            if (exception is NotoException.Auth.EmailNotVerified) remoteAuthDataSource.sendSignUpOtp(email)
-            throw exception
+    }
+
+    override suspend fun sendOtp(email: String, type: OtpType) = runCatching {
+        when (type) {
+            OtpType.LogIn -> remoteAuthDataSource.sendLogInOtp(email)
+            OtpType.ChangeEmail -> remoteAuthDataSource.sendChangeEmailOtp(email)
+            OtpType.DeleteAccount -> remoteAuthDataSource.sendDeleteAccountOtp(email)
         }
     }
 
-    override suspend fun verifyEmail(email: String, otp: String): Result<Unit> = runCatching {
+    override suspend fun verifyOtp(email: String, type: OtpType, otp: String): Result<Unit> = runCatching {
         withContext(dispatcher) {
-            val currentEmail = remoteAuthDataSource.get()?.email
-            if (currentEmail == null || currentEmail == email) {
-                remoteAuthDataSource.verifySignUpOtp(email, otp)
-            } else {
-                remoteAuthDataSource.verifyEmailChangeOtp(email, otp)
+            when (type) {
+                OtpType.LogIn -> {
+                    remoteAuthDataSource.verifyLogInOtp(email, otp)
+                    finishLogin()
+                }
+
+                OtpType.ChangeEmail -> {
+                    remoteAuthDataSource.verifyChangeEmailOtp(email, otp)
+                    settingsRepository.updateEmail(email)
+                }
+
+                OtpType.DeleteAccount -> remoteAuthDataSource.verifyDeleteAccountOtp(email, otp)
             }
-            finishLogin()
         }
     }
 

@@ -44,6 +44,10 @@ class LoginViewModel(
         }
     }
 
+    fun markEmailAsVerified() = viewModelScope.launch {
+        settingsRepository.updateUserStatus(UserStatus.LoggedIn)
+    }
+
     fun setEmail(email: String) {
         mutableEmail.value = email
         if (email.isNotBlank()) {

@@ -27,7 +27,7 @@ class ConfirmationDialogFragment : BaseDialogFragment() {
     ): View? = context?.let { context ->
         ComposeView(context).apply {
             setContent {
-                BottomSheetDialog(title = args.btnText) {
+                BottomSheetDialog(title = args.title ?: args.btnText) {
                     Surface(shape = MaterialTheme.shapes.small) {
                         Column(
                             modifier = Modifier.padding(NotoTheme.dimensions.medium),

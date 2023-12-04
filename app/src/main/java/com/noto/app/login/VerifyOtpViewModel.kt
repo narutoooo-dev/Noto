@@ -5,8 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.material.TextFieldStatus
-import com.noto.app.domain.model.UserStatus
-import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.domain.OtpType
 import com.noto.app.domain.repository.UserRepository
 import com.noto.app.toUiState
 import com.noto.app.util.Constants
@@ -14,10 +13,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class VerifyEmailViewModel(
+class VerifyOtpViewModel(
     private val userRepository: UserRepository,
-    private val settingsRepository: SettingsRepository,
     private val email: String,
+    private val type: OtpType,
+    private val sendOtp: Boolean,
 ) : ViewModel() {
 
     private val mutableState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
@@ -29,19 +29,30 @@ class VerifyEmailViewModel(
     private val mutableOtpStatus = MutableStateFlow<TextFieldStatus>(TextFieldStatus.Empty)
     val otpStatus get() = mutableOtpStatus.asStateFlow()
 
-    fun verifyEmail() = viewModelScope.launch {
+    init {
+        if (sendOtp) {
+            viewModelScope.launch {
+                userRepository.sendOtp(email, type)
+            }
+        }
+    }
+
+    fun verifyOtp() = viewModelScope.launch {
         if (otp.value.isNotBlank()) {
-            mutableState.value = UiState.Loading
-            mutableState.value = userRepository.verifyEmail(email, otp.value)
-                .onSuccess { settingsRepository.updateUserStatus(UserStatus.LoggedIn) }
-                .toUiState()
+            if (otp.value.length == Constants.OtpLength) {
+                mutableState.value = UiState.Loading
+                mutableState.value = userRepository.verifyOtp(email, type, otp.value)
+                    .toUiState()
+            } else {
+                mutableOtpStatus.value = TextFieldStatus.Error(R.string.one_time_passcode_is_required)
+            }
         } else {
             mutableOtpStatus.value = TextFieldStatus.Error(R.string.one_time_passcode_is_required)
         }
     }
 
     fun setOtp(otp: String) {
-        if (otp.length <= Constants.OtpMaxLength) {
+        if (otp.length <= Constants.OtpLength) {
             mutableOtp.value = otp
             mutableOtpStatus.value = TextFieldStatus.Empty
         }

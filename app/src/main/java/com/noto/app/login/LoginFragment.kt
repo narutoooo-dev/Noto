@@ -27,15 +27,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.noto.app.R
-import com.noto.app.components.screen.Screen
 import com.noto.app.components.material.*
+import com.noto.app.components.screen.Screen
+import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.NotoException
 import com.noto.app.fold
 import com.noto.app.theme.NotoTheme
-import com.noto.app.util.navController
-import com.noto.app.util.navigateSafely
-import com.noto.app.util.setupMixedTransitions
-import com.noto.app.util.toAnnotatedString
+import com.noto.app.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment() {
@@ -62,6 +61,10 @@ class LoginFragment : Fragment() {
                 val snackbarHostState = remember { SnackbarHostState() }
                 val focusManager = LocalFocusManager.current
                 val forgotPasswordAnnotatedString = remember { context.getText(R.string.forgot_password).toSpannable().toAnnotatedString() }
+                val isOtpVerified by remember {
+                    navController?.currentBackStackEntry?.savedStateHandle
+                        ?.getStateFlow<Boolean?>(Constants.VerifyOtp, null) ?: MutableStateFlow(null)
+                }.collectAsState()
 
                 Screen(
                     title = stringResource(id = R.string.log_in),
@@ -181,7 +184,17 @@ class LoginFragment : Fragment() {
                             }
 
                             NotoException.Auth.EmailNotVerified -> {
-                                navController?.navigateSafely(LoginFragmentDirections.actionLoginFragmentToVerifyEmailDialogFragment(email))
+                                navController?.navigateSafely(
+                                    LoginFragmentDirections.actionLoginFragmentToVerifyOtpDialogFragment(
+                                        email = email,
+                                        title = stringResource(id = R.string.verify_email),
+                                        primaryButtonText = stringResource(id = R.string.verify_email),
+                                        secondaryButtonText = stringResource(id = R.string.edit_email),
+                                        progressIndicatorText = stringResource(id = R.string.verifying_email),
+                                        type = OtpType.LogIn,
+                                        destinationId = R.id.loginFragment,
+                                    )
+                                )
                             }
 
                             else -> {
@@ -203,6 +216,14 @@ class LoginFragment : Fragment() {
                         }
                     }
                 )
+
+                LaunchedEffect(isOtpVerified) {
+                    if (isOtpVerified == true) {
+                        viewModel.markEmailAsVerified()
+                    } else {
+                        // TODO
+                    }
+                }
             }
         }
     }

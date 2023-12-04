@@ -1,5 +1,6 @@
 package com.noto.app.domain.repository
 
+import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +12,9 @@ interface UserRepository {
 
     suspend fun logIn(email: String, password: String): Result<Unit>
 
-    suspend fun verifyEmail(email: String, otp: String): Result<Unit>
+    suspend fun sendOtp(email: String, type: OtpType): Result<Unit>
+
+    suspend fun verifyOtp(email: String, type: OtpType, otp: String): Result<Unit>
 
     suspend fun updateName(name: String): Result<Unit>
 
