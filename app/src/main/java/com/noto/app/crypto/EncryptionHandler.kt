@@ -2,10 +2,10 @@ package com.noto.app.crypto
 
 interface EncryptionHandler {
 
-    fun generateEncryptedDek(): ByteArray
+    fun generateKeyset(): String
 
-    fun encryptData(encryptedDek: ByteArray, data: ByteArray): ByteArray
+    fun encryptData(keyset: String, data: ByteArray): ByteArray
 
-    fun decryptData(encryptedDek: ByteArray, encryptedData: ByteArray): ByteArray
+    fun decryptData(keyset: String, encryptedData: ByteArray): ByteArray
 
 }

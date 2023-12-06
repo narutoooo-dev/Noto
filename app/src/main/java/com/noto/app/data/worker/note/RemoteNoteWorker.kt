@@ -28,10 +28,10 @@ sealed interface RemoteNoteWorker : RemoteItemWorker {
 
     suspend fun LocalNote.toRemoteNote(): RemoteNote {
         val localFolder = localFolderDataSource.getLocalFolderById(folderId).first()!!
-        val encryptedDek = localFolder.encryptedKey!!
+        val keyset = localFolder.keyset!!
         val jsonContent = json.encodeToString(this.copy(id = 0L, folderId = 0L))
         val encodedContent = jsonContent.encodeToByteArray()
-        val encryptedContent = encryptionHandler.encryptData(encryptedDek, encodedContent)
+        val encryptedContent = encryptionHandler.encryptData(keyset, encodedContent)
         return RemoteNote(
             id = UUID.fromString(remoteId),
             folderId = UUID.fromString(localFolder.remoteId),
@@ -41,8 +41,8 @@ sealed interface RemoteNoteWorker : RemoteItemWorker {
 
     suspend fun RemoteNote.toLocalNote(): LocalNote {
         val localFolder = localFolderDataSource.getLocalFolderByRemoteId(folderId.toString()).first()!!
-        val encryptedDek = localFolder.encryptedKey!!
-        val decryptedContent = encryptionHandler.decryptData(encryptedDek, encryptedContent)
+        val keyset = localFolder.keyset!!
+        val decryptedContent = encryptionHandler.decryptData(keyset, encryptedContent)
         val decodedContent = decryptedContent.decodeToString()
         val content = json.decodeFromString<LocalNote>(decodedContent)
         return content.copy(id = 0L, remoteId = id.toString(), folderId = localFolder.id)

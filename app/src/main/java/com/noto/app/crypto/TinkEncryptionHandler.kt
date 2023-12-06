@@ -16,22 +16,19 @@ class TinkEncryptionHandler : EncryptionHandler {
         AeadConfig.register()
     }
 
-    override fun generateEncryptedDek(): ByteArray {
+    override fun generateKeyset(): String {
         val keysetHandle = KeysetHandle.generateNew(PredefinedAeadParameters.AES256_GCM)
-        val encryptedDek = TinkJsonProtoKeysetFormat.serializeEncryptedKeyset(keysetHandle, keyStoreAead, EmptyAssociatedData)
-        return encryptedDek.encodeToByteArray() // TODO Decide whether to encode the value or return it as JSON instead.
+        return TinkJsonProtoKeysetFormat.serializeEncryptedKeyset(keysetHandle, keyStoreAead, EmptyAssociatedData)
     }
 
-    override fun encryptData(encryptedDek: ByteArray, data: ByteArray): ByteArray {
-        val encryptedDek = encryptedDek.decodeToString()
-        val keysetHandle = TinkJsonProtoKeysetFormat.parseEncryptedKeyset(encryptedDek, keyStoreAead, EmptyAssociatedData)
+    override fun encryptData(keyset: String, data: ByteArray): ByteArray {
+        val keysetHandle = TinkJsonProtoKeysetFormat.parseEncryptedKeyset(keyset, keyStoreAead, EmptyAssociatedData)
         val aead = keysetHandle.getPrimitive(Aead::class.java)
         return aead.encrypt(data, EmptyAssociatedData)
     }
 
-    override fun decryptData(encryptedDek: ByteArray, encryptedData: ByteArray): ByteArray {
-        val encryptedDek = encryptedDek.decodeToString()
-        val keysetHandle = TinkJsonProtoKeysetFormat.parseEncryptedKeyset(encryptedDek, keyStoreAead, EmptyAssociatedData)
+    override fun decryptData(keyset: String, encryptedData: ByteArray): ByteArray {
+        val keysetHandle = TinkJsonProtoKeysetFormat.parseEncryptedKeyset(keyset, keyStoreAead, EmptyAssociatedData)
         val aead = keysetHandle.getPrimitive(Aead::class.java)
         return aead.decrypt(encryptedData, EmptyAssociatedData)
     }

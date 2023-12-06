@@ -23,19 +23,19 @@ sealed interface RemoteFolderWorker : RemoteItemWorker {
     private val json get() = get<Json>(KoinModules.Qualifiers.CryptoJson)
 
     fun RemoteFolder.toLocalFolder(): LocalFolder {
-        val decryptedContent = encryptionHandler.decryptData(encryptedKey, encryptedContent)
+        val decryptedContent = encryptionHandler.decryptData(keyset, encryptedContent)
         val decodedContent = decryptedContent.decodeToString()
         val content = json.decodeFromString<LocalFolder>(decodedContent)
-        return content.copy(id = 0L, remoteId = id.toString(), encryptedKey = encryptedKey)
+        return content.copy(id = 0L, remoteId = id.toString(), keyset = keyset)
     }
 
     fun LocalFolder.toRemoteFolder(): RemoteFolder {
         val jsonContent = json.encodeToString(this.copy(id = 0L))
         val encodedContent = jsonContent.encodeToByteArray()
-        val encryptedContent = encryptionHandler.encryptData(encryptedKey!!, encodedContent)
+        val encryptedContent = encryptionHandler.encryptData(keyset!!, encodedContent)
         return RemoteFolder(
             id = UUID.fromString(remoteId),
-            encryptedKey = encryptedKey,
+            keyset = keyset,
             encryptedContent = encryptedContent,
         )
     }

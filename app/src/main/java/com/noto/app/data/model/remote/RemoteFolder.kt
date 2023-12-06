@@ -7,7 +7,7 @@ import java.util.UUID
 data class RemoteFolder(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val encryptedKey: ByteArray,
+    val keyset: String,
     val encryptedContent: ByteArray,
 ) {
     override fun equals(other: Any?): Boolean {
@@ -17,15 +17,13 @@ data class RemoteFolder(
         other as RemoteFolder
 
         if (id != other.id) return false
-        if (!encryptedKey.contentEquals(other.encryptedKey)) return false
-        if (!encryptedContent.contentEquals(other.encryptedContent)) return false
-
-        return true
+        if (keyset != other.keyset) return false
+        return encryptedContent.contentEquals(other.encryptedContent)
     }
 
     override fun hashCode(): Int {
         var result = id.hashCode()
-        result = 31 * result + encryptedKey.contentHashCode()
+        result = 31 * result + keyset.hashCode()
         result = 31 * result + encryptedContent.contentHashCode()
         return result
     }

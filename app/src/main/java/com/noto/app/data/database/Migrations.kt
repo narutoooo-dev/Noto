@@ -1,5 +1,6 @@
 package com.noto.app.data.database
 
+import android.annotation.SuppressLint
 import androidx.room.DeleteColumn
 import androidx.room.DeleteTable
 import androidx.room.RenameColumn
@@ -96,6 +97,7 @@ object Migrations {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     val AddRemoteIdsToLocalItems = Migration(33, 34) { database ->
         database.beginTransaction()
         try {

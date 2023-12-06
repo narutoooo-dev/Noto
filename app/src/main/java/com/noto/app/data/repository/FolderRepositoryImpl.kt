@@ -1,7 +1,6 @@
 package com.noto.app.data.repository
 
 import com.noto.app.crypto.EncryptionHandler
-import com.noto.app.data.database.*
 import com.noto.app.data.model.DomainMappers
 import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalFolder
@@ -143,8 +142,8 @@ class FolderRepositoryImpl(
     private suspend fun Folder.toLocalFolder(): LocalFolder {
         val localFolder = localFolderDataSource.getLocalFolderById(id).firstOrNull()
         val remoteId = localFolder?.remoteId ?: UUID.randomUUID().toString()
-        val encryptedKey = if (isUserLoggedIn()) {
-            localFolder?.encryptedKey ?: encryptionHandler.generateEncryptedDek()
+        val keyset = if (isUserLoggedIn()) {
+            localFolder?.keyset ?: encryptionHandler.generateKeyset()
         } else {
             null
         }
@@ -170,7 +169,7 @@ class FolderRepositoryImpl(
             scrollingPosition = scrollingPosition,
             filteringType = DomainMappers.FilteringType.map(filteringType),
             openNotesIn = DomainMappers.OpenNotesIn.map(openNotesIn),
-            encryptedKey = encryptedKey
+            keyset = keyset
         )
     }
 

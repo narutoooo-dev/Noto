@@ -48,7 +48,7 @@ private const val NOTO_DATABASE = "Noto Database"
         AutoMigration(from = 29, to = 30),
         /** Add [Folder.openNotesIn] */
         AutoMigration(from = 31, to = 32),
-        /** Add [LocalFolder.encryptedKey] */
+        /** Add [LocalFolder.keyset] */
         AutoMigration(from = 34, to = 35),
     ],
 )
