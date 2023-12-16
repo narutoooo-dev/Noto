@@ -11,6 +11,7 @@ enum class NotoColor {
         val General = Teal
         val ReadingMode = Orange
         val Vault = Brown
+        val LocalBackup = Purple
     }
 }
 
@@ -68,4 +69,8 @@ enum class ScreenBrightnessLevel(val value: Float) {
 
 enum class UserStatus {
     New, LoggedIn, NotLoggedIn,
+}
+
+enum class AutoBackupDuration {
+    Daily, Weekly, Monthly,
 }
