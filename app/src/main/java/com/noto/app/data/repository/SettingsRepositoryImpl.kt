@@ -94,6 +94,15 @@ class SettingsRepositoryImpl(
 
     override val isUserLoggedIn: Flow<Boolean> = userStatus.map { it == UserStatus.LoggedIn }
 
+    override val autoBackupDuration: Flow<AutoBackupDuration> = storage[SettingsKeys.AutoBackupDuration, AutoBackupDuration.Daily]
+
+    override val scheduledAutoBackupDuration: Flow<AutoBackupDuration?> = storage.data
+        .map { preferences -> preferences[SettingsKeys.ScheduledAutoBackupDuration] }
+        .map { if (it != null) AutoBackupDuration.valueOf(it) else null }
+        .flowOn(coroutineDispatcher)
+
+    override val autoBackupLocation: Flow<String?> = storage.getNullable(SettingsKeys.AutoBackupLocation, null)
+
     override fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int> = storage[SettingsKeys.FilteredItemModel(model), 0]
 
     override fun getWidgetFolderId(widgetId: Int): Flow<Long> = storage[SettingsKeys.Widget.FolderId(widgetId), 0L]
@@ -214,6 +223,14 @@ class SettingsRepositoryImpl(
     override suspend fun updateEmail(email: String) = storage.set(SettingsKeys.Email, email)
 
     override suspend fun updateUserStatus(userStatus: UserStatus) = storage.set(SettingsKeys.UserStatus, userStatus.toString())
+
+    override suspend fun updateAutoBackupDuration(autoBackupDuration: AutoBackupDuration) =
+        storage.set(SettingsKeys.AutoBackupDuration, autoBackupDuration.toString())
+
+    override suspend fun updateScheduledAutoBackupDuration(autoBackupDuration: AutoBackupDuration?) =
+        storage.set(SettingsKeys.ScheduledAutoBackupDuration, autoBackupDuration?.toString())
+
+    override suspend fun updateAutoBackupLocation(autoBackupLocation: String?) = storage.set(SettingsKeys.AutoBackupLocation, autoBackupLocation)
 
     override suspend fun exportNotoData(): String {
         return withContext(coroutineDispatcher) {

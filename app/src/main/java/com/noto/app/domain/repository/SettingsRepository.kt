@@ -62,6 +62,12 @@ interface SettingsRepository {
 
     val isUserLoggedIn: Flow<Boolean>
 
+    val autoBackupLocation: Flow<String?>
+
+    val autoBackupDuration: Flow<AutoBackupDuration>
+
+    val scheduledAutoBackupDuration: Flow<AutoBackupDuration?>
+
     fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int>
 
     fun getWidgetFolderId(widgetId: Int): Flow<Long>
@@ -159,6 +165,12 @@ interface SettingsRepository {
     suspend fun updateEmail(email: String)
 
     suspend fun updateUserStatus(userStatus: UserStatus)
+
+    suspend fun updateAutoBackupLocation(autoBackupLocation: String?)
+
+    suspend fun updateAutoBackupDuration(autoBackupDuration: AutoBackupDuration)
+
+    suspend fun updateScheduledAutoBackupDuration(autoBackupDuration: AutoBackupDuration?)
 
     suspend fun exportNotoData(): String
 

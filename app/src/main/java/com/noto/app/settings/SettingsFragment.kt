@@ -80,7 +80,6 @@ class SettingsFragment : Fragment() {
                 Screen(title = stringResource(id = R.string.settings)) {
                     TelegramBanner()
                     MainSection()
-                    ExportImportSection()
                     ShareAndRateSection()
                     AboutSection()
                     Spacer(modifier = Modifier.weight(1F))
@@ -140,6 +139,16 @@ class SettingsFragment : Fragment() {
                 },
                 painter = painterResource(id = R.drawable.ic_round_vault_24),
                 painterColor = NotoColor.Vault.toColor(),
+            )
+
+            SettingsItem(
+                title = stringResource(id = R.string.local_backup),
+                type = SettingsItemType.None,
+                onClick = {
+                    navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToLocalBackupSettingsFragment())
+                },
+                painter = painterResource(id = R.drawable.ic_round_reset_24),
+                painterColor = NotoColor.LocalBackup.toColor(),
             )
         }
     }
@@ -215,21 +224,6 @@ class SettingsFragment : Fragment() {
                 },
                 painter = painterResource(id = R.drawable.ic_round_info_24),
                 painterColor = NotoColor.Black.toColor()
-            )
-        }
-    }
-
-    @Composable
-    private fun ExportImportSection(modifier: Modifier = Modifier) {
-        SettingsSection(modifier) {
-            SettingsItem(
-                title = stringResource(id = R.string.export_import_data),
-                type = SettingsItemType.None,
-                onClick = {
-                    navController?.navigateSafely(SettingsFragmentDirections.actionSettingsFragmentToExportImportDialogFragment())
-                },
-                painter = painterResource(id = R.drawable.ic_round_import_export_24),
-                painterColor = NotoColor.BlueGray.toColor(),
             )
         }
     }

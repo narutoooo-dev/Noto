@@ -32,6 +32,9 @@ object SettingsKeys {
     val Name = stringPreferencesKey("Name")
     val Email = stringPreferencesKey("Email")
     val UserStatus = stringPreferencesKey("UserStatus")
+    val AutoBackupLocation = stringPreferencesKey("AutoBackupLocation")
+    val AutoBackupDuration = stringPreferencesKey("AutoBackupDuration")
+    val ScheduledAutoBackupDuration = stringPreferencesKey("ScheduledAutoBackupDuration")
 
     fun FilteredItemModel(model: FilteredItemModel) = intPreferencesKey("Filtered_Item_Model_${model.id}")
 
