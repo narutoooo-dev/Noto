@@ -184,6 +184,12 @@ fun VaultTimeout.toStringResourceId(): Int = when (this) {
     VaultTimeout.After12Hours -> R.string.after_12_hours
 }
 
+fun AutoBackupDuration.toStringResourceId(): Int = when (this) {
+    AutoBackupDuration.Daily -> R.string.daily
+    AutoBackupDuration.Weekly -> R.string.weekly
+    AutoBackupDuration.Monthly -> R.string.monthly
+}
+
 val Number.dp
     get() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,

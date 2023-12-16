@@ -13,13 +13,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.noto.app.components.activity.BaseActivity
 import com.noto.app.databinding.AppActivityBinding
 import com.noto.app.domain.model.*
 import com.noto.app.filtered.FilteredItemModel
 import com.noto.app.main.MainFragment
+import com.noto.app.settings.backup.AutoBackupWorker
 import com.noto.app.util.*
 import com.noto.app.vault.VaultTimeoutWorker
 import kotlinx.coroutines.flow.combine
@@ -272,11 +275,44 @@ class AppActivity : BaseActivity() {
                 },
                 false
             )
+
+        combine(
+            viewModel.autoBackupLocation,
+            viewModel.autoBackupDuration,
+            viewModel.scheduledAutoBackupDuration,
+        ) { location, duration, scheduledDuration ->
+            if (location != null) {
+                if (duration != scheduledDuration) {
+                    workManager.cancelUniqueWork(Constants.AutoBackup)
+                    workManager.cancelAllWorkByTag(Constants.AutoBackup)
+                    val periodicWorkRequest = when (duration) {
+                        AutoBackupDuration.Daily -> createAutoBackupWorkRequest(1, TimeUnit.DAYS)
+                        AutoBackupDuration.Weekly -> createAutoBackupWorkRequest(7, TimeUnit.DAYS)
+                        AutoBackupDuration.Monthly -> createAutoBackupWorkRequest(30, TimeUnit.DAYS)
+                    }
+                    workManager.enqueueUniquePeriodicWork(
+                        Constants.AutoBackup,
+                        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                        periodicWorkRequest,
+                    )
+                    viewModel.setScheduledAutoBackupDuration(duration)
+                } else {
+                    // Do nothing.
+                }
+            } else {
+                workManager.cancelUniqueWork(Constants.AutoBackup)
+                viewModel.setScheduledAutoBackupDuration(null)
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun createVaultTimeoutWorkRequest(duration: Long, timeUnit: TimeUnit) = OneTimeWorkRequestBuilder<VaultTimeoutWorker>()
         .setInitialDelay(duration, timeUnit)
         .addTag(Constants.VaultTimeout)
+        .build()
+
+    private fun createAutoBackupWorkRequest(duration: Long, timeUnit: TimeUnit) = PeriodicWorkRequestBuilder<AutoBackupWorker>(duration, timeUnit)
+        .addTag(Constants.AutoBackup)
         .build()
 
     private fun inflateGraphAndSetStartDestination(startDestinationId: Int, args: Bundle? = null) {

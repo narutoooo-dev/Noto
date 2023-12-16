@@ -25,6 +25,7 @@ class NotoApplication : Application() {
                 KoinModules.RemoteDataSource,
                 KoinModules.Crypto,
                 KoinModules.RemoteService,
+                KoinModules.LocalBackup,
             )
         }
     }

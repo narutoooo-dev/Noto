@@ -23,15 +23,17 @@ sealed class NotoException(message: String? = null) : RuntimeException(message) 
         data object NameIsRequired : Model()
     }
 
-    sealed class Export : NotoException() {
-        data object ExportFailed : Export()
-        data object FileCreationFailed : Export()
-        data object NoFolderSelected : Export()
-    }
+    sealed class LocalBackup : NotoException() {
+        sealed class Export : NotoException() {
+            data object ExportFailed : Export()
+            data object FileCreationFailed : Export()
+            data object NoFolderSelected : Export()
+        }
 
-    sealed class Import : NotoException() {
-        data object ImportFailed : Import()
-        data object NoFileSelected : Import()
+        sealed class Import : NotoException() {
+            data object ImportFailed : Import()
+            data object NoFileSelected : Import()
+        }
     }
 
     sealed class Vault : NotoException() {

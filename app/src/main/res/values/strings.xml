@@ -67,18 +67,6 @@
     <string name="whats_new_in">What\'s new in %s</string>
     <string name="learn_more">Learn more…</string>
     <!--    <string name="share_with">Share with</string>-->
-    <string name="export_import_data">Export/Import data</string>
-    <string name="exporting_failed">Failed to export the data.</string>
-    <string name="importing_failed">Failed to import the data.</string>
-    <string name="data_is_exported">Data has been exported to %s</string>
-    <string name="data_is_imported">Data has been imported.</string>
-    <string name="export_data">Export data</string>
-    <string name="import_data">Import data</string>
-    <string name="importing_data">Importing data…</string>
-    <string name="exporting_data">Exporting data…</string>
-    <string name="create_file_failed">Failed to create a file.</string>
-    <string name="no_folder_is_selected">No folder has been selected.</string>
-    <string name="no_file_is_selected">No file has been selected.</string>
     <!-- Open with an app such as Signal -->
     <string name="open_with">Open with</string>
     <string name="invite_text">Check out Noto, a minimal open-source note-taking application.</string>
@@ -625,7 +613,7 @@
     <string name="intro_shortcuts">Shortcuts</string>
     <string name="intro_design">Minimal and modern design</string>
     <string name="intro_private_secure">Private and secure</string>
-    <string name="intro_auto_backup">Auto local backup</string>
+    <string name="intro_auto_backup">Auto backup</string>
     <string name="intro_archiving">Folders and notes archive</string>
     <string name="intro_colorful_folders">Colorful folders</string>
     <string name="intro_label_filtering">Inclusive/Exclusive/Strict label filtering</string>
@@ -735,6 +723,41 @@
     <string name="updating_email">Updating email…</string>
     <string name="email_is_updated">Email has been updated.</string>
     <string name="try_again_in">Please try again in a few minutes.</string>
+
+    <!-- Backup -->
+
+    <string name="local_backup">Local Backup</string>
+    <string name="back_up_now">Back up now</string>
+    <string name="restore_backup">Restore backup</string>
+    <string name="auto_backup">Auto backup</string>
+    <string name="manual_backup">Manual backup</string>
+    <string name="auto_backup_duration">Duration</string>
+    <string name="last_backup_size">Last backup size</string>
+    <string name="last_backup_date">Last backup date</string>
+    <string name="auto_backup_location">Location</string>
+    <string name="auto_backup_location_confirmation">Please select a backup location.</string>
+    <string name="auto_backup_location_description">To enable auto backup, you need to select a backup location which is used for backing up your data automatically.</string>
+    <string name="auto_backup_location_btn_text">Select location</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="backing_up">Backing up your data…</string>
+    <string name="restoring">Restoring your data…</string>
+    <string name="data_is_backed_up">Your data has been backed up.</string>
+    <string name="data_is_restored">Your data has been restored.</string>
+    <string name="back_up_failed">Failed to back up your data.</string>
+    <string name="restore_failed">Failed to restore your data.</string>
+    <string name="manual_backup_export">Export</string>
+    <string name="manual_backup_import">Import</string>
+    <string name="exporting_failed">Failed to export your data.</string>
+    <string name="importing_failed">Failed to import your data.</string>
+    <string name="data_is_exported">Your data has been exported to %s</string>
+    <string name="data_is_imported">Your data has been imported.</string>
+    <string name="importing_data">Importing your data…</string>
+    <string name="exporting_data">Exporting your data…</string>
+    <string name="create_file_failed">Failed to create a file.</string>
+    <string name="no_folder_is_selected">No folder has been selected.</string>
+    <string name="no_file_is_selected">No file has been selected.</string>
 
     <!-- Releases -->
 

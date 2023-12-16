@@ -6,7 +6,10 @@ import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
-import com.noto.app.util.*
+import com.noto.app.util.Constants
+import com.noto.app.util.firstLineOrEmpty
+import com.noto.app.util.isGeneral
+import com.noto.app.util.takeAfterFirstLineOrEmpty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
@@ -55,6 +58,16 @@ class AppViewModel(
     val mainInterfaceId = settingsRepository.mainInterfaceId
         .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.AllFoldersId)
 
+    val autoBackupLocation = settingsRepository.autoBackupLocation
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val autoBackupDuration = settingsRepository.autoBackupDuration
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AutoBackupDuration.Daily)
+
+    val scheduledAutoBackupDuration = settingsRepository.scheduledAutoBackupDuration
+        .distinctUntilChanged()
+        .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+
     var shouldNavigateToMainFragment = true
         private set
 
@@ -85,6 +98,10 @@ class AppViewModel(
 
     fun setScheduledVaultTimeout(vaultTimeout: VaultTimeout?) = viewModelScope.launch {
         settingsRepository.updateScheduledVaultTimeout(vaultTimeout)
+    }
+
+    fun setScheduledAutoBackupDuration(autoBackupDuration: AutoBackupDuration?) = viewModelScope.launch {
+        settingsRepository.updateScheduledAutoBackupDuration(autoBackupDuration)
     }
 
     private fun createGeneralFolder() = viewModelScope.launch {

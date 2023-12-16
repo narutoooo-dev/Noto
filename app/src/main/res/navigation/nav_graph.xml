@@ -283,14 +283,15 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="is_error"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </dialog>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.noto.app.settings.SettingsFragment"
         android:label="SettingsFragment">
-        <action
-            android:id="@+id/action_settingsFragment_to_exportImportDialogFragment"
-            app:destination="@id/exportImportDialogFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_generalSettingsFragment"
             app:destination="@id/generalSettingsFragment" />
@@ -321,6 +322,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_createAccountFragment"
             app:destination="@id/createAccountFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_localBackupSettingsFragment"
+            app:destination="@id/localBackupSettingsFragment" />
     </fragment>
     <dialog
         android:id="@+id/selectFolderDialogFragment"
@@ -468,11 +472,11 @@
         android:name="com.noto.app.settings.general.LanguageDialogFragment"
         android:label="LanguageDialogFragment" />
     <dialog
-        android:id="@+id/exportImportDialogFragment"
-        android:name="com.noto.app.settings.backup.ExportImportDialogFragment"
-        android:label="ExportImportDialogFragment">
+        android:id="@+id/manualBackupDialogFragment"
+        android:name="com.noto.app.settings.backup.ManualBackupDialogFragment"
+        android:label="ManualBackupDialogFragment">
         <action
-            android:id="@+id/action_exportImportDialogFragment_to_progressIndicatorDialogFragment"
+            android:id="@+id/action_manualBackupDialogFragment_to_progressIndicatorDialogFragment"
             app:destination="@id/progressIndicatorDialogFragment" />
     </dialog>
     <dialog
@@ -904,4 +908,25 @@
         android:id="@+id/changeVaultPasscodeDialogFragment"
         android:name="com.noto.app.settings.vault.ChangeVaultPasscodeDialogFragment"
         android:label="ChangeVaultPasscodeDialogFragment" />
+    <dialog
+        android:id="@+id/autoBackupDurationDialogFragment"
+        android:name="com.noto.app.settings.backup.AutoBackupDurationDialogFragment"
+        android:label="AutoBackupDurationDialogFragment" />
+    <fragment
+        android:id="@+id/localBackupSettingsFragment"
+        android:name="com.noto.app.settings.backup.LocalBackupSettingsFragment"
+        android:label="LocalBackupSettingsFragment" >
+        <action
+            android:id="@+id/action_localBackupSettingsFragment_to_autoBackupDurationDialogFragment"
+            app:destination="@id/autoBackupDurationDialogFragment" />
+        <action
+            android:id="@+id/action_localBackupSettingsFragment_to_confirmationDialogFragment"
+            app:destination="@id/confirmationDialogFragment" />
+        <action
+            android:id="@+id/action_localBackupSettingsFragment_to_progressIndicatorDialogFragment"
+            app:destination="@id/progressIndicatorDialogFragment" />
+        <action
+            android:id="@+id/action_localBackupSettingsFragment_to_manualBackupDialogFragment"
+            app:destination="@id/manualBackupDialogFragment" />
+    </fragment>
 </navigation>

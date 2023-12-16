@@ -37,6 +37,7 @@ object Constants {
     const val IsMainFoldersEnabled = "is_main_folders_enabled"
     const val IsChildFoldersEnabled = "is_child_folders_enabled"
     const val AllFoldersId = -4L
+    const val AutoBackup = "AutoBackup"
 
     const val NameMaxLength = 32
     const val OtpLength = 6

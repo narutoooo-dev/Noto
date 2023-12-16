@@ -39,7 +39,9 @@ import com.noto.app.note.NotePagerViewModel
 import com.noto.app.note.NoteViewModel
 import com.noto.app.settings.SettingsViewModel
 import com.noto.app.settings.account.AccountSettingsViewModel
-import com.noto.app.settings.backup.BackupViewModel
+import com.noto.app.settings.backup.AndroidLocalBackupHandler
+import com.noto.app.settings.backup.LocalBackupHandler
+import com.noto.app.settings.backup.LocalBackupSettingsViewModel
 import com.noto.app.settings.general.GeneralSettingsViewModel
 import com.noto.app.settings.readingmode.ReadingModeSettingsViewModel
 import com.noto.app.settings.vault.VaultSettingsViewModel
@@ -119,7 +121,7 @@ object KoinModules {
 
         viewModel { WhatsNewViewModel(get()) }
 
-        viewModel { BackupViewModel(get(), androidApplication()) }
+        viewModel { LocalBackupSettingsViewModel(get(), get()) }
 
         viewModel { IntroViewModel(get()) }
 
@@ -221,6 +223,12 @@ object KoinModules {
         single<RemoteFolderService> { AndroidRemoteFolderService(androidContext().applicationContext) }
 
         single<RemoteNoteService> { AndroidRemoteNoteService(androidContext().applicationContext) }
+
+    }
+
+    val LocalBackup = module {
+
+        single<LocalBackupHandler> { AndroidLocalBackupHandler(androidApplication(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 

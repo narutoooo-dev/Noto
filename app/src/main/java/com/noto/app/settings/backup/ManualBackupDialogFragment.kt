@@ -28,18 +28,18 @@ import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ExportImportDialogFragment : BaseDialogFragment() {
+class ManualBackupDialogFragment : BaseDialogFragment() {
 
-    private val viewModel by viewModel<BackupViewModel>()
+    private val viewModel by viewModel<LocalBackupSettingsViewModel>()
 
     private val parentView by lazy { parentFragment?.view }
 
     private val exportDataLauncher = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-        viewModel.exportData(uri)
+        viewModel.export(uri)
     }
 
     private val importDataLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        viewModel.importData(uri)
+        viewModel.import(uri)
     }
 
     override fun onCreateView(
@@ -51,17 +51,17 @@ class ExportImportDialogFragment : BaseDialogFragment() {
             setContent {
                 val exportState by viewModel.exportState.collectAsState()
                 val importState by viewModel.importState.collectAsState()
-                BottomSheetDialog(title = stringResource(id = R.string.export_import_data)) {
+                BottomSheetDialog(title = stringResource(id = R.string.manual_backup)) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium)) {
                         BottomSheetDialogItem(
-                            text = stringResource(id = R.string.export_data),
+                            text = stringResource(id = R.string.manual_backup_export),
                             onClick = { exportDataLauncher.launch(Uri.EMPTY) },
                             painter = painterResource(id = R.drawable.ic_round_file_upload_24),
                         )
 
                         BottomSheetDialogItem(
-                            text = stringResource(id = R.string.import_data),
-                            onClick = { importDataLauncher.launch(BackupViewModel.FileTypes) },
+                            text = stringResource(id = R.string.manual_backup_import),
+                            onClick = { importDataLauncher.launch(LocalBackupHandler.FileTypes) },
                             painter = painterResource(id = R.drawable.ic_round_file_download_24),
                         )
                     }
@@ -79,7 +79,7 @@ class ExportImportDialogFragment : BaseDialogFragment() {
                 is UiState.Empty -> {}
                 is UiState.Loading -> {
                     navController?.navigateSafely(
-                        ExportImportDialogFragmentDirections.actionExportImportDialogFragmentToProgressIndicatorDialogFragment(
+                        ManualBackupDialogFragmentDirections.actionManualBackupDialogFragmentToProgressIndicatorDialogFragment(
                             context.stringResource(R.string.exporting_data)
                         )
                     )
@@ -87,15 +87,15 @@ class ExportImportDialogFragment : BaseDialogFragment() {
 
                 is UiState.Failure -> {
                     when (state.exception) {
-                        NotoException.Export.ExportFailed -> {
+                        NotoException.LocalBackup.Export.ExportFailed -> {
                             parentView?.snackbar(context.stringResource(R.string.exporting_failed), R.drawable.ic_round_error_24)
                         }
 
-                        NotoException.Export.FileCreationFailed -> {
+                        NotoException.LocalBackup.Export.FileCreationFailed -> {
                             parentView?.snackbar(context.stringResource(R.string.create_file_failed), R.drawable.ic_round_error_24)
                         }
 
-                        NotoException.Export.NoFolderSelected -> {
+                        NotoException.LocalBackup.Export.NoFolderSelected -> {
                             parentView?.snackbar(context.stringResource(R.string.no_folder_is_selected), R.drawable.ic_round_warning_24)
                         }
 
@@ -126,7 +126,7 @@ class ExportImportDialogFragment : BaseDialogFragment() {
                 is UiState.Empty -> {}
                 is UiState.Loading -> {
                     navController?.navigateSafely(
-                        ExportImportDialogFragmentDirections.actionExportImportDialogFragmentToProgressIndicatorDialogFragment(
+                        ManualBackupDialogFragmentDirections.actionManualBackupDialogFragmentToProgressIndicatorDialogFragment(
                             context.stringResource(R.string.importing_data)
                         )
                     )
@@ -134,11 +134,11 @@ class ExportImportDialogFragment : BaseDialogFragment() {
 
                 is UiState.Failure -> {
                     when (state.exception) {
-                        NotoException.Import.ImportFailed -> {
+                        NotoException.LocalBackup.Import.ImportFailed -> {
                             parentView?.snackbar(context.stringResource(R.string.importing_failed), R.drawable.ic_round_error_24)
                         }
 
-                        NotoException.Import.NoFileSelected -> {
+                        NotoException.LocalBackup.Import.NoFileSelected -> {
                             parentView?.snackbar(context.stringResource(R.string.no_file_is_selected), R.drawable.ic_round_warning_24)
                         }
 
