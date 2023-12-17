@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 35,
-    "identityHash": "c69fe9c146978fed23a6c528f9399c18",
+    "identityHash": "640e4a48d39efef1807804f2fc6b8d56",
     "entities": [
       {
         "tableName": "folders",
@@ -275,12 +275,18 @@
       },
       {
         "tableName": "labels",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `folder_id` INTEGER NOT NULL, `title` TEXT NOT NULL, `color` INTEGER NOT NULL, `position` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`folder_id`) REFERENCES `folders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `remote_id` TEXT NOT NULL, `folder_id` INTEGER NOT NULL, `title` TEXT NOT NULL, `color` INTEGER NOT NULL, `position` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`folder_id`) REFERENCES `folders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remote_id",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -389,7 +395,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c69fe9c146978fed23a6c528f9399c18')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '640e4a48d39efef1807804f2fc6b8d56')"
     ]
   }
 }

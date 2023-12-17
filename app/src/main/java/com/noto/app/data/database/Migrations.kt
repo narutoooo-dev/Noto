@@ -122,6 +122,18 @@ object Migrations {
                     database.execSQL("UPDATE notes SET remote_id = '$remoteId' WHERE id = $noteId;")
                 }
             }
+
+            // Add RemoteId to Labels
+            database.execSQL("ALTER TABLE labels ADD COLUMN remote_id TEXT NOT NULL DEFAULT '';")
+            database.query("SELECT * FROM labels;").useCursor { cursor ->
+                repeat(cursor.count) { rowIndex ->
+                    cursor.moveToPosition(rowIndex)
+                    val labelId = cursor.getLong(0)
+                    val remoteId = UUID.randomUUID().toString()
+                    database.execSQL("UPDATE labels SET remote_id = '$remoteId' WHERE id = $labelId;")
+                }
+            }
+
             database.setTransactionSuccessful()
         } finally {
             database.endTransaction()
