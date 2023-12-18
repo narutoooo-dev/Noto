@@ -207,7 +207,7 @@ object KoinModules {
 
         single<PasswordTransformer> { PasswordTransformerImpl() }
 
-        single<EncryptionHandler> { TinkEncryptionHandler() }
+        single<CryptoManager> { TinkCryptoManager() }
 
         single<Json>(Qualifiers.CryptoJson) { JsonConfigs.Crypto }
 

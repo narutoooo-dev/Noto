@@ -1,6 +1,6 @@
 package com.noto.app.crypto
 
-interface EncryptionHandler {
+interface CryptoManager {
 
     fun generateKeyset(): String
 

@@ -1,6 +1,6 @@
 package com.noto.app.data.repository
 
-import com.noto.app.crypto.EncryptionHandler
+import com.noto.app.crypto.CryptoManager
 import com.noto.app.data.model.DomainMappers
 import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalFolder
@@ -24,7 +24,7 @@ class FolderRepositoryImpl(
     private val localNoteDataSource: LocalNoteDataSource,
     private val settingsRepository: SettingsRepository,
     private val remoteFolderService: RemoteFolderService,
-    private val encryptionHandler: EncryptionHandler,
+    private val cryptoManager: CryptoManager,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : FolderRepository, LocalGeneralFolderManager {
 
@@ -143,7 +143,7 @@ class FolderRepositoryImpl(
         val localFolder = localFolderDataSource.getLocalFolderById(id).firstOrNull()
         val remoteId = localFolder?.remoteId ?: UUID.randomUUID().toString()
         val keyset = if (isUserLoggedIn()) {
-            localFolder?.keyset ?: encryptionHandler.generateKeyset()
+            localFolder?.keyset ?: cryptoManager.generateKeyset()
         } else {
             null
         }

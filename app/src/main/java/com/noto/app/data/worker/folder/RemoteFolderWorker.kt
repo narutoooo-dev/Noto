@@ -1,6 +1,6 @@
 package com.noto.app.data.worker.folder
 
-import com.noto.app.crypto.EncryptionHandler
+import com.noto.app.crypto.CryptoManager
 import com.noto.app.data.model.local.LocalFolder
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.data.worker.RemoteItemWorker
@@ -18,12 +18,12 @@ sealed interface RemoteFolderWorker : RemoteItemWorker {
 
     val remoteFolderDataSource get() = get<RemoteFolderDataSource>()
 
-    private val encryptionHandler get() = get<EncryptionHandler>()
+    private val cryptoManager get() = get<CryptoManager>()
 
     private val json get() = get<Json>(KoinModules.Qualifiers.CryptoJson)
 
     fun RemoteFolder.toLocalFolder(): LocalFolder {
-        val decryptedContent = encryptionHandler.decryptData(keyset, encryptedContent)
+        val decryptedContent = cryptoManager.decryptData(keyset, encryptedContent)
         val decodedContent = decryptedContent.decodeToString()
         val content = json.decodeFromString<LocalFolder>(decodedContent)
         return content.copy(id = 0L, remoteId = id.toString(), keyset = keyset)
@@ -32,7 +32,7 @@ sealed interface RemoteFolderWorker : RemoteItemWorker {
     fun LocalFolder.toRemoteFolder(): RemoteFolder {
         val jsonContent = json.encodeToString(this.copy(id = 0L))
         val encodedContent = jsonContent.encodeToByteArray()
-        val encryptedContent = encryptionHandler.encryptData(keyset!!, encodedContent)
+        val encryptedContent = cryptoManager.encryptData(keyset!!, encodedContent)
         return RemoteFolder(
             id = UUID.fromString(remoteId),
             keyset = keyset,

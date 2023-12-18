@@ -7,7 +7,7 @@ import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.PredefinedAeadParameters
 import com.google.crypto.tink.integration.android.AndroidKeystoreKmsClient
 
-class TinkEncryptionHandler : EncryptionHandler {
+class TinkCryptoManager : CryptoManager {
 
     private val androidKeystoreKmsClient by lazy { AndroidKeystoreKmsClient.Builder().build() }
     private val keyStoreAead by lazy { androidKeystoreKmsClient.getAead(KeyStoreUri) }
