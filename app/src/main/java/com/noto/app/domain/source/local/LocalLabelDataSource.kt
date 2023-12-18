@@ -5,19 +5,19 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalLabelDataSource {
 
-    fun getAllLabels(): Flow<List<LocalLabel>>
+    fun getAllLocalLabels(): Flow<List<LocalLabel>>
 
-    fun getMainLabels(): Flow<List<LocalLabel>>
+    fun getMainLocalLabels(): Flow<List<LocalLabel>>
 
-    fun getLabelsByFolderId(folderId: Long): Flow<List<LocalLabel>>
+    fun getLocalLabelsByFolderId(localFolderId: Long): Flow<List<LocalLabel>>
 
-    fun getLabelById(id: Long): Flow<LocalLabel>
+    fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel>
 
-    suspend fun createLabel(label: LocalLabel): Long
+    suspend fun createLocalLabel(localLabel: LocalLabel): Long
 
-    suspend fun updateLabel(label: LocalLabel)
+    suspend fun updateLocalLabel(localLabel: LocalLabel)
 
-    suspend fun deleteLabel(label: LocalLabel)
+    suspend fun deleteLocalLabel(localLabel: LocalLabel)
 
     suspend fun clearLabels()
 

@@ -9,25 +9,25 @@ import kotlinx.coroutines.flow.Flow
 interface LocalLabelDao : LocalLabelDataSource {
 
     @Query("SELECT * FROM labels")
-    override fun getAllLabels(): Flow<List<LocalLabel>>
+    override fun getAllLocalLabels(): Flow<List<LocalLabel>>
 
     @Query("SELECT labels.* FROM labels JOIN folders ON folders.id = labels.folder_id WHERE folders.is_archived = 0 AND folders.is_vaulted = 0")
-    override fun getMainLabels(): Flow<List<LocalLabel>>
+    override fun getMainLocalLabels(): Flow<List<LocalLabel>>
 
-    @Query("SELECT * FROM labels WHERE folder_id = :folderId")
-    override fun getLabelsByFolderId(folderId: Long): Flow<List<LocalLabel>>
+    @Query("SELECT * FROM labels WHERE folder_id = :localFolderId")
+    override fun getLocalLabelsByFolderId(localFolderId: Long): Flow<List<LocalLabel>>
 
-    @Query("SELECT * FROM labels WHERE id = :id")
-    override fun getLabelById(id: Long): Flow<LocalLabel>
+    @Query("SELECT * FROM labels WHERE id = :localLabelId")
+    override fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel>
 
     @Insert
-    override suspend fun createLabel(label: LocalLabel): Long
+    override suspend fun createLocalLabel(localLabel: LocalLabel): Long
 
     @Update
-    override suspend fun updateLabel(label: LocalLabel)
+    override suspend fun updateLocalLabel(localLabel: LocalLabel)
 
     @Delete
-    override suspend fun deleteLabel(label: LocalLabel)
+    override suspend fun deleteLocalLabel(localLabel: LocalLabel)
 
     @Query("DELETE FROM labels")
     override suspend fun clearLabels()

@@ -16,30 +16,30 @@ class LabelRepositoryImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : LabelRepository {
 
-    override fun getMainLabels(): Flow<List<Label>> = dataSource.getMainLabels()
+    override fun getMainLabels(): Flow<List<Label>> = dataSource.getMainLocalLabels()
         .map { it.map { it.toDomainLabel() } }
         .flowOn(dispatcher)
 
-    override fun getLabelsByFolderId(folderId: Long): Flow<List<Label>> = dataSource.getLabelsByFolderId(folderId)
+    override fun getLabelsByFolderId(folderId: Long): Flow<List<Label>> = dataSource.getLocalLabelsByFolderId(folderId)
         .map { it.map { it.toDomainLabel() } }
         .flowOn(dispatcher)
 
-    override fun getLabelById(id: Long): Flow<Label> = dataSource.getLabelById(id)
+    override fun getLabelById(id: Long): Flow<Label> = dataSource.getLocalLabelById(id)
         .filterNotNull()
         .map { it.toDomainLabel() }
         .flowOn(dispatcher)
 
     override suspend fun createLabel(label: Label) = withContext(dispatcher) {
         val position = getLabelPosition(label.folderId)
-        dataSource.createLabel(label.copy(position = position).toLocalLabel())
+        dataSource.createLocalLabel(label.copy(position = position).toLocalLabel())
     }
 
     override suspend fun updateLabel(label: Label) = withContext(dispatcher) {
-        dataSource.updateLabel(label.copy(title = label.title.trim()).toLocalLabel())
+        dataSource.updateLocalLabel(label.copy(title = label.title.trim()).toLocalLabel())
     }
 
     override suspend fun deleteLabel(label: Label) = withContext(dispatcher) {
-        dataSource.deleteLabel(label.toLocalLabel())
+        dataSource.deleteLocalLabel(label.toLocalLabel())
     }
 
     override suspend fun clearLabels() = withContext(dispatcher) {
@@ -47,7 +47,7 @@ class LabelRepositoryImpl(
     }
 
     private suspend fun getLabelPosition(folderId: Long) = withContext(dispatcher) {
-        dataSource.getLabelsByFolderId(folderId)
+        dataSource.getLocalLabelsByFolderId(folderId)
             .filterNotNull()
             .first()
             .count()

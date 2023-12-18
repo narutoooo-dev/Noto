@@ -57,7 +57,7 @@ class NoteRepositoryImpl(
     override fun getNoteById(noteId: Long): Flow<Note> = combine(
         localNoteDataSource.getLocalNoteById(noteId)
             .filterNotNull(),
-        localLabelDataSource.getMainLabels(),
+        localLabelDataSource.getMainLocalLabels(),
         localNoteLabelDataSource.getNoteLabelsByNoteId(noteId),
     ) { note, labels, noteLabels ->
         labels.filter { it.folderId == note.folderId }
@@ -133,7 +133,7 @@ class NoteRepositoryImpl(
 
     private fun Flow<List<LocalNote>>.toDomainNotes(folderId: Long?): Flow<List<Note>> = combine(
         this,
-        if (folderId != null) localLabelDataSource.getLabelsByFolderId(folderId) else localLabelDataSource.getMainLabels(),
+        if (folderId != null) localLabelDataSource.getLocalLabelsByFolderId(folderId) else localLabelDataSource.getMainLocalLabels(),
         localNoteLabelDataSource.getAllNoteLabels(),
     ) { notes, labels, noteLabels ->
         notes.map { note ->

@@ -236,7 +236,7 @@ class SettingsRepositoryImpl(
         return withContext(coroutineDispatcher) {
             val folders = localFolderDataSource.getAllLocalFolders().first()
             val notes = localNoteDataSource.getAllLocalNotes().first()
-            val labels = localLabelDataSource.getAllLabels().first()
+            val labels = localLabelDataSource.getAllLocalLabels().first()
             val noteLabels = localNoteLabelDataSource.getAllNoteLabels().first()
             val config = config.first()
             val data = LocalNotoData(folders, notes, labels, noteLabels, config)
@@ -269,7 +269,7 @@ class SettingsRepositoryImpl(
                 }
                 labels.forEach { localLabel ->
                     val folderId = folderIds.getValue(localLabel.folderId)
-                    val newLabelId = localLabelDataSource.createLabel(localLabel.copy(id = 0, folderId = folderId))
+                    val newLabelId = localLabelDataSource.createLocalLabel(localLabel.copy(id = 0, folderId = folderId))
                     labelIds[localLabel.id] = newLabelId
                 }
                 noteLabels.forEach { noteLabel ->
