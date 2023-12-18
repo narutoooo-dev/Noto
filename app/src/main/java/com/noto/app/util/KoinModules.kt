@@ -216,6 +216,8 @@ object KoinModules {
             AndroidKeyStoreManager(keyStore, androidContext().dataStore)
         }
 
+        single { EncryptionHandler(get(), get(Qualifiers.CryptoJson)) }
+
     }
 
     val RemoteService = module {
