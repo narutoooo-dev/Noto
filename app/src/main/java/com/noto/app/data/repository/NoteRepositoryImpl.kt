@@ -43,7 +43,7 @@ class NoteRepositoryImpl(
     override fun getMainNotesByFolderId(folderId: Long): Flow<List<Note>> = flow {
         if (settingsRepository.isUserLoggedIn.first()) {
             val remoteFolderId = localFolderDataSource.getLocalFolderById(folderId).firstOrNull()?.remoteId
-            if (remoteFolderId != null) remoteNoteService.getRemoteNoteByRemoteFolderId(remoteFolderId)
+            if (remoteFolderId != null) remoteNoteService.getRemoteNotesByFolderId(remoteFolderId)
         }
         localNoteDataSource.getLocalNotesByFolderId(folderId)
             .toDomainNotes(folderId)

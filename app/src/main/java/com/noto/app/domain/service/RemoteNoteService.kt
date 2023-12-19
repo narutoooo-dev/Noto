@@ -4,7 +4,7 @@ interface RemoteNoteService {
 
     fun getAllRemoteNotes()
 
-    fun getRemoteNoteByRemoteFolderId(remoteFolderId: String)
+    fun getRemoteNotesByFolderId(remoteFolderId: String)
 
     fun createRemoteNote(remoteNoteId: String)
 

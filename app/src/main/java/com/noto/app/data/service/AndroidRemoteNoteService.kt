@@ -22,7 +22,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
         workManager.enqueueUniqueWork(GetRemoteNotesUniqueWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
-    override fun getRemoteNoteByRemoteFolderId(remoteFolderId: String) {
+    override fun getRemoteNotesByFolderId(remoteFolderId: String) {
         val workData = workDataOf(RemoteItemWorker.RemoteFolderId to remoteFolderId)
         val workRequest = OneTimeWorkRequestBuilder<GetRemoteNotesWorker>()
             .setConstraints(buildConstraints())
