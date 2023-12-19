@@ -6,7 +6,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.noto.app.data.worker.RemoteItemWorker
-import com.noto.app.data.worker.note.*
+import com.noto.app.data.worker.note.CreateRemoteNoteWorker
+import com.noto.app.data.worker.note.DeleteRemoteNoteWorker
+import com.noto.app.data.worker.note.GetRemoteNotesWorker
+import com.noto.app.data.worker.note.UpdateRemoteNoteWorker
 import com.noto.app.domain.service.RemoteNoteService
 
 class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRemoteItemService {
@@ -19,7 +22,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(GetRemoteNotesUniqueWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(GetAllRemoteNotesWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun getRemoteNotesByFolderId(remoteFolderId: String) {
@@ -28,7 +31,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(GetRemoteNotesWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun createRemoteNote(remoteNoteId: String) {
@@ -37,7 +40,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(remoteNoteId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(CreateRemoteNoteWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun updateRemoteNote(remoteNoteId: String) {
@@ -46,7 +49,7 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(remoteNoteId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(UpdateRemoteNoteWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun deleteRemoteNote(remoteNoteId: String) {
@@ -55,11 +58,15 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(remoteNoteId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(DeleteRemoteNoteWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
-    companion object {
-        const val GetRemoteNotesUniqueWorkName = "GetRemoteNotes"
+    private companion object {
+        private const val GetAllRemoteNotesWorkName = "GetAllRemoteNotes"
+        private const val GetRemoteNotesWorkName = "GetRemoteNotes"
+        private const val CreateRemoteNoteWorkName = "CreateRemoteNote"
+        private const val UpdateRemoteNoteWorkName = "UpdateRemoteNote"
+        private const val DeleteRemoteNoteWorkName = "DeleteRemoteNote"
     }
 
 }

@@ -14,12 +14,12 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
         val workRequest = OneTimeWorkRequestBuilder<GetRemoteFoldersWorker>()
             .setConstraints(buildConstraints())
             .build()
-        workManager.enqueueUniqueWork(GetRemoteFoldersUniqueWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(GetRemoteFoldersWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun createRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<CreateRemoteFolderWorker>(remoteFolderId)
-        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(CreateRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun createRemoteGeneralFolder() {
@@ -31,12 +31,12 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
 
     override fun updateRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<UpdateRemoteFolderWorker>(remoteFolderId)
-        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(UpdateRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun deleteRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<DeleteRemoteFolderWorker>(remoteFolderId)
-        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(DeleteRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     private inline fun <reified W : ListenableWorker> createOneTimeRequest(remoteFolderId: String): OneTimeWorkRequest {
@@ -50,9 +50,12 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
 
     private fun buildWorkData(remoteFolderId: String) = workDataOf(RemoteItemWorker.RemoteFolderId to remoteFolderId)
 
-    companion object {
-        private const val GetRemoteFoldersUniqueWorkName = "GetRemoteFolders"
+    private companion object {
+        private const val GetRemoteFoldersWorkName = "GetRemoteFolders"
+        private const val CreateRemoteFolderWorkName = "CreateRemoteFolder"
         private const val CreateRemoteGeneralFolderWorkName = "CreateRemoteGeneralFolder"
+        private const val UpdateRemoteFolderWorkName = "UpdateRemoteFolder"
+        private const val DeleteRemoteFolderWorkName = "DeleteRemoteFolder"
     }
 
 }
