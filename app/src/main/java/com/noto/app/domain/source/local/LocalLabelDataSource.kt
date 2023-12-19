@@ -13,6 +13,8 @@ interface LocalLabelDataSource {
 
     fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel>
 
+    fun getLocalLabelByRemoteId(remoteLabelId: String): Flow<LocalLabel?>
+
     suspend fun createLocalLabel(localLabel: LocalLabel): Long
 
     suspend fun updateLocalLabel(localLabel: LocalLabel)

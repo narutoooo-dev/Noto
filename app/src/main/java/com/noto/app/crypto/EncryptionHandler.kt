@@ -11,7 +11,6 @@ class EncryptionHandler(val cryptoManager: CryptoManager, val json: Json) {
         return cryptoManager.encryptData(keyset, encodedContent)
     }
 
-
     inline fun <reified T : Any> decryptItem(keyset: String, encryptedItem: ByteArray): T {
         val decryptedContent = cryptoManager.decryptData(keyset, encryptedItem)
         val decodedContent = decryptedContent.decodeToString()

@@ -282,7 +282,7 @@ fun Icon.toActivityAliasName(isAppActivityIconEnabled: Boolean) = when (this) {
 suspend fun LabelRepository.getOrCreateLabel(folderId: Long, label: Label): Long {
     val folderLabels = getLabelsByFolderId(folderId).first()
     val existingLabel = folderLabels.firstOrNull { it.title == label.title }?.id
-    return existingLabel ?: createLabel(label.copy(id = 0, folderId = folderId))
+    return existingLabel ?: createLabel(label.copy(id = 0, folderId = folderId)).getOrDefault(0L)
 }
 
 fun Language.Companion.Comparator(context: Context): Comparator<Language> {

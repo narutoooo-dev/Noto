@@ -11,11 +11,11 @@ interface LabelRepository {
 
     fun getLabelById(id: Long): Flow<Label>
 
-    suspend fun createLabel(label: Label): Long
+    suspend fun createLabel(label: Label): Result<Long>
 
-    suspend fun updateLabel(label: Label)
+    suspend fun updateLabel(label: Label): Result<Unit>
 
-    suspend fun deleteLabel(label: Label)
+    suspend fun deleteLabel(label: Label): Result<Unit>
 
     suspend fun clearLabels()
 

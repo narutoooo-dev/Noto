@@ -20,6 +20,9 @@ interface LocalLabelDao : LocalLabelDataSource {
     @Query("SELECT * FROM labels WHERE id = :localLabelId")
     override fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel>
 
+    @Query("SELECT * FROM labels WHERE remote_id = :remoteLabelId")
+    override fun getLocalLabelByRemoteId(remoteLabelId: String): Flow<LocalLabel?>
+
     @Insert
     override suspend fun createLocalLabel(localLabel: LocalLabel): Long
 

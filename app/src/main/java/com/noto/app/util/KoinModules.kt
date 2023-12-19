@@ -11,20 +11,19 @@ import com.noto.app.data.database.NotoDatabase
 import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
+import com.noto.app.data.service.AndroidRemoteLabelService
 import com.noto.app.data.service.AndroidRemoteNoteService
 import com.noto.app.data.source.remote.*
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
 import com.noto.app.domain.service.RemoteFolderService
+import com.noto.app.domain.service.RemoteLabelService
 import com.noto.app.domain.service.RemoteNoteService
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
-import com.noto.app.domain.source.remote.RemoteAuthDataSource
-import com.noto.app.domain.source.remote.RemoteFolderDataSource
-import com.noto.app.domain.source.remote.RemoteNoteDataSource
-import com.noto.app.domain.source.remote.RemoteUserDataSource
+import com.noto.app.domain.source.remote.*
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
 import com.noto.app.folder.NewFolderViewModel
@@ -55,6 +54,10 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -133,7 +136,7 @@ object KoinModules {
 
         single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<LabelRepository> { LabelRepositoryImpl(get()) }
+        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<SettingsRepository> {
             SettingsRepositoryImpl(
@@ -201,6 +204,8 @@ object KoinModules {
 
         single<RemoteNoteDataSource> { SupabaseNoteClient(get()) }
 
+        single<RemoteLabelDataSource> { SupabaseLabelClient(get()) }
+
     }
 
     val Crypto = module {
@@ -225,6 +230,8 @@ object KoinModules {
         single<RemoteFolderService> { AndroidRemoteFolderService(androidContext().applicationContext) }
 
         single<RemoteNoteService> { AndroidRemoteNoteService(androidContext().applicationContext) }
+
+        single<RemoteLabelService> { AndroidRemoteLabelService(androidContext().applicationContext) }
 
     }
 

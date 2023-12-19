@@ -14,6 +14,7 @@ interface RemoteItemWorker : KoinComponent {
         const val GeneralFolderId = -1L
         const val RemoteFolderId = "remote_folder_id"
         const val RemoteNoteId = "remote_note_id"
+        const val RemoteLabelId = "remote_label_id"
     }
 
 }

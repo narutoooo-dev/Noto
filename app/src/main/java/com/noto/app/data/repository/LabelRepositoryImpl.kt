@@ -5,49 +5,79 @@ import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.repository.LabelRepository
+import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.domain.service.RemoteLabelService
+import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
+import com.noto.app.domain.source.remote.RemoteLabelDataSource
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class LabelRepositoryImpl(
-    private val dataSource: LocalLabelDataSource,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val localFolderDataSource: LocalFolderDataSource,
+    private val localLabelDataSource: LocalLabelDataSource,
+    private val remoteLabelDataSource: RemoteLabelDataSource,
+    private val remoteLabelService: RemoteLabelService,
+    private val settingsRepository: SettingsRepository,
+    private val coroutineDispatcher: CoroutineDispatcher,
 ) : LabelRepository {
 
-    override fun getMainLabels(): Flow<List<Label>> = dataSource.getMainLocalLabels()
+    override fun getMainLabels(): Flow<List<Label>> = localLabelDataSource.getMainLocalLabels()
         .map { it.map { it.toDomainLabel() } }
-        .flowOn(dispatcher)
+        .flowOn(coroutineDispatcher)
 
-    override fun getLabelsByFolderId(folderId: Long): Flow<List<Label>> = dataSource.getLocalLabelsByFolderId(folderId)
-        .map { it.map { it.toDomainLabel() } }
-        .flowOn(dispatcher)
+    override fun getLabelsByFolderId(folderId: Long): Flow<List<Label>> = localLabelDataSource.getLocalLabelsByFolderId(folderId)
+        .map {
+            if (settingsRepository.isUserLoggedIn.first()) {
+                val remoteFolderId = localFolderDataSource.getLocalFolderById(folderId).firstOrNull()?.remoteId
+                if (remoteFolderId != null) remoteLabelService.getRemoteLabelsByFolderId(remoteFolderId)
+            }
+            it.map { it.toDomainLabel() }
+        }
+        .flowOn(coroutineDispatcher)
 
-    override fun getLabelById(id: Long): Flow<Label> = dataSource.getLocalLabelById(id)
+    override fun getLabelById(id: Long): Flow<Label> = localLabelDataSource.getLocalLabelById(id)
         .filterNotNull()
         .map { it.toDomainLabel() }
-        .flowOn(dispatcher)
+        .flowOn(coroutineDispatcher)
 
-    override suspend fun createLabel(label: Label) = withContext(dispatcher) {
-        val position = getLabelPosition(label.folderId)
-        dataSource.createLocalLabel(label.copy(position = position).toLocalLabel())
+    override suspend fun createLabel(label: Label) = runCatching {
+        withContext(coroutineDispatcher) {
+            val position = getLabelPosition(label.folderId)
+            val positionedLabel = label.copy(position = position)
+            val localLabel = positionedLabel.toLocalLabel()
+            val localLabelId = localLabelDataSource.createLocalLabel(localLabel)
+
+            if (settingsRepository.isUserLoggedIn.first()) remoteLabelService.createRemoteLabel(localLabel.remoteId)
+
+            localLabelId
+        }
     }
 
-    override suspend fun updateLabel(label: Label) = withContext(dispatcher) {
-        dataSource.updateLocalLabel(label.copy(title = label.title.trim()).toLocalLabel())
+    override suspend fun updateLabel(label: Label) = runCatching {
+        withContext(coroutineDispatcher) {
+            val localLabel = label.copy(title = label.title.trim()).toLocalLabel()
+            localLabelDataSource.updateLocalLabel(localLabel)
+            if (settingsRepository.isUserLoggedIn.first()) remoteLabelService.updateRemoteLabel(localLabel.remoteId)
+        }
     }
 
-    override suspend fun deleteLabel(label: Label) = withContext(dispatcher) {
-        dataSource.deleteLocalLabel(label.toLocalLabel())
+    override suspend fun deleteLabel(label: Label) = runCatching {
+        withContext(coroutineDispatcher) {
+            val localLabel = label.toLocalLabel()
+            localLabelDataSource.deleteLocalLabel(localLabel)
+            if (settingsRepository.isUserLoggedIn.first()) remoteLabelService.deleteRemoteLabel(localLabel.remoteId)
+        }
     }
 
-    override suspend fun clearLabels() = withContext(dispatcher) {
-        dataSource.clearLabels()
+    override suspend fun clearLabels() = withContext(coroutineDispatcher) {
+        localLabelDataSource.clearLabels()
     }
 
-    private suspend fun getLabelPosition(folderId: Long) = withContext(dispatcher) {
-        dataSource.getLocalLabelsByFolderId(folderId)
+    private suspend fun getLabelPosition(folderId: Long) = withContext(coroutineDispatcher) {
+        localLabelDataSource.getLocalLabelsByFolderId(folderId)
             .filterNotNull()
             .first()
             .count()
@@ -63,9 +93,12 @@ class LabelRepositoryImpl(
         )
     }
 
-    private fun Label.toLocalLabel(): LocalLabel {
+    private suspend fun Label.toLocalLabel(): LocalLabel {
+        val localLabel = localLabelDataSource.getLocalLabelById(id).firstOrNull()
+        val remoteId = localLabel?.remoteId ?: UUID.randomUUID().toString()
         return LocalLabel(
             id = id,
+            remoteId = remoteId,
             folderId = folderId,
             title = title,
             color = DomainMappers.NotoColor.map(color),
