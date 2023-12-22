@@ -18,7 +18,7 @@ class GetRemoteNotesWorker(appContext: Context, workerParams: WorkerParameters) 
             }
             remoteNotes.forEach { remoteNote ->
                 val databaseLocalNote = localNoteDataSource.getLocalNoteByRemoteId(remoteNote.id.toString()).first()
-                val remoteLocalNote = remoteNote.toLocalNote()
+                val remoteLocalNote = noteMapper.mapRemoteNoteToLocalNote(remoteNote)
                 if (databaseLocalNote == null) {
                     localNoteDataSource.createLocalNote(remoteLocalNote.copy(id = RemoteItemWorker.NewItemId))
                 } else {

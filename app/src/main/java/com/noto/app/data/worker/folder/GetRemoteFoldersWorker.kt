@@ -13,7 +13,7 @@ class GetRemoteFoldersWorker(appContext: Context, workerParams: WorkerParameters
         try {
             remoteFolderDataSource.getRemoteFolders().forEach { remoteFolder ->
                 val databaseLocalFolder = localFolderDataSource.getLocalFolderByRemoteId(remoteFolder.id.toString()).first()
-                val remoteLocalFolder = remoteFolder.toLocalFolder()
+                val remoteLocalFolder = folderMapper.mapRemoteFolderToLocalFolder(remoteFolder)
                 if (databaseLocalFolder == null) {
                     val isGeneralFolder = remoteLocalFolder.title.isBlank()
                     val id = if (isGeneralFolder) RemoteItemWorker.GeneralFolderId else RemoteItemWorker.NewItemId

@@ -15,7 +15,7 @@ class CreateRemoteNoteWorker(appContext: Context, workerParams: WorkerParameters
             if (remoteNoteId != null) {
                 val localNote = localNoteDataSource.getLocalNoteByRemoteId(remoteNoteId).first()
                 if (localNote != null) {
-                    val remoteNote = localNote.toRemoteNote()
+                    val remoteNote = noteMapper.mapLocalNoteToRemoteNote(localNote)
                     remoteNoteDataSource.createRemoteNote(remoteNote)
                 } else {
                     NotoException.Entity.InvalidLocalItem()

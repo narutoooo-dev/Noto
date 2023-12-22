@@ -15,7 +15,7 @@ class UpdateRemoteLabelWorker(appContext: Context, workerParams: WorkerParameter
             if (remoteLabelId != null) {
                 val localLabel = localLabelDataSource.getLocalLabelByRemoteId(remoteLabelId).firstOrNull()
                 if (localLabel != null) {
-                    val remoteLabel = localLabel.toRemoteLabel()
+                    val remoteLabel = labelMapper.mapLocalLabelToRemoteLabel(localLabel)
                     remoteLabelDataSource.updateRemoteLabel(remoteLabel)
                 } else {
                     NotoException.Entity.InvalidLocalItem()

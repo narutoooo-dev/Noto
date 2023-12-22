@@ -15,7 +15,7 @@ class CreateRemoteLabelWorker(appContext: Context, workerParams: WorkerParameter
             if (remoteLabelId != null) {
                 val localLabel = localLabelDataSource.getLocalLabelByRemoteId(remoteLabelId).first()
                 if (localLabel != null) {
-                    val remoteLabel = localLabel.toRemoteLabel()
+                    val remoteLabel = labelMapper.mapLocalLabelToRemoteLabel(localLabel)
                     remoteLabelDataSource.createRemoteLabel(remoteLabel)
                 } else {
                     NotoException.Entity.InvalidLocalItem()

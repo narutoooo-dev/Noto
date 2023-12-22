@@ -14,10 +14,13 @@ class CreateRemoteGeneralFolderWorker(appContext: Context, workerParams: WorkerP
 
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {
-            val isGeneralFolderExists = remoteFolderDataSource.getRemoteFolders().map { it.toLocalFolder() }.any { it.title.isBlank() }
+            val isGeneralFolderExists = remoteFolderDataSource.getRemoteFolders()
+                .map { folderMapper.mapRemoteFolderToLocalFolder(it) }
+                .any { it.title.isBlank() }
+
             if (!isGeneralFolderExists) {
                 val generalFolder = localGeneralFolderManager.newLocalGeneralFolder()
-                val remoteFolder = generalFolder.toRemoteFolder()
+                val remoteFolder = folderMapper.mapLocalFolderToRemoteFolder(generalFolder)
                 localFolderDataSource.createLocalFolder(generalFolder)
                 remoteFolderDataSource.createRemoteFolder(remoteFolder)
             } // Else: General folder already exists, don't create it, but fetch it instead.

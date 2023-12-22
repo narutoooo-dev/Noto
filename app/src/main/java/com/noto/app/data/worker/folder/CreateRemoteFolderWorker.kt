@@ -15,7 +15,7 @@ class CreateRemoteFolderWorker(appContext: Context, workerParams: WorkerParamete
             if (remoteFolderId != null) {
                 val localFolder = localFolderDataSource.getLocalFolderByRemoteId(remoteFolderId).firstOrNull()
                 if (localFolder != null) {
-                    val remoteFolder = localFolder.toRemoteFolder()
+                    val remoteFolder = folderMapper.mapLocalFolderToRemoteFolder(localFolder)
                     remoteFolderDataSource.createRemoteFolder(remoteFolder)
                 } else {
                     NotoException.Entity.InvalidLocalItem()

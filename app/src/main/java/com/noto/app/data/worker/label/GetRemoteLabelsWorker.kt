@@ -16,7 +16,7 @@ class GetRemoteLabelsWorker(appContext: Context, workerParams: WorkerParameters)
                 val remoteLabels = remoteLabelDataSource.getRemoteLabelsByFolderId(remoteFolderId)
                 remoteLabels.forEach { remoteLabel ->
                     val databaseLocalLabel = localLabelDataSource.getLocalLabelByRemoteId(remoteLabel.id.toString()).first()
-                    val remoteLocalLabel = remoteLabel.toLocalLabel()
+                    val remoteLocalLabel = labelMapper.mapRemoteLabelToLocalLabel(remoteLabel)
                     if (databaseLocalLabel == null) {
                         localLabelDataSource.createLocalLabel(remoteLocalLabel.copy(id = RemoteItemWorker.NewItemId))
                     } else {

@@ -1,11 +1,9 @@
 package com.noto.app.data.repository
 
-import com.noto.app.data.model.DomainMappers
-import com.noto.app.data.model.LocalMappers
 import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.data.model.local.LocalNote
 import com.noto.app.data.model.local.LocalNoteLabel
-import com.noto.app.domain.model.Label
+import com.noto.app.data.model.mapper.NoteMapper
 import com.noto.app.domain.model.Note
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
@@ -19,7 +17,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.UUID
 
 class NoteRepositoryImpl(
     private val localFolderDataSource: LocalFolderDataSource,
@@ -29,6 +26,7 @@ class NoteRepositoryImpl(
     private val remoteNoteDataSource: RemoteNoteDataSource,
     private val remoteNoteService: RemoteNoteService,
     private val settingsRepository: SettingsRepository,
+    private val noteMapper: NoteMapper,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : NoteRepository {
 
@@ -60,17 +58,16 @@ class NoteRepositoryImpl(
         localLabelDataSource.getMainLocalLabels(),
         localNoteLabelDataSource.getNoteLabelsByNoteId(noteId),
     ) { note, labels, noteLabels ->
-        labels.filter { it.folderId == note.folderId }
+        val selectedLabels = labels.filter { it.folderId == note.folderId }
             .filteredSelected(noteLabels, note.id)
-            .map { it.toDomainLabel() }
-            .let { note.toDomainNote(it) }
+        noteMapper.mapLocalNoteToDomainNote(note, selectedLabels)
     }.flowOn(coroutineDispatcher)
 
     override suspend fun createNote(note: Note): Result<Long> = runCatching {
         withContext(coroutineDispatcher) {
             val position = getNotePosition(note.folderId)
             val positionedNote = note.copy(position = position)
-            val localNote = positionedNote.toLocalNote()
+            val localNote = noteMapper.mapDomainNoteToLocalNote(positionedNote)
             val localNoteId = localNoteDataSource.createLocalNote(localNote)
 
             val noteLabels = note.labels.map { label -> LocalNoteLabel(noteId = localNoteId, labelId = label.id) }
@@ -84,7 +81,7 @@ class NoteRepositoryImpl(
 
     override suspend fun updateNote(note: Note) = runCatching {
         withContext(coroutineDispatcher) {
-            val localNote = note.toLocalNote()
+            val localNote = noteMapper.mapDomainNoteToLocalNote(note)
             localNoteDataSource.updateLocalNote(localNote)
 
             val databaseNoteLabels = localNoteLabelDataSource.getNoteLabelsByNoteId(note.id).first()
@@ -108,7 +105,7 @@ class NoteRepositoryImpl(
 
     override suspend fun deleteNote(note: Note) = runCatching {
         withContext(coroutineDispatcher) {
-            val localNote = note.toLocalNote()
+            val localNote = noteMapper.mapDomainNoteToLocalNote(note)
             localNoteDataSource.deleteLocalNote(localNote)
             if (settingsRepository.isUserLoggedIn.first()) remoteNoteService.deleteRemoteNote(localNote.remoteId)
         }
@@ -137,58 +134,9 @@ class NoteRepositoryImpl(
         localNoteLabelDataSource.getAllNoteLabels(),
     ) { notes, labels, noteLabels ->
         notes.map { note ->
-            labels.filteredSelected(noteLabels, note.id)
-                .map { it.toDomainLabel() }
-                .let { note.toDomainNote(it) }
+            val selectedLabels = labels.filteredSelected(noteLabels, note.id)
+            noteMapper.mapLocalNoteToDomainNote(note, selectedLabels)
         }
-    }
-
-    private fun LocalNote.toDomainNote(labels: List<Label>): Note {
-        return Note(
-            id = id,
-            folderId = folderId,
-            title = title,
-            body = body,
-            position = position,
-            creationDate = LocalMappers.Instant.map(creationDate),
-            isPinned = isPinned,
-            isArchived = isArchived,
-            reminderDate = reminderDate?.let(LocalMappers.Instant::map),
-            isVaulted = isVaulted,
-            accessDate = LocalMappers.Instant.map(accessDate),
-            scrollingPosition = scrollingPosition,
-            labels = labels,
-        )
-    }
-
-    private suspend fun Note.toLocalNote(): LocalNote {
-        val localNote = localNoteDataSource.getLocalNoteById(id).firstOrNull()
-        val remoteId = localNote?.remoteId ?: UUID.randomUUID().toString()
-        return LocalNote(
-            id = id,
-            remoteId = remoteId,
-            folderId = folderId,
-            title = title,
-            body = body,
-            position = position,
-            creationDate = DomainMappers.Instant.map(creationDate),
-            isPinned = isPinned,
-            isArchived = isArchived,
-            reminderDate = reminderDate?.let(DomainMappers.Instant::map),
-            isVaulted = isVaulted,
-            accessDate = DomainMappers.Instant.map(accessDate),
-            scrollingPosition = scrollingPosition,
-        )
-    }
-
-    private fun LocalLabel.toDomainLabel(): Label {
-        return Label(
-            id = id,
-            folderId = folderId,
-            title = title,
-            color = LocalMappers.NotoColor.map(color),
-            position = position,
-        )
     }
 
 }

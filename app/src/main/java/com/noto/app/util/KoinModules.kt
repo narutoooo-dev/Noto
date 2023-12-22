@@ -9,6 +9,10 @@ import com.noto.app.BuildConfig
 import com.noto.app.crypto.*
 import com.noto.app.data.database.NotoDatabase
 import com.noto.app.data.model.local.LocalGeneralFolderManager
+import com.noto.app.data.model.mapper.FolderMapper
+import com.noto.app.data.model.mapper.LabelMapper
+import com.noto.app.data.model.mapper.NoteMapper
+import com.noto.app.data.model.mapper.PropertyMapper
 import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
 import com.noto.app.data.service.AndroidRemoteLabelService
@@ -54,10 +58,6 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -132,11 +132,11 @@ object KoinModules {
 
     val Repository = module {
 
-        single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<SettingsRepository> {
             SettingsRepositoryImpl(
@@ -154,7 +154,7 @@ object KoinModules {
 
         single<CoroutineDispatcher>(Qualifiers.CoroutineDispatcher) { Dispatchers.IO }
 
-        single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 
@@ -238,6 +238,18 @@ object KoinModules {
     val LocalBackup = module {
 
         single<LocalBackupHandler> { AndroidLocalBackupHandler(androidApplication(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
+    }
+
+    val Mapper = module {
+
+        single<FolderMapper> { FolderMapper(get(), get(), get(), get(), get(), get()) }
+
+        single<NoteMapper> { NoteMapper(get(), get(), get(), get(), get()) }
+
+        single<LabelMapper> { LabelMapper(get(), get(), get(), get()) }
+
+        single<PropertyMapper> { PropertyMapper() }
 
     }
 
