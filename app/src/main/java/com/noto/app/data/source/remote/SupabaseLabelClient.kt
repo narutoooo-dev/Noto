@@ -9,6 +9,14 @@ import io.github.jan.supabase.postgrest.query.Returning
 
 class SupabaseLabelClient(private val client: SupabaseClient) : RemoteLabelDataSource {
 
+    override suspend fun getAllRemoteLabels(): List<RemoteLabel> {
+        return tryCatching {
+            client.postgrest[SupabaseConstants.Tables.Labels]
+                .select()
+                .decodeList()
+        }
+    }
+
     override suspend fun getRemoteLabelsByFolderId(remoteFolderId: String): List<RemoteLabel> {
         return tryCatching {
             client.postgrest[SupabaseConstants.Tables.Labels]

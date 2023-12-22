@@ -4,6 +4,8 @@ import com.noto.app.data.model.remote.RemoteLabel
 
 interface RemoteLabelDataSource {
 
+    suspend fun getAllRemoteLabels(): List<RemoteLabel>
+
     suspend fun getRemoteLabelsByFolderId(remoteFolderId: String): List<RemoteLabel>
 
     suspend fun createRemoteLabel(remoteLabel: RemoteLabel)
