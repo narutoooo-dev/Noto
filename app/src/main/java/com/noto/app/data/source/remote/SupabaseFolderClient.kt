@@ -9,7 +9,7 @@ import io.github.jan.supabase.postgrest.query.Returning
 
 class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDataSource {
 
-    override suspend fun getRemoteFolders(): List<RemoteFolder> {
+    override suspend fun getAllRemoteFolders(): List<RemoteFolder> {
         return tryCatching {
             client.postgrest[SupabaseConstants.Tables.Folders]
                 .select()

@@ -5,7 +5,6 @@ import com.noto.app.domain.model.Label
 import com.noto.app.domain.repository.LabelRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.service.RemoteLabelService
-import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.remote.RemoteLabelDataSource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
 class LabelRepositoryImpl(
-    private val localFolderDataSource: LocalFolderDataSource,
     private val localLabelDataSource: LocalLabelDataSource,
     private val remoteLabelDataSource: RemoteLabelDataSource,
     private val remoteLabelService: RemoteLabelService,
@@ -27,13 +25,7 @@ class LabelRepositoryImpl(
         .flowOn(coroutineDispatcher)
 
     override fun getLabelsByFolderId(folderId: Long): Flow<List<Label>> = localLabelDataSource.getLocalLabelsByFolderId(folderId)
-        .map {
-            if (settingsRepository.isUserLoggedIn.first()) {
-                val remoteFolderId = localFolderDataSource.getLocalFolderById(folderId).firstOrNull()?.remoteId
-                if (remoteFolderId != null) remoteLabelService.getRemoteLabelsByFolderId(remoteFolderId)
-            }
-            it.map { labelMapper.mapLocalLabelToDomainLabel(it) }
-        }
+        .map { it.map { labelMapper.mapLocalLabelToDomainLabel(it) } }
         .flowOn(coroutineDispatcher)
 
     override fun getLabelById(id: Long): Flow<Label> = localLabelDataSource.getLocalLabelById(id)

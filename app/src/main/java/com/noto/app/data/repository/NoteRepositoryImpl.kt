@@ -8,7 +8,6 @@ import com.noto.app.domain.model.Note
 import com.noto.app.domain.repository.NoteRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.service.RemoteNoteService
-import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
@@ -19,7 +18,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class NoteRepositoryImpl(
-    private val localFolderDataSource: LocalFolderDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
     private val localLabelDataSource: LocalLabelDataSource,
     private val localNoteLabelDataSource: LocalNoteLabelDataSource,
@@ -38,15 +36,9 @@ class NoteRepositoryImpl(
         .toDomainNotes(folderId = null)
         .flowOn(coroutineDispatcher)
 
-    override fun getMainNotesByFolderId(folderId: Long): Flow<List<Note>> = flow {
-        if (settingsRepository.isUserLoggedIn.first()) {
-            val remoteFolderId = localFolderDataSource.getLocalFolderById(folderId).firstOrNull()?.remoteId
-            if (remoteFolderId != null) remoteNoteService.getRemoteNotesByFolderId(remoteFolderId)
-        }
-        localNoteDataSource.getLocalNotesByFolderId(folderId)
-            .toDomainNotes(folderId)
-            .also { emitAll(it) }
-    }.flowOn(coroutineDispatcher)
+    override fun getMainNotesByFolderId(folderId: Long): Flow<List<Note>> = localNoteDataSource.getLocalNotesByFolderId(folderId)
+        .toDomainNotes(folderId)
+        .flowOn(coroutineDispatcher)
 
     override fun getArchivedNotesByFolderId(folderId: Long): Flow<List<Note>> = localNoteDataSource.getArchivedLocalNotesByFolderId(folderId)
         .toDomainNotes(folderId)

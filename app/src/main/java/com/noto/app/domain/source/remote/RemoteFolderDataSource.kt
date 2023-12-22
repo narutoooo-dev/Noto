@@ -4,7 +4,7 @@ import com.noto.app.data.model.remote.RemoteFolder
 
 interface RemoteFolderDataSource {
 
-    suspend fun getRemoteFolders(): List<RemoteFolder>
+    suspend fun getAllRemoteFolders(): List<RemoteFolder>
 
     suspend fun createRemoteFolder(remoteFolder: RemoteFolder)
 

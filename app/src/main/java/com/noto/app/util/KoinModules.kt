@@ -8,6 +8,9 @@ import com.noto.app.AppViewModel
 import com.noto.app.BuildConfig
 import com.noto.app.crypto.*
 import com.noto.app.data.database.NotoDatabase
+import com.noto.app.data.fetcher.RemoteFoldersFetcher
+import com.noto.app.data.fetcher.RemoteLabelsFetcher
+import com.noto.app.data.fetcher.RemoteNotesFetcher
 import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.model.mapper.FolderMapper
 import com.noto.app.data.model.mapper.LabelMapper
@@ -134,23 +137,15 @@ object KoinModules {
 
         single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<SettingsRepository> {
-            SettingsRepositoryImpl(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                JsonConfigs.ExportImportData,
-                get(Qualifiers.CoroutineDispatcher)
-            )
+            SettingsRepositoryImpl(get(), get(), get(), get(), get(), JsonConfigs.ExportImportData, get(Qualifiers.CoroutineDispatcher))
         }
 
-        single<UserRepository> { UserRepositoryImpl(get(), get(), get(), passwordTransformer = get(), keyStoreManager = get()) }
+        single<UserRepository> { UserRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<CoroutineDispatcher>(Qualifiers.CoroutineDispatcher) { Dispatchers.IO }
 
@@ -250,6 +245,16 @@ object KoinModules {
         single<LabelMapper> { LabelMapper(get(), get(), get(), get()) }
 
         single<PropertyMapper> { PropertyMapper() }
+
+    }
+
+    val RemoteFetcher = module {
+
+        single<RemoteFoldersFetcher> { RemoteFoldersFetcher(get(), get(), get()) }
+
+        single<RemoteNotesFetcher> { RemoteNotesFetcher(get(), get(), get()) }
+
+        single<RemoteLabelsFetcher> { RemoteLabelsFetcher(get(), get(), get()) }
 
     }
 

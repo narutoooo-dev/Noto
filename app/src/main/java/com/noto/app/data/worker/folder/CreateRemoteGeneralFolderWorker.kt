@@ -14,7 +14,7 @@ class CreateRemoteGeneralFolderWorker(appContext: Context, workerParams: WorkerP
 
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {
-            val isGeneralFolderExists = remoteFolderDataSource.getRemoteFolders()
+            val isGeneralFolderExists = remoteFolderDataSource.getAllRemoteFolders()
                 .map { folderMapper.mapRemoteFolderToLocalFolder(it) }
                 .any { it.title.isBlank() }
 

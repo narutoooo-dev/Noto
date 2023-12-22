@@ -23,12 +23,9 @@ class FolderRepositoryImpl(
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : FolderRepository, LocalGeneralFolderManager {
 
-    override fun getMainFolders(): Flow<List<Folder>> = flow {
-        if (isUserLoggedIn()) remoteFolderService.getRemoteFolders()
-        localFolderDataSource.getMainLocalFolders()
-            .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
-            .also { emitAll(it) }
-    }.flowOn(coroutineDispatcher)
+    override fun getMainFolders(): Flow<List<Folder>> = localFolderDataSource.getMainLocalFolders()
+        .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
+        .flowOn(coroutineDispatcher)
 
     override fun getArchivedFolders(): Flow<List<Folder>> = localFolderDataSource.getArchivedLocalFolders()
         .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
