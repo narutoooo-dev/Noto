@@ -13,14 +13,23 @@ class RemoteFoldersFetcher(
 ) {
     suspend fun fetchRemoteFolders() {
         remoteFolderDataSource.getAllRemoteFolders().forEach { remoteFolder ->
-            val databaseLocalFolder = localFolderDataSource.getLocalFolderByRemoteId(remoteFolder.id.toString()).first()
             val remoteLocalFolder = folderMapper.mapRemoteFolderToLocalFolder(remoteFolder)
-            if (databaseLocalFolder == null) {
-                val isGeneralFolder = remoteLocalFolder.title.isBlank()
-                val id = if (isGeneralFolder) RemoteItemWorker.GeneralFolderId else RemoteItemWorker.NewItemId
-                localFolderDataSource.createLocalFolder(remoteLocalFolder.copy(id = id))
+            val isGeneralFolder = remoteLocalFolder.title.isBlank()
+            if (isGeneralFolder) {
+                val localGeneralFolder = localFolderDataSource.getLocalFolderById(RemoteItemWorker.GeneralFolderId).first()
+                val remoteLocalGeneralFolder = remoteLocalFolder.copy(id = RemoteItemWorker.GeneralFolderId)
+                if (localGeneralFolder == null) {
+                    localFolderDataSource.createLocalFolder(remoteLocalGeneralFolder)
+                } else {
+                    localFolderDataSource.updateLocalFolder(remoteLocalGeneralFolder)
+                }
             } else {
-                localFolderDataSource.updateLocalFolder(remoteLocalFolder.copy(id = databaseLocalFolder.id))
+                val databaseLocalFolder = localFolderDataSource.getLocalFolderByRemoteId(remoteFolder.id.toString()).first()
+                if (databaseLocalFolder == null) {
+                    localFolderDataSource.createLocalFolder(remoteLocalFolder.copy(id = RemoteItemWorker.NewItemId))
+                } else {
+                    localFolderDataSource.updateLocalFolder(remoteLocalFolder.copy(id = databaseLocalFolder.id))
+                }
             }
         }
     }
