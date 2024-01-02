@@ -1,7 +1,5 @@
 package com.noto.app.data.repository
 
-import com.noto.app.data.model.local.LocalFolder
-import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.model.mapper.FolderMapper
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.repository.FolderRepository
@@ -21,7 +19,7 @@ class FolderRepositoryImpl(
     private val remoteFolderService: RemoteFolderService,
     private val folderMapper: FolderMapper,
     private val coroutineDispatcher: CoroutineDispatcher,
-) : FolderRepository, LocalGeneralFolderManager {
+) : FolderRepository {
 
     override fun getMainFolders(): Flow<List<Folder>> = localFolderDataSource.getMainLocalFolders()
         .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
@@ -42,11 +40,10 @@ class FolderRepositoryImpl(
 
     override suspend fun createGeneralFolder(): Result<Unit> = runCatching {
         withContext(coroutineDispatcher) {
-            if (isUserLoggedIn()) {
-                remoteFolderService.createRemoteGeneralFolder()
-            } else {
-                val localGeneralFolder = newLocalGeneralFolder()
-                localFolderDataSource.createLocalFolder(localGeneralFolder)
+            if (!isUserLoggedIn()) {
+                val folder = Folder.General
+                val localFolder = folderMapper.mapDomainFolderToLocalFolder(folder)
+                localFolderDataSource.createLocalFolder(localFolder)
             }
         }
     }
@@ -94,7 +91,5 @@ class FolderRepositoryImpl(
     @Suppress("DEPRECATION")
     private val Folder.correctTitle
         get() = if (isGeneral) "" else title
-
-    override suspend fun newLocalGeneralFolder(): LocalFolder = folderMapper.mapDomainFolderToLocalFolder(Folder.General)
 
 }

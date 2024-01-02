@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.model.remote.RemoteFolder
+import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.NotoException
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
@@ -15,7 +16,17 @@ class GetRemoteFoldersWorker(appContext: Context, workerParams: WorkerParameters
 
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {
-            remoteFolderDataSource.getAllRemoteFolders().also { remoteFolderCacheHandler.cacheRemoteItems(it) }
+            val remoteFolders = remoteFolderDataSource.getAllRemoteFolders()
+            remoteFolderCacheHandler.cacheRemoteItems(remoteFolders)
+            val localFolders = remoteFolders.map { folderMapper.mapRemoteFolderToLocalFolder(it) }
+            val isGeneralFolderCreated = localFolders.any { it.title.isBlank() }
+            if (!isGeneralFolderCreated) {
+                val folder = Folder.General
+                val localFolder = folderMapper.mapDomainFolderToLocalFolder(folder)
+                val remoteFolder = folderMapper.mapLocalFolderToRemoteFolder(localFolder)
+                localFolderDataSource.createLocalFolder(localFolder)
+                remoteFolderDataSource.createRemoteFolder(remoteFolder)
+            } // Else: General folder already exists and fetched, don't create it.
             Result.success()
         } catch (exception: Throwable) {
             when (exception) {

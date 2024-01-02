@@ -3,7 +3,10 @@ package com.noto.app.data.service
 import android.content.Context
 import androidx.work.*
 import com.noto.app.data.worker.RemoteItemWorker
-import com.noto.app.data.worker.folder.*
+import com.noto.app.data.worker.folder.CreateRemoteFolderWorker
+import com.noto.app.data.worker.folder.DeleteRemoteFolderWorker
+import com.noto.app.data.worker.folder.GetRemoteFoldersWorker
+import com.noto.app.data.worker.folder.UpdateRemoteFolderWorker
 import com.noto.app.domain.service.RemoteFolderService
 
 class AndroidRemoteFolderService(context: Context) : RemoteFolderService, AndroidRemoteItemService {
@@ -20,13 +23,6 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
     override fun createRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<CreateRemoteFolderWorker>(remoteFolderId)
         workManager.enqueueUniqueWork(CreateRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
-    }
-
-    override fun createRemoteGeneralFolder() {
-        val workRequest = OneTimeWorkRequestBuilder<CreateRemoteGeneralFolderWorker>()
-            .setConstraints(buildConstraints())
-            .build()
-        workManager.enqueueUniqueWork(CreateRemoteGeneralFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun updateRemoteFolder(remoteFolderId: String) {
@@ -53,7 +49,6 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
     private companion object {
         private const val GetRemoteFoldersWorkName = "GetRemoteFolders"
         private const val CreateRemoteFolderWorkName = "CreateRemoteFolder"
-        private const val CreateRemoteGeneralFolderWorkName = "CreateRemoteGeneralFolder"
         private const val UpdateRemoteFolderWorkName = "UpdateRemoteFolder"
         private const val DeleteRemoteFolderWorkName = "DeleteRemoteFolder"
     }
