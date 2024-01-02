@@ -7,15 +7,19 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.noto.app.AppViewModel
 import com.noto.app.BuildConfig
 import com.noto.app.crypto.*
+import com.noto.app.data.cache.RemoteFolderCacheHandler
+import com.noto.app.data.cache.RemoteItemCacheHandler
+import com.noto.app.data.cache.RemoteLabelCacheHandler
+import com.noto.app.data.cache.RemoteNoteCacheHandler
 import com.noto.app.data.database.NotoDatabase
-import com.noto.app.data.fetcher.RemoteFoldersFetcher
-import com.noto.app.data.fetcher.RemoteLabelsFetcher
-import com.noto.app.data.fetcher.RemoteNotesFetcher
 import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.model.mapper.FolderMapper
 import com.noto.app.data.model.mapper.LabelMapper
 import com.noto.app.data.model.mapper.NoteMapper
 import com.noto.app.data.model.mapper.PropertyMapper
+import com.noto.app.data.model.remote.RemoteFolder
+import com.noto.app.data.model.remote.RemoteLabel
+import com.noto.app.data.model.remote.RemoteNote
 import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
 import com.noto.app.data.service.AndroidRemoteLabelService
@@ -145,7 +149,22 @@ object KoinModules {
             SettingsRepositoryImpl(get(), get(), get(), get(), get(), JsonConfigs.ExportImportData, get(Qualifiers.CoroutineDispatcher))
         }
 
-        single<UserRepository> { UserRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<UserRepository> {
+            UserRepositoryImpl(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(Qualifiers.CoroutineDispatcher)
+            )
+        }
 
         single<CoroutineDispatcher>(Qualifiers.CoroutineDispatcher) { Dispatchers.IO }
 
@@ -248,13 +267,13 @@ object KoinModules {
 
     }
 
-    val RemoteFetcher = module {
+    val CacheHandler = module {
 
-        single<RemoteFoldersFetcher> { RemoteFoldersFetcher(get(), get(), get()) }
+        single<RemoteItemCacheHandler<RemoteFolder>> { RemoteFolderCacheHandler(get(), get()) }
 
-        single<RemoteNotesFetcher> { RemoteNotesFetcher(get(), get(), get()) }
+        single<RemoteItemCacheHandler<RemoteNote>> { RemoteNoteCacheHandler(get(), get()) }
 
-        single<RemoteLabelsFetcher> { RemoteLabelsFetcher(get(), get(), get()) }
+        single<RemoteItemCacheHandler<RemoteLabel>> { RemoteLabelCacheHandler(get(), get()) }
 
     }
 

@@ -1,18 +1,17 @@
-package com.noto.app.data.fetcher
+package com.noto.app.data.cache
 
 import com.noto.app.data.model.mapper.FolderMapper
+import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.domain.source.local.LocalFolderDataSource
-import com.noto.app.domain.source.remote.RemoteFolderDataSource
 import kotlinx.coroutines.flow.first
 
-class RemoteFoldersFetcher(
-    private val remoteFolderDataSource: RemoteFolderDataSource,
+class RemoteFolderCacheHandler(
     private val localFolderDataSource: LocalFolderDataSource,
     private val folderMapper: FolderMapper,
-) {
-    suspend fun fetchRemoteFolders() {
-        remoteFolderDataSource.getAllRemoteFolders().forEach { remoteFolder ->
+) : RemoteItemCacheHandler<RemoteFolder> {
+    override suspend fun cacheRemoteItems(remoteItems: List<RemoteFolder>) {
+        remoteItems.forEach { remoteFolder ->
             val remoteLocalFolder = folderMapper.mapRemoteFolderToLocalFolder(remoteFolder)
             val isGeneralFolder = remoteLocalFolder.title.isBlank()
             if (isGeneralFolder) {

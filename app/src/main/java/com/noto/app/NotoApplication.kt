@@ -27,7 +27,7 @@ class NotoApplication : Application() {
                 KoinModules.RemoteService,
                 KoinModules.LocalBackup,
                 KoinModules.Mapper,
-                KoinModules.RemoteFetcher,
+                KoinModules.CacheHandler,
             )
         }
     }

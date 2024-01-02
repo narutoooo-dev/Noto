@@ -2,16 +2,16 @@ package com.noto.app.data.repository
 
 import com.noto.app.crypto.KeyStoreManager
 import com.noto.app.crypto.PasswordTransformer
-import com.noto.app.data.fetcher.RemoteFoldersFetcher
-import com.noto.app.data.fetcher.RemoteLabelsFetcher
-import com.noto.app.data.fetcher.RemoteNotesFetcher
+import com.noto.app.data.cache.RemoteItemCacheHandler
+import com.noto.app.data.model.remote.RemoteFolder
+import com.noto.app.data.model.remote.RemoteLabel
+import com.noto.app.data.model.remote.RemoteNote
 import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.User
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.repository.UserRepository
-import com.noto.app.domain.source.remote.RemoteAuthDataSource
-import com.noto.app.domain.source.remote.RemoteUserDataSource
+import com.noto.app.domain.source.remote.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -19,12 +19,15 @@ import kotlinx.coroutines.withContext
 class UserRepositoryImpl(
     private val remoteAuthDataSource: RemoteAuthDataSource,
     private val remoteUserDataSource: RemoteUserDataSource,
+    private val remoteFolderDataSource: RemoteFolderDataSource,
+    private val remoteNoteDataSource: RemoteNoteDataSource,
+    private val remoteLabelDataSource: RemoteLabelDataSource,
     private val settingsRepository: SettingsRepository,
     private val passwordTransformer: PasswordTransformer,
     private val keyStoreManager: KeyStoreManager,
-    private val remoteFoldersFetcher: RemoteFoldersFetcher,
-    private val remoteNotesFetcher: RemoteNotesFetcher,
-    private val remoteLabelsFetcher: RemoteLabelsFetcher,
+    private val remoteFolderCacheHandler: RemoteItemCacheHandler<RemoteFolder>,
+    private val remoteNoteCacheHandler: RemoteItemCacheHandler<RemoteNote>,
+    private val remoteLabelCacheHandler: RemoteItemCacheHandler<RemoteLabel>,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : UserRepository {
 
@@ -60,7 +63,7 @@ class UserRepositoryImpl(
             val keyData = passwordTransformer.generateKek(password.encodeToByteArray())
             keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
             finishLogin()
-            fetchRemoteItems()
+            fetchAndCacheRemoteItems()
         }
     }
 
@@ -78,7 +81,7 @@ class UserRepositoryImpl(
                 OtpType.LogIn -> {
                     remoteAuthDataSource.verifyLogInOtp(email, otp)
                     finishLogin()
-                    fetchRemoteItems()
+                    fetchAndCacheRemoteItems()
                 }
 
                 OtpType.ChangeEmail -> {
@@ -125,10 +128,10 @@ class UserRepositoryImpl(
         remoteAuthUser?.let { settingsRepository.updateEmail(it.email) }
     }
 
-    private suspend fun fetchRemoteItems() {
-        remoteFoldersFetcher.fetchRemoteFolders()
-        remoteNotesFetcher.fetchRemoteNotes(remoteFolderId = null)
-        remoteLabelsFetcher.fetchRemoteLabels(remoteFolderId = null)
+    private suspend fun fetchAndCacheRemoteItems() {
+        remoteFolderDataSource.getAllRemoteFolders().also { remoteFolderCacheHandler.cacheRemoteItems(it) }
+        remoteNoteDataSource.getAllRemoteNotes().also { remoteNoteCacheHandler.cacheRemoteItems(it) }
+        remoteLabelDataSource.getAllRemoteLabels().also { remoteLabelCacheHandler.cacheRemoteItems(it) }
     }
 
 }
