@@ -6,12 +6,13 @@ import androidx.work.WorkerParameters
 import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.model.remote.RemoteLabel
 import com.noto.app.data.worker.RemoteItemWorker
+import com.noto.app.util.KoinModules
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 
 class GetRemoteLabelsWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams), RemoteLabelWorker {
 
-    private val remoteLabelCacheHandler by inject<RemoteItemCacheHandler<RemoteLabel>>()
+    private val remoteLabelCacheHandler by inject<RemoteItemCacheHandler<RemoteLabel>>(KoinModules.Qualifiers.RemoteLabelCacheHandler)
 
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {

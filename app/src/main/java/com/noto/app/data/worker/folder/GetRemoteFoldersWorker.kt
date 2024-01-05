@@ -7,12 +7,13 @@ import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.model.NotoException
+import com.noto.app.util.KoinModules
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 
 class GetRemoteFoldersWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams), RemoteFolderWorker {
 
-    private val remoteFolderCacheHandler by inject<RemoteItemCacheHandler<RemoteFolder>>()
+    private val remoteFolderCacheHandler by inject<RemoteItemCacheHandler<RemoteFolder>>(KoinModules.Qualifiers.RemoteFolderCacheHandler)
 
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         try {
