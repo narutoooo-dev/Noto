@@ -12,7 +12,6 @@ import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.cache.RemoteLabelCacheHandler
 import com.noto.app.data.cache.RemoteNoteCacheHandler
 import com.noto.app.data.database.NotoDatabase
-import com.noto.app.data.model.local.LocalGeneralFolderManager
 import com.noto.app.data.model.mapper.FolderMapper
 import com.noto.app.data.model.mapper.LabelMapper
 import com.noto.app.data.model.mapper.NoteMapper
@@ -24,6 +23,7 @@ import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
 import com.noto.app.data.service.AndroidRemoteLabelService
 import com.noto.app.data.service.AndroidRemoteNoteService
+import com.noto.app.data.source.local.LocalSettingsDataSource
 import com.noto.app.data.source.remote.*
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
@@ -85,6 +85,9 @@ object KoinModules {
     object Qualifiers {
         val CoroutineDispatcher = qualifier("CoroutineDispatcher")
         val CryptoJson = qualifier("CryptoJson")
+        val RemoteFolderCacheHandler = qualifier("RemoteFolderCacheHandler")
+        val RemoteNoteCacheHandler = qualifier("RemoteNoteCacheHandler")
+        val RemoteLabelCacheHandler = qualifier("RemoteLabelCacheHandler")
     }
 
     val ViewModel = module {
@@ -159,16 +162,14 @@ object KoinModules {
                 get(),
                 get(),
                 get(),
-                get(),
-                get(),
-                get(),
+                get(Qualifiers.RemoteFolderCacheHandler),
+                get(Qualifiers.RemoteNoteCacheHandler),
+                get(Qualifiers.RemoteLabelCacheHandler),
                 get(Qualifiers.CoroutineDispatcher)
             )
         }
 
         single<CoroutineDispatcher>(Qualifiers.CoroutineDispatcher) { Dispatchers.IO }
-
-        single<LocalGeneralFolderManager> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 
@@ -183,6 +184,8 @@ object KoinModules {
         single<LocalNoteLabelDataSource> { NotoDatabase.getInstance(androidContext()).noteLabelDao }
 
         single<DataStore<Preferences>> { androidContext().dataStore }
+
+        single<LocalSettingsDataSource> { LocalSettingsDataSource(get()) }
 
     }
 
@@ -269,11 +272,11 @@ object KoinModules {
 
     val CacheHandler = module {
 
-        single<RemoteItemCacheHandler<RemoteFolder>> { RemoteFolderCacheHandler(get(), get()) }
+        single<RemoteItemCacheHandler<RemoteFolder>>(Qualifiers.RemoteFolderCacheHandler) { RemoteFolderCacheHandler(get(), get()) }
 
-        single<RemoteItemCacheHandler<RemoteNote>> { RemoteNoteCacheHandler(get(), get()) }
+        single<RemoteItemCacheHandler<RemoteNote>>(Qualifiers.RemoteNoteCacheHandler) { RemoteNoteCacheHandler(get(), get()) }
 
-        single<RemoteItemCacheHandler<RemoteLabel>> { RemoteLabelCacheHandler(get(), get()) }
+        single<RemoteItemCacheHandler<RemoteLabel>>(Qualifiers.RemoteLabelCacheHandler) { RemoteLabelCacheHandler(get(), get()) }
 
     }
 

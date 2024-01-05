@@ -1,30 +1,26 @@
 package com.noto.app.data.model.local
 
 import com.noto.app.domain.model.*
-import com.noto.app.util.Constants
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class LocalSettingsConfig(
-    val theme: Theme = Theme.System,
-    val font: Font = Font.Nunito,
-    val language: Language = Language.System,
-    val icon: Icon = Icon.Futuristic,
-    val vaultPasscode: String? = null,
-    val vaultTimeout: VaultTimeout = VaultTimeout.Immediately,
-    val scheduledVaultTimeout: VaultTimeout? = null,
-    val isVaultOpen: Boolean = false,
-    val isBioAuthEnabled: Boolean = false,
-    val lastVersion: String = Release.Version.Last.format(),
-    val sortingType: FolderListSortingType = FolderListSortingType.CreationDate,
-    val sortingOrder: SortingOrder = SortingOrder.Descending,
-    val isShowNotesCount: Boolean = false,
-    val isDoNotDisturb: Boolean = false,
-    val isScreenOn: Boolean = true,
-    val mainInterfaceId: Long = Constants.AllFoldersId,
-    val isRememberScrollingPosition: Boolean = true,
-    val allNotesScrollingPosition: Int = 0,
-    val recentNotesScrollingPosition: Int = 0,
-    val scheduledNotesScrollingPosition: Int = 0,
-    val archivedNotesScrollingPosition: Int = 0,
+    val theme: Theme,
+    val font: Font,
+    val language: Language,
+    val icon: Icon,
+    val vaultPasscode: String?,
+    val sortingType: FolderListSortingType,
+    val sortingOrder: SortingOrder,
+    val isShowNotesCount: Boolean,
+    val isDoNotDisturb: Boolean,
+    val isScreenOn: Boolean,
+    val isFullScreen: Boolean,
+    val mainInterfaceId: Long,
+    val quickNoteFolderId: Long,
+    val isRememberScrollingPosition: Boolean,
+    val screenBrightnessLevel: ScreenBrightnessLevel,
+    val quickExist: Boolean,
+    val continuousSearch: Boolean,
+    val previewAutoScroll: Boolean,
 )
