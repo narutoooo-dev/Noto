@@ -227,7 +227,7 @@ object KoinModules {
 
     val Crypto = module {
 
-        single<PasswordTransformer> { PasswordTransformerImpl() }
+        single<PasswordTransformer> { Argon2PasswordTransformer() }
 
         single<CryptoManager> { TinkCryptoManager() }
 

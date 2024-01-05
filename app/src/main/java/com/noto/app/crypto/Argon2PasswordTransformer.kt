@@ -17,7 +17,7 @@ private const val Version = Argon2Parameters.ARGON2_VERSION_13
 private const val Type = Argon2Parameters.ARGON2_id
 private const val EncodingFlags = Base64.NO_PADDING
 
-class PasswordTransformerImpl(private val secureRandom: SecureRandom = SecureRandom()) : PasswordTransformer {
+class Argon2PasswordTransformer(private val secureRandom: SecureRandom = SecureRandom()) : PasswordTransformer {
 
     private val generator = Argon2BytesGenerator()
 
@@ -88,7 +88,7 @@ class PasswordTransformerImpl(private val secureRandom: SecureRandom = SecureRan
         append(",p=")
         append(lanes)
         append("$")
-        salt?.let(this@PasswordTransformerImpl::encodeToString)?.let(::append)
+        salt?.let(this@Argon2PasswordTransformer::encodeToString)?.let(::append)
     }
 
     private fun String.decodeToParameters(): Argon2Parameters {
@@ -99,7 +99,7 @@ class PasswordTransformerImpl(private val secureRandom: SecureRandom = SecureRan
             "argon2id" -> Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
             else -> unknownAlgorithm()
         }
-        val salt = parts.last().let(this@PasswordTransformerImpl::decodeToByteArray)
+        val salt = parts.last().let(this@Argon2PasswordTransformer::decodeToByteArray)
         builder.withSalt(salt)
         val version = parts.getIntValueAtIndex(1)
         builder.withVersion(version)
