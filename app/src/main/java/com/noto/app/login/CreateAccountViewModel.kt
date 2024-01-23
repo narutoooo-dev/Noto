@@ -143,7 +143,7 @@ class CreateAccountViewModel(
 
     fun validateConfirmPassword() {
         if (confirmPassword.value.isNotBlank()) {
-            val isConfirmPasswordValid = confirmPassword == password
+            val isConfirmPasswordValid = confirmPassword.value == password.value
             if (!isConfirmPasswordValid) mutableConfirmPasswordStatus.value = TextFieldStatus.Error(R.string.confirm_password_is_invalid)
         }
     }
