@@ -5,7 +5,6 @@ import com.noto.app.domain.model.tryCatching
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Returning
 
 class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDataSource {
 
@@ -19,17 +18,25 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
 
     override suspend fun createRemoteFolder(remoteFolder: RemoteFolder) {
         client.postgrest[SupabaseConstants.Tables.Folders]
-            .insert(remoteFolder, returning = Returning.MINIMAL)
+            .insert(remoteFolder)
     }
 
     override suspend fun updateRemoteFolder(remoteFolder: RemoteFolder) {
         client.postgrest[SupabaseConstants.Tables.Folders]
-            .update(remoteFolder, returning = Returning.MINIMAL) { RemoteFolder::id eq remoteFolder.id }
+            .update(remoteFolder) {
+                filter {
+                    RemoteFolder::id eq remoteFolder.id
+                }
+            }
     }
 
     override suspend fun deleteRemoteFolderById(remoteFolderId: String) {
         client.postgrest[SupabaseConstants.Tables.Folders]
-            .delete(returning = Returning.MINIMAL) { RemoteFolder::id eq remoteFolderId }
+            .delete {
+                filter {
+                    RemoteFolder::id eq remoteFolderId
+                }
+            }
     }
 
 }

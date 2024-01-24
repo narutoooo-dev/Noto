@@ -73,7 +73,7 @@ import com.noto.app.widget.NoteListWidgetConfigViewModel
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.gotrue.GoTrue
+import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.ktor.http.URLProtocol
@@ -230,7 +230,7 @@ object KoinModules {
 //                        }
 //                    }
 //                }
-                install(GoTrue) {
+                install(Auth) {
                     scheme = URLProtocol.HTTPS.name
                     host = SupabaseConstants.URLs.NotoHost
                 }

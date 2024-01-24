@@ -10,7 +10,7 @@ class SupabaseUserClient(private val client: SupabaseClient) : RemoteUserDataSou
 
     override suspend fun getUser(): RemoteUser {
         return tryCatching {
-            client.postgrest[SupabaseConstants.Tables.Users].select(single = true).decodeAs()
+            client.postgrest[SupabaseConstants.Tables.Users].select { single() }.decodeAs()
         }
     }
 
@@ -18,8 +18,11 @@ class SupabaseUserClient(private val client: SupabaseClient) : RemoteUserDataSou
         tryCatching {
             client.postgrest[SupabaseConstants.Tables.Users].update(
                 update = { RemoteUser::name setTo name },
-                filter = { RemoteUser::id eq id }
-            )
+            ) {
+                filter {
+                    RemoteUser::id eq id
+                }
+            }
         }
     }
 

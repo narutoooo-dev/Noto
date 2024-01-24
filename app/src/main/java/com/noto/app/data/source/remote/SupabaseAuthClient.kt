@@ -11,8 +11,9 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.SessionStatus
-import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.gotrue.providers.builtin.OTP
 import io.github.jan.supabase.gotrue.user.UserInfo
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
@@ -25,7 +26,7 @@ import kotlinx.serialization.json.put
 class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSource {
 
     override val isUserLoggedIn: Flow<Boolean>
-        get() = client.gotrue.sessionStatus
+        get() = client.auth.sessionStatus
             .filter { it is SessionStatus.Authenticated || it is SessionStatus.NotAuthenticated }
             .map { it is SessionStatus.Authenticated }
 
@@ -51,7 +52,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
                 }
             }
         ) {
-            val result = client.gotrue.signUpWith(Email, SupabaseConstants.URLs.NotoVerifyEmail) {
+            val result = client.auth.signUpWith(Email, SupabaseConstants.URLs.NotoVerifyEmail) {
                 this.email = email
                 this.password = password
                 this.data = buildJsonObject {
@@ -77,7 +78,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
                 }
             }
         ) {
-            client.gotrue.loginWith(Email, SupabaseConstants.URLs.NotoVerifyEmail) {
+            client.auth.signInWith(Email, SupabaseConstants.URLs.NotoVerifyEmail) {
                 this.email = email
                 this.password = password
             }
@@ -86,19 +87,19 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
 
     override suspend fun sendLogInOtp(email: String) {
         tryCatching {
-            client.gotrue.resendEmail(OtpType.Email.SIGNUP, email)
+            client.auth.resendEmail(OtpType.Email.SIGNUP, email)
         }
     }
 
     override suspend fun sendChangeEmailOtp(email: String) {
         tryCatching {
-            client.gotrue.resendEmail(OtpType.Email.EMAIL_CHANGE, email)
+            client.auth.resendEmail(OtpType.Email.EMAIL_CHANGE, email)
         }
     }
 
     override suspend fun sendDeleteAccountOtp(email: String) {
         tryCatching {
-            client.gotrue.sendOtpTo(Email) {
+            client.auth.signInWith(OTP) {
                 this.email = email
             }
         }
@@ -113,7 +114,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
                 }
             }
         ) {
-            client.gotrue.verifyEmailOtp(OtpType.Email.SIGNUP, email, otp)
+            client.auth.verifyEmailOtp(OtpType.Email.SIGNUP, email, otp)
         }
     }
 
@@ -126,7 +127,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
                 }
             }
         ) {
-            client.gotrue.verifyEmailOtp(OtpType.Email.EMAIL_CHANGE, email, otp)
+            client.auth.verifyEmailOtp(OtpType.Email.EMAIL_CHANGE, email, otp)
         }
     }
 
@@ -139,7 +140,7 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
                 }
             }
         ) {
-            client.gotrue.verifyEmailOtp(OtpType.Email.MAGIC_LINK, email, otp)
+            client.auth.verifyEmailOtp(OtpType.Email.MAGIC_LINK, email, otp)
         }
     }
 
@@ -165,25 +166,25 @@ class SupabaseAuthClient(private val client: SupabaseClient) : RemoteAuthDataSou
             }
         ) {
             // TODO Add redirect modifier to SupabaseConstants.URLs.NotoVerifyEmail
-            client.gotrue.modifyUser { this.email = email }
+            client.auth.modifyUser { this.email = email }
         }
     }
 
     override suspend fun get(): RemoteAuthUser? {
         return tryCatching {
-            client.gotrue.currentUserOrNull()?.toRemoteAuthUser()
+            client.auth.currentUserOrNull()?.toRemoteAuthUser()
         }
     }
 
     override suspend fun retrieve(): RemoteAuthUser {
         return tryCatching {
-            client.gotrue.retrieveUserForCurrentSession(updateSession = true).toRemoteAuthUser()
+            client.auth.retrieveUserForCurrentSession(updateSession = true).toRemoteAuthUser()
         }
     }
 
     override suspend fun logOut() {
         tryCatching {
-            client.gotrue.logout()
+            client.auth.signOut()
         }
     }
 

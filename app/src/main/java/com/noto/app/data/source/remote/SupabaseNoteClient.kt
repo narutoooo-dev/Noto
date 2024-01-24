@@ -5,7 +5,6 @@ import com.noto.app.domain.model.tryCatching
 import com.noto.app.domain.source.remote.RemoteNoteDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Returning
 
 class SupabaseNoteClient(private val client: SupabaseClient) : RemoteNoteDataSource {
 
@@ -20,24 +19,36 @@ class SupabaseNoteClient(private val client: SupabaseClient) : RemoteNoteDataSou
     override suspend fun getRemoteNotesByFolderId(remoteFolderId: String): List<RemoteNote> {
         return tryCatching {
             client.postgrest[SupabaseConstants.Tables.Notes]
-                .select { RemoteNote::folderId eq remoteFolderId }
+                .select {
+                    filter {
+                        RemoteNote::folderId eq remoteFolderId
+                    }
+                }
                 .decodeList()
         }
     }
 
     override suspend fun createRemoteNote(remoteNote: RemoteNote) {
         client.postgrest[SupabaseConstants.Tables.Notes]
-            .insert(remoteNote, returning = Returning.MINIMAL)
+            .insert(remoteNote)
     }
 
     override suspend fun updateRemoteNote(remoteNote: RemoteNote) {
         client.postgrest[SupabaseConstants.Tables.Notes]
-            .update(remoteNote, returning = Returning.MINIMAL) { RemoteNote::id eq remoteNote.id }
+            .update(remoteNote) {
+                filter {
+                    RemoteNote::id eq remoteNote.id
+                }
+            }
     }
 
     override suspend fun deleteRemoteNoteById(remoteNoteId: String) {
         client.postgrest[SupabaseConstants.Tables.Notes]
-            .delete(returning = Returning.MINIMAL) { RemoteNote::id eq remoteNoteId }
+            .delete {
+                filter {
+                    RemoteNote::id eq remoteNoteId
+                }
+            }
     }
 
 }
