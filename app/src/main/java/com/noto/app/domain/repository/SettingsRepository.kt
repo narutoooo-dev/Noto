@@ -68,6 +68,10 @@ interface SettingsRepository {
 
     val scheduledAutoBackupDuration: Flow<AutoBackupDuration?>
 
+    val autoBackupFormat: Flow<BackupFormat>
+
+    val keyEncryptionKeyParameters: Flow<String?>
+
     fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int>
 
     fun getWidgetFolderId(widgetId: Int): Flow<Long>
@@ -172,9 +176,23 @@ interface SettingsRepository {
 
     suspend fun updateScheduledAutoBackupDuration(autoBackupDuration: AutoBackupDuration?)
 
-    suspend fun exportNotoData(): String
+    suspend fun updateAutoBackupFormat(autoBackupFormat: BackupFormat)
 
-    suspend fun importNotoData(data: String)
+    suspend fun updateKeyEncryptionKeyParameters(parameters: String)
+
+    suspend fun updateAutoBackupPasscode(passcode: String?)
+
+    suspend fun exportNotoData(): Result<String>
+
+    suspend fun importNotoData(data: String): Result<Unit>
+
+    suspend fun exportEncryptedNotoData(): Result<String>
+
+    suspend fun exportEncryptedNotoData(passcode: String): Result<String>
+
+    suspend fun importEncryptedNotoData(data: String): Result<Unit>
+
+    suspend fun importEncryptedNotoData(data: String, passcode: String): Result<Unit>
 
     suspend fun clearSettings()
 

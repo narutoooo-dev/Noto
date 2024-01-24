@@ -26,6 +26,7 @@ import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.screen.Screen
 import com.noto.app.domain.model.AutoBackupDuration
+import com.noto.app.domain.model.BackupFormat
 import com.noto.app.domain.model.NotoColor
 import com.noto.app.domain.model.NotoException
 import com.noto.app.settings.SettingsItem
@@ -60,11 +61,19 @@ class LocalBackupSettingsFragment : Fragment() {
             ?.getLiveData<Boolean>(Constants.IsConfirmed)
             ?.observe(viewLifecycleOwner) { isConfirmed -> if (isConfirmed) autoBackupLocationLauncher.launch(Uri.EMPTY) }
 
+        navController?.currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<String>(Constants.BackupPasscode)
+            ?.observe(viewLifecycleOwner) {
+                viewModel.updateAutoBackupFormat(BackupFormat.Encrypted)
+                viewModel.updateAutoBackupPasscode(it)
+            }
+
         ComposeView(context).apply {
             isTransitionGroup = true
             setContent {
                 val autoBackupLocation by viewModel.autoBackupLocation.collectAsState()
                 val autoBackupDuration by viewModel.autoBackupDuration.collectAsState()
+                val autoBackupFormat by viewModel.autoBackupFormat.collectAsState()
                 val autoBackupDirectory = remember(autoBackupLocation) { autoBackupLocation?.directoryPath }
                 val backUpState by viewModel.backUpState.collectAsState()
                 val restoreState by viewModel.restoreState.collectAsState()
@@ -78,6 +87,7 @@ class LocalBackupSettingsFragment : Fragment() {
                         autoBackupDuration = autoBackupDuration,
                         isAutoBackupEnabled = isAutoBackupEnabled,
                         autoBackupDirectory = autoBackupDirectory,
+                        backupFormat = autoBackupFormat,
                         onToggle = {
                             if (isAutoBackupEnabled) {
                                 viewModel.disableAutoBackup()
@@ -110,6 +120,7 @@ class LocalBackupSettingsFragment : Fragment() {
         autoBackupDuration: AutoBackupDuration,
         isAutoBackupEnabled: Boolean,
         autoBackupDirectory: String?,
+        backupFormat: BackupFormat,
         onToggle: () -> Unit,
         onBackUp: () -> Unit,
         onRestore: () -> Unit,
@@ -142,6 +153,19 @@ class LocalBackupSettingsFragment : Fragment() {
                             painter = painterResource(id = R.drawable.ic_round_schedule_24),
                             onClick = {
                                 navController?.navigateSafely(LocalBackupSettingsFragmentDirections.actionLocalBackupSettingsFragmentToAutoBackupDurationDialogFragment())
+                            }
+                        )
+
+                        SettingsItem(
+                            title = stringResource(id = R.string.backup_format),
+                            type = SettingsItemType.Text(stringResource(backupFormat.toStringResourceId())),
+                            painter = painterResource(id = R.drawable.ic_round_backup_format_24),
+                            onClick = {
+                                navController?.navigateSafely(
+                                    LocalBackupSettingsFragmentDirections.actionLocalBackupSettingsFragmentToBackupFormatDialogFragment(
+                                        selectedFormat = backupFormat,
+                                    )
+                                )
                             }
                         )
 

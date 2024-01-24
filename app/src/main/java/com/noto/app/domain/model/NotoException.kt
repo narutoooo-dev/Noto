@@ -34,6 +34,8 @@ sealed class NotoException(message: String? = null) : RuntimeException(message) 
             data object ImportFailed : Import()
             data object NoFileSelected : Import()
         }
+
+        data object MissingPasscode : LocalBackup()
     }
 
     sealed class Vault : NotoException() {

@@ -5,7 +5,6 @@ import android.app.Application
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.noto.app.domain.model.NotoException
-import com.noto.app.domain.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.io.InputStream
@@ -13,7 +12,6 @@ import java.io.OutputStream
 
 class AndroidLocalBackupHandler(
     private val application: Application,
-    private val settingsRepository: SettingsRepository,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : LocalBackupHandler {
 
@@ -33,7 +31,7 @@ class AndroidLocalBackupHandler(
     }
 
     @SuppressLint("Recycle")
-    override suspend fun export(uri: String?, deleteCurrent: Boolean): Result<Unit> = runCatching {
+    override suspend fun export(uri: String?, data: String, deleteCurrent: Boolean): Result<Unit> = runCatching {
         withContext(coroutineDispatcher) {
             val androidUri = uri?.let(Uri::parse)
             if (androidUri != null) {
@@ -43,7 +41,6 @@ class AndroidLocalBackupHandler(
                 if (documentFile != null) {
                     val outputStream = application.contentResolver?.openOutputStream(documentFile.uri)
                     if (outputStream != null) {
-                        val data = settingsRepository.exportNotoData()
                         outputStream.writeText(data)
                         if (deleteCurrent) documentTree.findFile(LocalBackupHandler.OldFileName)?.delete()
                     } else {
@@ -64,17 +61,12 @@ class AndroidLocalBackupHandler(
     }
 
     @SuppressLint("Recycle")
-    override suspend fun import(uri: String?): Result<Unit> = runCatching {
+    override suspend fun import(uri: String?): Result<String> = runCatching {
         withContext(coroutineDispatcher) {
             val androidUri = uri?.let(Uri::parse)?.toDocumentUri()
             if (androidUri != null) {
                 val inputStream = application.contentResolver?.openInputStream(androidUri)
-                if (inputStream != null) {
-                    val data = inputStream.readText()
-                    settingsRepository.importNotoData(data)
-                } else {
-                    NotoException.LocalBackup.Import.ImportFailed()
-                }
+                inputStream?.readText() ?: NotoException.LocalBackup.Import.ImportFailed()
             } else {
                 NotoException.LocalBackup.Import.NoFileSelected()
             }

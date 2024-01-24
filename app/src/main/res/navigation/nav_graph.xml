@@ -478,6 +478,9 @@
         <action
             android:id="@+id/action_manualBackupDialogFragment_to_progressIndicatorDialogFragment"
             app:destination="@id/progressIndicatorDialogFragment" />
+        <action
+            android:id="@+id/action_manualBackupDialogFragment_to_backupFormatDialogFragment"
+            app:destination="@id/backupFormatDialogFragment" />
     </dialog>
     <dialog
         android:id="@+id/progressIndicatorDialogFragment"
@@ -928,5 +931,35 @@
         <action
             android:id="@+id/action_localBackupSettingsFragment_to_manualBackupDialogFragment"
             app:destination="@id/manualBackupDialogFragment" />
+        <action
+            android:id="@+id/action_localBackupSettingsFragment_to_backupFormatDialogFragment"
+            app:destination="@id/backupFormatDialogFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/backupFormatDialogFragment"
+        android:name="com.noto.app.settings.backup.BackupFormatDialogFragment"
+        android:label="BackupFormatDialogFragment" >
+        <argument
+            android:name="selected_format"
+            app:argType="com.noto.app.domain.model.BackupFormat" />
+        <action
+            android:id="@+id/action_backupFormatDialogFragment_to_backupPasscodeDialogFragment"
+            app:destination="@id/backupPasscodeDialogFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/backupPasscodeDialogFragment"
+        android:name="com.noto.app.settings.backup.BackupPasscodeDialogFragment"
+        android:label="BackupPasscodeDialogFragment" >
+        <action
+            android:id="@+id/action_backupPasscodeDialogFragment_to_backupPasscodeRequirementsDialogFragment"
+            app:destination="@id/backupPasscodeRequirementsDialogFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/backupPasscodeRequirementsDialogFragment"
+        android:name="com.noto.app.settings.backup.BackupPasscodeRequirementsDialogFragment"
+        android:label="BackupPasscodeRequirementsDialogFragment" >
+        <argument
+            android:name="passcode"
+            app:argType="string" />
+    </dialog>
 </navigation>

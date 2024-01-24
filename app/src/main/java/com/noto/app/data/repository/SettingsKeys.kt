@@ -35,6 +35,9 @@ object SettingsKeys {
     val AutoBackupLocation = stringPreferencesKey("AutoBackupLocation")
     val AutoBackupDuration = stringPreferencesKey("AutoBackupDuration")
     val ScheduledAutoBackupDuration = stringPreferencesKey("ScheduledAutoBackupDuration")
+    val AutoBackupFormat = stringPreferencesKey("AutoBackupFormat")
+    val KeyEncryptionKeyParameters = stringPreferencesKey("KeyEncryptionKeyParameters")
+    val AutoBackupEncryptionParameters = stringPreferencesKey("AutoBackupEncryptionParameters")
 
     fun FilteredItemModel(model: FilteredItemModel) = intPreferencesKey("Filtered_Item_Model_${model.id}")
 

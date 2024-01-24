@@ -202,6 +202,7 @@
     <string name="archive_vaulted_folder_confirmation">Are you sure you want to archive this folder?</string>
     <string name="archive_vaulted_folder_description">Archiving this folder will also remove it from the vault.</string>
     <string name="passcode">Passcode</string>
+    <string name="confirm_passcode">Confirm passcode</string>
     <string name="new_passcode">New passcode</string>
     <string name="current_passcode">Current passcode</string>
     <string name="vault_setup">Vault setup</string>
@@ -680,6 +681,7 @@
     <string name="password_is_invalid">Password is invalid.</string>
     <string name="password_is_invalid_requirements">Password doesn\'t meet the requirements.</string>
     <string name="confirm_password_is_invalid">Passwords don\'t match.</string>
+    <string name="confirm_passcode_is_invalid">Passcodes don\'t match.</string>
     <string name="name_is_required">Name is required.</string>
     <string name="email_is_required">Email is required.</string>
     <string name="password_is_required">Password is required.</string>
@@ -758,6 +760,15 @@
     <string name="create_file_failed">Failed to create a file.</string>
     <string name="no_folder_is_selected">No folder has been selected.</string>
     <string name="no_file_is_selected">No file has been selected.</string>
+    <string name="backup_format_plain_text">Plain text</string>
+    <string name="backup_format_encrypted">Encrypted</string>
+    <string name="backup_format">Format</string>
+    <string name="backup_passcode">Backup passcode</string>
+    <string name="backup_passcode_requirements">Passcode requirements</string>
+    <string name="backup_passcode_invalid_requirements">Passcode doesn\'t meet the requirements.</string>
+    <string name="confirm_passcode_is_required">Confirm passcode is required.</string>
+    <string name="backup_passcode_title">Encrypt your local backup with a passcode.</string>
+    <string name="backup_passcode_description">By providing a passcode, you ensure that your exported data are only accessible by you. Losing the passcode would make the exported data unrecoverable.</string>
 
     <!-- Releases -->
 

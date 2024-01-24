@@ -190,6 +190,11 @@ fun AutoBackupDuration.toStringResourceId(): Int = when (this) {
     AutoBackupDuration.Monthly -> R.string.monthly
 }
 
+fun BackupFormat.toStringResourceId(): Int = when (this) {
+    BackupFormat.PlainText -> R.string.backup_format_plain_text
+    BackupFormat.Encrypted -> R.string.backup_format_encrypted
+}
+
 val Number.dp
     get() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,

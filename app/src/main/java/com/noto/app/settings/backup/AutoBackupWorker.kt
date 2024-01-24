@@ -3,6 +3,7 @@ package com.noto.app.settings.backup
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.noto.app.domain.model.BackupFormat
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.util.KoinModules
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,11 +22,20 @@ class AutoBackupWorker(appContext: Context, workerParams: WorkerParameters) : Co
 
     override suspend fun doWork(): Result = withContext(coroutineDispatcher) {
         val uri = settingsRepository.autoBackupLocation.first()
-        localBackupHandler.export(uri, deleteCurrent = true)
-            .fold(
-                onSuccess = { Result.success() },
-                onFailure = { Result.failure() }
-            )
+        val result = when (settingsRepository.autoBackupFormat.first()) {
+            BackupFormat.PlainText -> settingsRepository.exportNotoData()
+            BackupFormat.Encrypted -> settingsRepository.exportEncryptedNotoData()
+        }
+        result.fold(
+            onSuccess = { exportedData ->
+                localBackupHandler.export(uri, exportedData, deleteCurrent = true)
+                    .fold(
+                        onSuccess = { Result.success() },
+                        onFailure = { Result.failure() }
+                    )
+            },
+            onFailure = { Result.failure() },
+        )
     }
 
 }

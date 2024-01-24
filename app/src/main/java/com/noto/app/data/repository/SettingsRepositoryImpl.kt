@@ -1,5 +1,8 @@
 package com.noto.app.data.repository
 
+import com.noto.app.crypto.KeyStoreManager
+import com.noto.app.crypto.RawAesCryptoManager
+import com.noto.app.crypto.key.Argon2KeyGenerator
 import com.noto.app.data.model.local.LocalNotoData
 import com.noto.app.data.model.local.LocalSettingsConfig
 import com.noto.app.data.source.local.LocalSettingsDataSource
@@ -26,6 +29,9 @@ class SettingsRepositoryImpl(
     private val localNoteDataSource: LocalNoteDataSource,
     private val localLabelDataSource: LocalLabelDataSource,
     private val localNoteLabelDataSource: LocalNoteLabelDataSource,
+    private val keyStoreManager: KeyStoreManager,
+    private val keyGenerator: Argon2KeyGenerator,
+    private val cryptoManager: RawAesCryptoManager,
     private val jsonConverter: Json,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : SettingsRepository {
@@ -97,6 +103,11 @@ class SettingsRepositoryImpl(
 
     override val scheduledAutoBackupDuration: Flow<AutoBackupDuration?> =
         localSettingsDataSource.getEnumOrNull(SettingsKeys.ScheduledAutoBackupDuration)
+
+    override val autoBackupFormat: Flow<BackupFormat> =
+        localSettingsDataSource.getEnumOrDefault(SettingsKeys.AutoBackupFormat, BackupFormat.PlainText)
+
+    override val keyEncryptionKeyParameters: Flow<String?> = localSettingsDataSource.getOrNull(SettingsKeys.KeyEncryptionKeyParameters)
 
     override val autoBackupLocation: Flow<String?> = localSettingsDataSource.getOrNull(SettingsKeys.AutoBackupLocation)
 
@@ -236,11 +247,28 @@ class SettingsRepositoryImpl(
     override suspend fun updateScheduledAutoBackupDuration(autoBackupDuration: AutoBackupDuration?) =
         localSettingsDataSource.set(SettingsKeys.ScheduledAutoBackupDuration, autoBackupDuration?.toString())
 
+    override suspend fun updateAutoBackupFormat(autoBackupFormat: BackupFormat) =
+        localSettingsDataSource.set(SettingsKeys.AutoBackupFormat, autoBackupFormat.toString())
+
+    override suspend fun updateKeyEncryptionKeyParameters(parameters: String) =
+        localSettingsDataSource.set(SettingsKeys.KeyEncryptionKeyParameters, parameters)
+
     override suspend fun updateAutoBackupLocation(autoBackupLocation: String?) =
         localSettingsDataSource.set(SettingsKeys.AutoBackupLocation, autoBackupLocation)
 
-    override suspend fun exportNotoData(): String {
-        return withContext(coroutineDispatcher) {
+    override suspend fun updateAutoBackupPasscode(passcode: String?) {
+        if (passcode != null) {
+            val keyData = keyGenerator.generateKey(passcode.encodeToByteArray())
+            keyStoreManager.storeKey(KeyStoreManager.AutoBackupPasscodeId, keyData.key)
+            localSettingsDataSource.set(SettingsKeys.AutoBackupEncryptionParameters, keyData.encodedParameters)
+        } else {
+            keyStoreManager.deleteKey(KeyStoreManager.AutoBackupPasscodeId)
+            localSettingsDataSource.set(SettingsKeys.AutoBackupEncryptionParameters, null)
+        }
+    }
+
+    override suspend fun exportNotoData(): Result<String> = runCatching {
+        withContext(coroutineDispatcher) {
             val folders = localFolderDataSource.getAllLocalFolders().first()
             val notes = localNoteDataSource.getAllLocalNotes().first()
             val labels = localLabelDataSource.getAllLocalLabels().first()
@@ -251,13 +279,40 @@ class SettingsRepositoryImpl(
         }
     }
 
-    override suspend fun importNotoData(data: String) {
+    override suspend fun exportEncryptedNotoData(): Result<String> = runCatching {
+        withContext(coroutineDispatcher) {
+            val key = keyStoreManager.getKey(KeyStoreManager.AutoBackupPasscodeId) ?: NotoException.LocalBackup.MissingPasscode()
+            val parameters = localSettingsDataSource.getOrNull(SettingsKeys.AutoBackupEncryptionParameters)
+                .first() ?: NotoException.LocalBackup.MissingPasscode()
+            val encodedData = exportNotoData().getOrThrow()
+            val encryptedContent = cryptoManager.encryptData(key, RawAesCryptoManager.FixedIv, encodedData.encodeToByteArray())
+            val encryptedData = LocalNotoData.Encrypted(
+                encryptedContent = encryptedContent,
+                encodedParameters = parameters,
+            )
+            jsonConverter.encodeToString(encryptedData)
+        }
+    }
+
+    override suspend fun exportEncryptedNotoData(passcode: String): Result<String> = runCatching {
+        withContext(coroutineDispatcher) {
+            val keyData = keyGenerator.generateKey(passcode.encodeToByteArray())
+            val encodedData = exportNotoData().getOrThrow()
+            val encryptedContent = cryptoManager.encryptData(keyData.key, RawAesCryptoManager.FixedIv, encodedData.encodeToByteArray())
+            val encryptedData = LocalNotoData.Encrypted(
+                encryptedContent = encryptedContent,
+                encodedParameters = keyData.encodedParameters,
+            )
+            jsonConverter.encodeToString(encryptedData)
+        }
+    }
+
+    override suspend fun importNotoData(data: String) = runCatching {
         withContext(coroutineDispatcher) {
             val folderIds = mutableMapOf<Long, Long>()
             val noteIds = mutableMapOf<Long, Long>()
             val labelIds = mutableMapOf<Long, Long>()
-            val data = jsonConverter.decodeFromString<LocalNotoData>(data)
-            data.apply {
+            jsonConverter.decodeFromString<LocalNotoData>(data).run {
                 folders.forEach { localFolder ->
                     if (localFolder.id == Folder.GeneralFolderId) {
                         localFolderDataSource.updateLocalFolder(localFolder)
@@ -289,6 +344,26 @@ class SettingsRepositoryImpl(
         }
     }
 
+    override suspend fun importEncryptedNotoData(data: String): Result<Unit> = runCatching {
+        withContext(coroutineDispatcher) {
+            val key = keyStoreManager.getKey(KeyStoreManager.AutoBackupPasscodeId) ?: NotoException.LocalBackup.MissingPasscode()
+            val encryptedData = jsonConverter.decodeFromString<LocalNotoData.Encrypted>(data)
+            val decryptedContent = cryptoManager.decryptData(key, RawAesCryptoManager.FixedIv, encryptedData.encryptedContent)
+            val decodedData = decryptedContent.decodeToString()
+            importNotoData(decodedData).getOrThrow()
+        }
+    }
+
+    override suspend fun importEncryptedNotoData(data: String, passcode: String): Result<Unit> = runCatching {
+        withContext(coroutineDispatcher) {
+            val encryptedData = jsonConverter.decodeFromString<LocalNotoData.Encrypted>(data)
+            val keyData = keyGenerator.generateKey(passcode.encodeToByteArray(), encryptedData.encodedParameters)
+            val decryptedContent = cryptoManager.decryptData(keyData.key, RawAesCryptoManager.FixedIv, encryptedData.encryptedContent)
+            val decodedData = decryptedContent.decodeToString()
+            importNotoData(decodedData).getOrThrow()
+        }
+    }
+
     private val config: Flow<LocalSettingsConfig> = localSettingsDataSource.storage.data.map {
         LocalSettingsConfig(
             theme = theme.first(),
@@ -315,24 +390,24 @@ class SettingsRepositoryImpl(
     private suspend fun updateConfig(config: LocalSettingsConfig) {
         withContext(coroutineDispatcher) {
             with(config) {
-                updateTheme(theme)
-                updateFont(font)
-                updateLanguage(language)
-                updateIcon(icon)
-                if (vaultPasscode != null) updateVaultPasscode(vaultPasscode)
-                updateSortingType(sortingType)
-                updateSortingOrder(sortingOrder)
-                updateIsShowNotesCount(isShowNotesCount)
-                updateIsDoNotDisturb(isDoNotDisturb)
-                updateIsScreenOn(isScreenOn)
-                updateIsFullScreen(isFullScreen)
-                updateMainInterfaceId(mainInterfaceId)
-                updateQuickNoteFolderId(quickNoteFolderId)
-                updateIsRememberScrollingPosition(isRememberScrollingPosition)
-                updateScreenBrightnessLevel(screenBrightnessLevel)
-                updateQuickExit(quickExist)
-                updateContinuousSearch(continuousSearch)
-                updatePreviewAutoScroll(previewAutoScroll)
+                theme?.let { updateTheme(it) }
+                font?.let { updateFont(it) }
+                language?.let { updateLanguage(it) }
+                icon?.let { updateIcon(it) }
+                vaultPasscode?.let { updateVaultPasscode(vaultPasscode) }
+                sortingType?.let { updateSortingType(it) }
+                sortingOrder?.let { updateSortingOrder(it) }
+                isShowNotesCount?.let { updateIsShowNotesCount(it) }
+                isDoNotDisturb?.let { updateIsDoNotDisturb(it) }
+                isScreenOn?.let { updateIsScreenOn(it) }
+                isFullScreen?.let { updateIsFullScreen(it) }
+                mainInterfaceId?.let { updateMainInterfaceId(it) }
+                quickNoteFolderId?.let { updateQuickNoteFolderId(it) }
+                isRememberScrollingPosition?.let { updateIsRememberScrollingPosition(it) }
+                screenBrightnessLevel?.let { updateScreenBrightnessLevel(it) }
+                quickExist?.let { updateQuickExit(it) }
+                continuousSearch?.let { updateContinuousSearch(it) }
+                previewAutoScroll?.let { updatePreviewAutoScroll(it) }
             }
         }
     }

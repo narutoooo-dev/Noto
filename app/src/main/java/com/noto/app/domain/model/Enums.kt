@@ -74,3 +74,7 @@ enum class UserStatus {
 enum class AutoBackupDuration {
     Daily, Weekly, Monthly,
 }
+
+enum class BackupFormat {
+    PlainText, Encrypted,
+}

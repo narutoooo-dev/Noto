@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,6 +21,7 @@ import com.noto.app.UiState
 import com.noto.app.components.dialog.BaseDialogFragment
 import com.noto.app.components.dialog.BottomSheetDialog
 import com.noto.app.components.dialog.BottomSheetDialogItem
+import com.noto.app.domain.model.BackupFormat
 import com.noto.app.domain.model.NotoException
 import com.noto.app.theme.NotoTheme
 import com.noto.app.util.*
@@ -47,11 +46,35 @@ class ManualBackupDialogFragment : BaseDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? = context?.let { context ->
+
+        navController?.currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<String>(Constants.BackupPasscode)
+            ?.observe(viewLifecycleOwner) {
+                viewModel.updateManualBackupFormat(BackupFormat.Encrypted)
+                viewModel.updateManualBackupPasscode(it)
+            }
+
         ComposeView(context).apply {
             setContent {
                 val exportState by viewModel.exportState.collectAsState()
                 val importState by viewModel.importState.collectAsState()
+                val manualBackupFormat by viewModel.manualBackupFormat.collectAsState()
                 BottomSheetDialog(title = stringResource(id = R.string.manual_backup)) {
+                    BottomSheetDialogItem(
+                        text = stringResource(id = R.string.backup_format),
+                        onClick = {
+                            navController?.navigateSafely(
+                                ManualBackupDialogFragmentDirections.actionManualBackupDialogFragmentToBackupFormatDialogFragment(
+                                    selectedFormat = manualBackupFormat,
+                                )
+                            )
+                        },
+                        painter = painterResource(id = R.drawable.ic_round_backup_format_24),
+                        value = stringResource(manualBackupFormat.toStringResourceId()),
+                    )
+
+                    Spacer(modifier = Modifier.height(NotoTheme.dimensions.medium))
+
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(NotoTheme.dimensions.medium)) {
                         BottomSheetDialogItem(
                             text = stringResource(id = R.string.manual_backup_export),
@@ -100,6 +123,7 @@ class ManualBackupDialogFragment : BaseDialogFragment() {
                         }
 
                         else -> {
+                            state.exception.printStackTrace()
                             parentView?.snackbar(context.stringResource(R.string.something_went_wrong), R.drawable.ic_round_error_24)
                         }
                     }

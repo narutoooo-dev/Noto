@@ -4,9 +4,9 @@ interface LocalBackupHandler {
 
     fun validateUri(uri: String?): Boolean
 
-    suspend fun export(uri: String?, deleteCurrent: Boolean): Result<Unit>
+    suspend fun export(uri: String?, data: String, deleteCurrent: Boolean): Result<Unit>
 
-    suspend fun import(uri: String?): Result<Unit>
+    suspend fun import(uri: String?): Result<String>
 
     companion object {
         const val FileName = "Noto.json"
