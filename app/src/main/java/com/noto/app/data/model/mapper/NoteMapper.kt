@@ -1,6 +1,6 @@
 package com.noto.app.data.model.mapper
 
-import com.noto.app.crypto.EncryptionHandler
+import com.noto.app.crypto.tink.TinkEncryptionHandler
 import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.data.model.local.LocalNote
 import com.noto.app.data.model.remote.RemoteNote
@@ -14,7 +14,7 @@ import java.util.UUID
 class NoteMapper(
     private val localFolderDataSource: LocalFolderDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
-    private val encryptionHandler: EncryptionHandler,
+    private val tinkEncryptionHandler: TinkEncryptionHandler,
     private val labelMapper: LabelMapper,
     private val propertyMapper: PropertyMapper,
 ) {
@@ -66,7 +66,7 @@ class NoteMapper(
         return with(localNote) {
             val localFolder = localFolderDataSource.getLocalFolderById(folderId).first()!!
             val keyset = localFolder.keyset!!
-            val encryptedContent = encryptionHandler.encryptItem(keyset, this.copy(id = 0L, folderId = 0L))
+            val encryptedContent = tinkEncryptionHandler.encryptItem(keyset, this.copy(id = 0L, folderId = 0L))
             RemoteNote(
                 id = UUID.fromString(remoteId),
                 folderId = UUID.fromString(localFolder.remoteId),
@@ -79,7 +79,7 @@ class NoteMapper(
         return with(remoteNote) {
             val localFolder = localFolderDataSource.getLocalFolderByRemoteId(folderId.toString()).first()!!
             val keyset = localFolder.keyset!!
-            val decryptedContent = encryptionHandler.decryptItem<LocalNote>(keyset, encryptedContent)
+            val decryptedContent = tinkEncryptionHandler.decryptItem<LocalNote>(keyset, encryptedContent)
             decryptedContent.copy(id = 0L, remoteId = id.toString(), folderId = localFolder.id)
         }
     }

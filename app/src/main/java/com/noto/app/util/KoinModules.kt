@@ -6,7 +6,18 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.noto.app.AppViewModel
 import com.noto.app.BuildConfig
-import com.noto.app.crypto.*
+import com.noto.app.crypto.AndroidKeyStoreManager
+import com.noto.app.crypto.KeyStoreManager
+import com.noto.app.crypto.RawAesCryptoManager
+import com.noto.app.crypto.key.Argon2KeyGenerator
+import com.noto.app.crypto.key.DefaultArgon2KeyGenerator
+import com.noto.app.crypto.key.PasswordBasedKeyGenerator
+import com.noto.app.crypto.key.VaultPasscodeKeyGenerator
+import com.noto.app.crypto.salt.SaltGenerator
+import com.noto.app.crypto.salt.SecureRandomSaltGenerator
+import com.noto.app.crypto.tink.TinkAesCryptoManager
+import com.noto.app.crypto.tink.TinkCryptoManager
+import com.noto.app.crypto.tink.TinkEncryptionHandler
 import com.noto.app.data.cache.RemoteFolderCacheHandler
 import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.cache.RemoteLabelCacheHandler
@@ -88,6 +99,10 @@ object KoinModules {
         val RemoteFolderCacheHandler = qualifier("RemoteFolderCacheHandler")
         val RemoteNoteCacheHandler = qualifier("RemoteNoteCacheHandler")
         val RemoteLabelCacheHandler = qualifier("RemoteLabelCacheHandler")
+        val AccountPasswordKeyGenerator = qualifier("AccountPasswordKeyGenerator")
+        val AccountKekGenerator = qualifier("AccountKekGenerator")
+        val VaultPasscodeKeyGenerator = qualifier("VaultPasscodeKeyGenerator")
+        val BackupPasscodeKeyGenerator = qualifier("BackupPasscodeKeyGenerator")
     }
 
     val ViewModel = module {
@@ -122,9 +137,9 @@ object KoinModules {
 
         viewModel { NewLabelViewModel(get(), get(), it[0], it[1]) }
 
-        viewModel { VaultSettingsViewModel(get(), get()) }
+        viewModel { VaultSettingsViewModel(get(), get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
 
-        viewModel { VaultPasscodeViewModel(get()) }
+        viewModel { VaultPasscodeViewModel(get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
 
         viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get(), get()) }
 
@@ -149,7 +164,18 @@ object KoinModules {
         single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<SettingsRepository> {
-            SettingsRepositoryImpl(get(), get(), get(), get(), get(), JsonConfigs.ExportImportData, get(Qualifiers.CoroutineDispatcher))
+            SettingsRepositoryImpl(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(Qualifiers.BackupPasscodeKeyGenerator),
+                get(),
+                JsonConfigs.ExportImportData,
+                get(Qualifiers.CoroutineDispatcher)
+            )
         }
 
         single<UserRepository> {
@@ -160,12 +186,13 @@ object KoinModules {
                 get(),
                 get(),
                 get(),
-                get(),
+                get(Qualifiers.AccountPasswordKeyGenerator),
+                get(Qualifiers.AccountKekGenerator),
                 get(),
                 get(Qualifiers.RemoteFolderCacheHandler),
                 get(Qualifiers.RemoteNoteCacheHandler),
                 get(Qualifiers.RemoteLabelCacheHandler),
-                get(Qualifiers.CoroutineDispatcher)
+                get(Qualifiers.CoroutineDispatcher),
             )
         }
 
@@ -227,18 +254,28 @@ object KoinModules {
 
     val Crypto = module {
 
-        single<PasswordTransformer> { Argon2PasswordTransformer() }
+        single<Argon2KeyGenerator>(Qualifiers.AccountPasswordKeyGenerator) { DefaultArgon2KeyGenerator(get()) }
 
-        single<CryptoManager> { TinkCryptoManager() }
+        single<Argon2KeyGenerator>(Qualifiers.AccountKekGenerator) { DefaultArgon2KeyGenerator(get(), saltSize = 0) }
+
+        single<Argon2KeyGenerator>(Qualifiers.BackupPasscodeKeyGenerator) { DefaultArgon2KeyGenerator(get(), saltSize = 0) }
+
+        single<PasswordBasedKeyGenerator>(Qualifiers.VaultPasscodeKeyGenerator) { VaultPasscodeKeyGenerator(get()) }
+
+        single<TinkCryptoManager> { TinkAesCryptoManager() }
 
         single<Json>(Qualifiers.CryptoJson) { JsonConfigs.Crypto }
 
         single<KeyStoreManager> {
             val keyStore = KeyStore.getInstance(AndroidKeyStore).apply { load(null) }
-            AndroidKeyStoreManager(keyStore, androidContext().dataStore)
+            AndroidKeyStoreManager(keyStore)
         }
 
-        single { EncryptionHandler(get(), get(Qualifiers.CryptoJson)) }
+        single { TinkEncryptionHandler(get(), get(Qualifiers.CryptoJson)) }
+
+        single<RawAesCryptoManager> { RawAesCryptoManager() }
+
+        single<SaltGenerator> { SecureRandomSaltGenerator() }
 
     }
 
@@ -254,7 +291,7 @@ object KoinModules {
 
     val LocalBackup = module {
 
-        single<LocalBackupHandler> { AndroidLocalBackupHandler(androidApplication(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<LocalBackupHandler> { AndroidLocalBackupHandler(androidApplication(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 

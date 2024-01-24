@@ -1,7 +1,7 @@
 package com.noto.app.data.model.mapper
 
-import com.noto.app.crypto.CryptoManager
-import com.noto.app.crypto.EncryptionHandler
+import com.noto.app.crypto.tink.TinkEncryptionHandler
+import com.noto.app.crypto.tink.TinkCryptoManager
 import com.noto.app.data.model.local.LocalFolder
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.domain.model.Folder
@@ -10,14 +10,15 @@ import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.Clock
 import java.util.UUID
 
 class FolderMapper(
     private val localFolderDataSource: LocalFolderDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
     private val settingsRepository: SettingsRepository,
-    private val cryptoManager: CryptoManager,
-    private val encryptionHandler: EncryptionHandler,
+    private val tinkCryptoManager: TinkCryptoManager,
+    private val tinkEncryptionHandler: TinkEncryptionHandler,
     private val propertyMapper: PropertyMapper,
 ) {
 
@@ -26,7 +27,7 @@ class FolderMapper(
             val localFolder = localFolderDataSource.getLocalFolderById(id).firstOrNull()
             val remoteId = localFolder?.remoteId ?: UUID.randomUUID().toString()
             val keyset = if (settingsRepository.isUserLoggedIn.first()) {
-                localFolder?.keyset ?: cryptoManager.generateKeyset()
+                localFolder?.keyset ?: tinkCryptoManager.keysetGenerator.generateEncryptedKeyset()
             } else {
                 null
             }
@@ -102,18 +103,19 @@ class FolderMapper(
 
     suspend fun mapLocalFolderToRemoteFolder(localFolder: LocalFolder): RemoteFolder {
         return with(localFolder) {
-            val encryptedContent = encryptionHandler.encryptItem(keyset!!, this.copy(id = 0L))
+            val encryptedContent = tinkEncryptionHandler.encryptItem(keyset!!, this.copy(id = 0L))
             RemoteFolder(
                 id = UUID.fromString(remoteId),
                 keyset = keyset,
                 encryptedContent = encryptedContent,
+                updatedAt = Clock.System.now().toString(),
             )
         }
     }
 
     suspend fun mapRemoteFolderToLocalFolder(remoteFolder: RemoteFolder): LocalFolder {
         return with(remoteFolder) {
-            val decryptedContent = encryptionHandler.decryptItem<LocalFolder>(keyset, encryptedContent)
+            val decryptedContent = tinkEncryptionHandler.decryptItem<LocalFolder>(keyset, encryptedContent)
             decryptedContent.copy(id = 0L, remoteId = id.toString(), keyset = keyset)
         }
     }

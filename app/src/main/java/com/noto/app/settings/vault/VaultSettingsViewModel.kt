@@ -5,16 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.material.TextFieldStatus
+import com.noto.app.crypto.key.PasswordBasedKeyGenerator
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.VaultTimeout
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.util.Constants
-import com.noto.app.util.hash
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class VaultSettingsViewModel(private val folderRepository: FolderRepository, private val settingsRepository: SettingsRepository) : ViewModel() {
+class VaultSettingsViewModel(
+    private val folderRepository: FolderRepository,
+    private val settingsRepository: SettingsRepository,
+    private val vaultPasscodeKeyGenerator: PasswordBasedKeyGenerator,
+) : ViewModel() {
 
     private val mutableVaultPasscodeState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val vaultPasscodeState get() = mutableVaultPasscodeState.asStateFlow()
@@ -70,10 +74,20 @@ class VaultSettingsViewModel(private val folderRepository: FolderRepository, pri
         if (newVaultPasscode.value.isNotBlank()) {
             if (newVaultPasscode.value.length >= Constants.VaultPasscodeMinLength) {
                 if (currentVaultPasscode.value.isNotBlank()) {
-                    val currentHashedPasscode = currentVaultPasscode.value.hash()
+                    val currentHashedPasscode = currentVaultPasscode.value
+                        .encodeToByteArray()
+                        .let(vaultPasscodeKeyGenerator::generateKey)
+                        .key
+                        .let(vaultPasscodeKeyGenerator::encodeKeyToString)
                     if (vaultPasscode.value == currentHashedPasscode) {
                         mutableVaultPasscodeState.value = UiState.Loading
-                        settingsRepository.updateVaultPasscode(newVaultPasscode.value.hash())
+                        settingsRepository.updateVaultPasscode(
+                            newVaultPasscode.value
+                                .encodeToByteArray()
+                                .let(vaultPasscodeKeyGenerator::generateKey)
+                                .key
+                                .let(vaultPasscodeKeyGenerator::encodeKeyToString)
+                        )
                         mutableVaultPasscodeState.value = UiState.Success(Unit)
                     } else {
                         mutableVaultPasscodeState.value = UiState.Failure(NotoException.Vault.MismatchedPasscodes)

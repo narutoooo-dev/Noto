@@ -1,7 +1,7 @@
 package com.noto.app.data.repository
 
 import com.noto.app.crypto.KeyStoreManager
-import com.noto.app.crypto.PasswordTransformer
+import com.noto.app.crypto.key.Argon2KeyGenerator
 import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.data.model.remote.RemoteLabel
@@ -23,7 +23,8 @@ class UserRepositoryImpl(
     private val remoteNoteDataSource: RemoteNoteDataSource,
     private val remoteLabelDataSource: RemoteLabelDataSource,
     private val settingsRepository: SettingsRepository,
-    private val passwordTransformer: PasswordTransformer,
+    private val accountPasswordKeyGenerator: Argon2KeyGenerator,
+    private val accountKekGenerator: Argon2KeyGenerator,
     private val keyStoreManager: KeyStoreManager,
     private val remoteFolderCacheHandler: RemoteItemCacheHandler<RemoteFolder>,
     private val remoteNoteCacheHandler: RemoteItemCacheHandler<RemoteNote>,
@@ -45,11 +46,12 @@ class UserRepositoryImpl(
             if (isEmailExist) {
                 NotoException.Auth.UserAlreadyExists()
             } else {
-                val passwordData = passwordTransformer.hashPassword(password.toByteArray())
-                val encodedPassword = passwordData.key.let(passwordTransformer::encodeToString)
+                val passwordData = accountPasswordKeyGenerator.generateKey(password.encodeToByteArray())
+                val encodedPassword = passwordData.key.let(accountPasswordKeyGenerator::encodeKeyToString)
                 remoteAuthDataSource.signUp(name, email, encodedPassword, passwordData.encodedParameters)
-                val keyData = passwordTransformer.generateKek(password.encodeToByteArray())
-                keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
+                val keyData = accountKekGenerator.generateKey(password.encodeToByteArray())
+                keyStoreManager.storeKey(KeyStoreManager.KeyEncryptionKeyId, keyData.key)
+                settingsRepository.updateKeyEncryptionKeyParameters(keyData.encodedParameters)
             }
         }
     }
@@ -57,11 +59,12 @@ class UserRepositoryImpl(
     override suspend fun logIn(email: String, password: String): Result<Unit> = runCatching {
         withContext(coroutineDispatcher) {
             val passwordParametersResponse = remoteAuthDataSource.getPasswordParameters(email)
-            val hashedPassword = passwordTransformer.verifyPassword(password.toByteArray(), passwordParametersResponse.passwordParameters)
-            val encodedPassword = passwordTransformer.encodeToString(hashedPassword)
+            val hashedPassword = accountPasswordKeyGenerator.generateKey(password.encodeToByteArray(), passwordParametersResponse.passwordParameters)
+            val encodedPassword = accountPasswordKeyGenerator.encodeKeyToString(hashedPassword.key)
             remoteAuthDataSource.logIn(email, encodedPassword)
-            val keyData = passwordTransformer.generateKek(password.encodeToByteArray())
-            keyStoreManager.storeKek(keyData.key, keyData.encodedParameters)
+            val keyData = accountKekGenerator.generateKey(password.encodeToByteArray())
+            keyStoreManager.storeKey(KeyStoreManager.KeyEncryptionKeyId, keyData.key)
+            settingsRepository.updateKeyEncryptionKeyParameters(keyData.encodedParameters)
             finishLogin()
             fetchAndCacheRemoteItems()
         }

@@ -5,17 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.noto.app.R
 import com.noto.app.UiState
 import com.noto.app.components.material.TextFieldStatus
+import com.noto.app.crypto.key.PasswordBasedKeyGenerator
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.util.Constants
-import com.noto.app.util.hash
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class VaultPasscodeViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class VaultPasscodeViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val vaultPasscodeKeyGenerator: PasswordBasedKeyGenerator,
+) : ViewModel() {
 
     private val mutableState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val state get() = mutableState.asStateFlow()
@@ -48,7 +51,11 @@ class VaultPasscodeViewModel(private val settingsRepository: SettingsRepository)
     fun validatePasscode() {
         if (vaultPasscode.value.isNotBlank()) {
             mutableState.value = UiState.Loading
-            val hashedVaultPasscode = vaultPasscode.value.hash()
+            val hashedVaultPasscode = vaultPasscode.value
+                .encodeToByteArray()
+                .let(vaultPasscodeKeyGenerator::generateKey)
+                .key
+                .let(vaultPasscodeKeyGenerator::encodeKeyToString)
             if (hashedVaultPasscode == currentVaultPasscode.value) {
                 mutableState.value = UiState.Success(Unit)
             } else {
@@ -63,7 +70,13 @@ class VaultPasscodeViewModel(private val settingsRepository: SettingsRepository)
         if (vaultPasscode.value.isNotBlank()) {
             if (vaultPasscode.value.length >= Constants.VaultPasscodeMinLength) {
                 mutableState.value = UiState.Loading
-                settingsRepository.updateVaultPasscode(vaultPasscode.value.hash())
+                settingsRepository.updateVaultPasscode(
+                    vaultPasscode.value
+                        .encodeToByteArray()
+                        .let(vaultPasscodeKeyGenerator::generateKey)
+                        .key
+                        .let(vaultPasscodeKeyGenerator::encodeKeyToString)
+                )
                 mutableState.value = UiState.Success(Unit)
             } else {
                 mutableState.value = UiState.Failure(NotoException.Vault.PasscodeRequirements)

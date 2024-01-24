@@ -38,6 +38,7 @@ object Constants {
     const val IsChildFoldersEnabled = "is_child_folders_enabled"
     const val AllFoldersId = -4L
     const val AutoBackup = "AutoBackup"
+    const val BackupPasscode = "BackupPasscode"
 
     const val NameMaxLength = 32
     const val OtpLength = 6
@@ -62,6 +63,10 @@ object Constants {
                     && password.matches(LowercaseChars)
                     && password.matches(NumberChars)
                     && password.matches(SpecialChars)
+        }
+
+        fun matchesBackupPasscode(passcode: String): Boolean {
+            return passcode.matches(MinChars) && passcode.matches(NumberChars)
         }
     }
 

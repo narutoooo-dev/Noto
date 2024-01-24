@@ -1,7 +1,6 @@
 package com.noto.app.util
 
 import android.content.Context
-import android.util.Base64
 import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.viewbinding.ViewBinding
@@ -18,18 +17,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import java.text.Collator
-import java.util.*
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
+import java.util.Locale
 import kotlin.time.Duration.Companion.days
 
 val LabelDefaultStrokeWidth = 2.dp
 const val LineSeparator = "\n\n"
 val SelectedLabelsComparator = compareByDescending<LabelItemModel> { it.isSelected }.thenBy { it.label.position }
-
-private const val HashAlgorithm = "PBKDF2WithHmacSHA1"
-private const val HashIterationCount = 65536
-private const val HashKeyLength = 128
 
 fun String?.firstLineOrEmpty() = this?.lines()?.firstOrNull()?.trim().orEmpty()
 
@@ -197,14 +190,6 @@ fun <K, V> Map<K?, V>.filterNotNullKeys() = filterKeys { it != null } as Map<K, 
 
 fun Map<Label, Boolean>.filterSelected() = filterValues { it }.map { it.key }
 fun List<LabelItemModel>.filterSelected() = filter { it.isSelected }.map { it.label }
-
-fun String.hash(): String {
-    val salt = ByteArray(16)
-    val spec = PBEKeySpec(this.toCharArray(), salt, HashIterationCount, HashKeyLength)
-    val factory = SecretKeyFactory.getInstance(HashAlgorithm)
-    val bytes = factory.generateSecret(spec).encoded
-    return Base64.encodeToString(bytes, Base64.DEFAULT)
-}
 
 val Folder.isGeneral
     get() = id == Folder.GeneralFolderId
