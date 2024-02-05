@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 @Entity(
@@ -28,6 +29,10 @@ data class LocalNoteLabel(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Long = 0L,
+
+    @Transient
+    @ColumnInfo(name = "remote_id")
+    val remoteId: String = "",
 
     @ColumnInfo(name = "note_id")
     val noteId: Long,
