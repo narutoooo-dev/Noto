@@ -33,16 +33,7 @@ class SupabaseNoteLabelClient(private val client: SupabaseClient) : RemoteNoteLa
             .insert(remoteNoteLabel)
     }
 
-    override suspend fun updateRemoteNoteLabel(remoteNoteLabel: RemoteNoteLabel) {
-        client.postgrest[SupabaseConstants.Tables.NoteLabels]
-            .update(remoteNoteLabel) {
-                filter {
-                    RemoteNoteLabel::id eq remoteNoteLabel.id
-                }
-            }
-    }
-
-    override suspend fun deleteNoteLabelBy(remoteNoteLabelId: String) {
+    override suspend fun deleteRemoteNoteLabelById(remoteNoteLabelId: String) {
         client.postgrest[SupabaseConstants.Tables.NoteLabels]
             .delete {
                 filter {

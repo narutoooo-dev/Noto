@@ -10,8 +10,6 @@ interface RemoteNoteLabelDataSource {
 
     suspend fun createRemoteNoteLabel(remoteNoteLabel: RemoteNoteLabel)
 
-    suspend fun updateRemoteNoteLabel(remoteNoteLabel: RemoteNoteLabel)
-
-    suspend fun deleteNoteLabelBy(remoteNoteLabelId: String)
+    suspend fun deleteRemoteNoteLabelById(remoteNoteLabelId: String)
 
 }
