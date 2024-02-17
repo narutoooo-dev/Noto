@@ -1,16 +1,35 @@
 package com.noto.app.data.model.mapper
 
+import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.data.model.local.LocalNoteLabel
 import com.noto.app.data.model.remote.RemoteNoteLabel
+import com.noto.app.domain.model.Label
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import java.util.UUID
 
 class NoteLabelMapper(
     private val localNoteDataSource: LocalNoteDataSource,
     private val localLabelDataSource: LocalLabelDataSource,
+    private val localNoteLabelDataSource: LocalNoteLabelDataSource,
+    private val labelMapper: LabelMapper,
 ) {
+
+    suspend fun mapDomainLabelToLocalNoteLabel(domainLabel: Label, localNoteId: Long): LocalNoteLabel {
+        return with(domainLabel) {
+            val localNoteLabel = localNoteLabelDataSource.getNoteLabelsByNoteId(localNoteId).firstOrNull()?.firstOrNull { it.labelId == id }
+            val remoteId = localNoteLabel?.remoteId ?: UUID.randomUUID().toString()
+            LocalNoteLabel(remoteId = remoteId, noteId = localNoteId, labelId = id)
+        }
+    }
+
+    suspend fun mapLocalNoteLabelToDomainLabel(localNoteLabel: LocalNoteLabel, localLabels: List<LocalLabel>): Label {
+        val localLabel = localLabels.first { label -> label.id == localNoteLabel.labelId }
+        return labelMapper.mapLocalLabelToDomainLabel(localLabel)
+    }
 
     suspend fun mapLocalNoteLabelToRemoteNoteLabel(localNoteLabel: LocalNoteLabel): RemoteNoteLabel {
         return with(localNoteLabel) {
