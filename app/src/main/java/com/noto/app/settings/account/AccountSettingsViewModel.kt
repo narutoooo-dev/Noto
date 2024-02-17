@@ -6,7 +6,6 @@ import com.noto.app.UiState
 import com.noto.app.components.material.TextFieldStatus
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.repository.*
-import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.toUiState
 import com.noto.app.util.Constants
 import kotlinx.coroutines.flow.*
@@ -17,7 +16,6 @@ class AccountSettingsViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
-    private val localNoteLabelDataSource: LocalNoteLabelDataSource,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -90,7 +88,6 @@ class AccountSettingsViewModel(
         folderRepository.clearFolders()
         noteRepository.clearNotes()
         labelRepository.clearLabels()
-        localNoteLabelDataSource.clearLocalNoteLabels()
         settingsRepository.clearSettings()
     }
 

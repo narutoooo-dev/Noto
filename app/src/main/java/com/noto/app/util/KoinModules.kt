@@ -137,7 +137,7 @@ object KoinModules {
 
         viewModel { VaultPasscodeViewModel(get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
 
-        viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get(), get()) }
+        viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get()) }
 
         viewModel { ReadingModeSettingsViewModel(get()) }
 

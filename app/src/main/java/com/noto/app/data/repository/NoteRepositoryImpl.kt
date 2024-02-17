@@ -106,6 +106,7 @@ class NoteRepositoryImpl(
 
     override suspend fun clearNotes() = withContext(coroutineDispatcher) {
         localNoteDataSource.clearLocalNotes()
+        localNoteLabelDataSource.clearLocalNoteLabels()
     }
 
     private suspend fun getNotePosition(folderId: Long) = withContext(coroutineDispatcher) {
