@@ -5,16 +5,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalNoteLabelDataSource {
 
-    fun getAllNoteLabels(): Flow<List<LocalNoteLabel>>
+    fun getAllLocalNoteLabels(): Flow<List<LocalNoteLabel>>
 
-    fun getNoteLabelsByNoteId(noteId: Long): Flow<List<LocalNoteLabel>>
+    fun getLocalNoteLabelsByNoteId(localNoteId: Long): Flow<List<LocalNoteLabel>>
 
-    fun getNoteLabelByRemoteId(remoteNoteLabelId: String): Flow<LocalNoteLabel?>
+    fun getLocalNoteLabelByRemoteId(remoteNoteLabelId: String): Flow<LocalNoteLabel?>
 
-    suspend fun createNoteLabel(noteLabel: LocalNoteLabel)
+    suspend fun createLocalNoteLabel(localNoteLabel: LocalNoteLabel)
 
-    suspend fun deleteNoteLabel(noteLabel: LocalNoteLabel)
+    suspend fun deleteLocalNoteLabel(localNoteLabel: LocalNoteLabel)
 
-    suspend fun clearNoteLabels()
+    suspend fun clearLocalNoteLabels()
 
 }

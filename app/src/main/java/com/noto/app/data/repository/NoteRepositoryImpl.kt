@@ -48,7 +48,7 @@ class NoteRepositoryImpl(
         localNoteDataSource.getLocalNoteById(noteId)
             .filterNotNull(),
         localLabelDataSource.getMainLocalLabels(),
-        localNoteLabelDataSource.getNoteLabelsByNoteId(noteId),
+        localNoteLabelDataSource.getLocalNoteLabelsByNoteId(noteId),
     ) { localNote, localLabels, localNoteLabels ->
         val localFolderLabels = localLabels.filter { it.folderId == localNote.folderId }
         val labels = localNoteLabels.map { localNoteLabel ->
@@ -65,7 +65,7 @@ class NoteRepositoryImpl(
             val localNoteId = localNoteDataSource.createLocalNote(localNote)
 
             val noteLabels = note.labels.map { label -> noteLabelMapper.mapDomainLabelToLocalNoteLabel(label, localNoteId) }
-            noteLabels.forEach { launch { localNoteLabelDataSource.createNoteLabel(it) } }
+            noteLabels.forEach { launch { localNoteLabelDataSource.createLocalNoteLabel(it) } }
 
             if (settingsRepository.isUserLoggedIn.first()) remoteNoteService.createRemoteNote(localNote.remoteId)
 
@@ -78,7 +78,7 @@ class NoteRepositoryImpl(
             val localNote = noteMapper.mapDomainNoteToLocalNote(note)
             localNoteDataSource.updateLocalNote(localNote)
 
-            val databaseNoteLabels = localNoteLabelDataSource.getNoteLabelsByNoteId(note.id).first()
+            val databaseNoteLabels = localNoteLabelDataSource.getLocalNoteLabelsByNoteId(note.id).first()
             val updatedNoteLabels = note.labels.map { noteLabelMapper.mapDomainLabelToLocalNoteLabel(it, note.id) }
             val databaseLabelIds = databaseNoteLabels.map { it.labelId }
             val updatedLabelIds = updatedNoteLabels.map { it.labelId }
@@ -87,8 +87,8 @@ class NoteRepositoryImpl(
             val oldRemoteNoteLabelIds = oldNoteLabels.map { it.remoteId }
             val newRemoteNoteLabelIds = newNoteLabels.map { it.remoteId }
 
-            oldNoteLabels.forEach { launch { localNoteLabelDataSource.deleteNoteLabel(it) } }
-            newNoteLabels.forEach { launch { localNoteLabelDataSource.createNoteLabel(it) } }
+            oldNoteLabels.forEach { launch { localNoteLabelDataSource.deleteLocalNoteLabel(it) } }
+            newNoteLabels.forEach { launch { localNoteLabelDataSource.createLocalNoteLabel(it) } }
 
             if (settingsRepository.isUserLoggedIn.first()) {
                 remoteNoteService.updateRemoteNote(localNote.remoteId, oldRemoteNoteLabelIds, newRemoteNoteLabelIds)
@@ -118,7 +118,7 @@ class NoteRepositoryImpl(
     private fun Flow<List<LocalNote>>.toDomainNotes(folderId: Long?): Flow<List<Note>> = combine(
         this,
         if (folderId != null) localLabelDataSource.getLocalLabelsByFolderId(folderId) else localLabelDataSource.getMainLocalLabels(),
-        localNoteLabelDataSource.getAllNoteLabels(),
+        localNoteLabelDataSource.getAllLocalNoteLabels(),
     ) { localNotes, localLabels, localNoteLabels ->
         localNotes.map { localNote ->
             val labels = localNoteLabels.filter { it.noteId == localNote.id }

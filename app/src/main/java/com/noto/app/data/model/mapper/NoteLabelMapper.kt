@@ -20,7 +20,7 @@ class NoteLabelMapper(
 
     suspend fun mapDomainLabelToLocalNoteLabel(domainLabel: Label, localNoteId: Long): LocalNoteLabel {
         return with(domainLabel) {
-            val localNoteLabel = localNoteLabelDataSource.getNoteLabelsByNoteId(localNoteId).firstOrNull()?.firstOrNull { it.labelId == id }
+            val localNoteLabel = localNoteLabelDataSource.getLocalNoteLabelsByNoteId(localNoteId).firstOrNull()?.firstOrNull { it.labelId == id }
             val remoteId = localNoteLabel?.remoteId ?: UUID.randomUUID().toString()
             LocalNoteLabel(remoteId = remoteId, noteId = localNoteId, labelId = id)
         }

@@ -16,7 +16,7 @@ class CreateRemoteNoteWorker(appContext: Context, workerParams: WorkerParameters
                 val localNote = localNoteDataSource.getLocalNoteByRemoteId(remoteNoteId).first()
                 if (localNote != null) {
                     val remoteNote = noteMapper.mapLocalNoteToRemoteNote(localNote)
-                    val localNoteLabels = localNoteLabelDataSource.getNoteLabelsByNoteId(localNote.id).first()
+                    val localNoteLabels = localNoteLabelDataSource.getLocalNoteLabelsByNoteId(localNote.id).first()
                     val remoteNoteLabels = localNoteLabels.map { noteLabelMapper.mapLocalNoteLabelToRemoteNoteLabel(it) }
                     remoteNoteDataSource.createRemoteNote(remoteNote)
                     remoteNoteLabels.forEach { remoteNoteLabelDataSource.createRemoteNoteLabel(it) }

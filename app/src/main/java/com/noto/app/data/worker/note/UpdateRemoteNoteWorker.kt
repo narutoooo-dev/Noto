@@ -20,7 +20,7 @@ class UpdateRemoteNoteWorker(appContext: Context, workerParams: WorkerParameters
                 if (localNote != null) {
                     val remoteNote = noteMapper.mapLocalNoteToRemoteNote(localNote)
                     val newLocalNoteLabels = newRemoteNoteLabelIds
-                        .mapNotNull { remoteNoteLabelId -> localNoteLabelDataSource.getNoteLabelByRemoteId(remoteNoteLabelId).first() }
+                        .mapNotNull { remoteNoteLabelId -> localNoteLabelDataSource.getLocalNoteLabelByRemoteId(remoteNoteLabelId).first() }
                         .map { noteLabelMapper.mapLocalNoteLabelToRemoteNoteLabel(it) }
                     remoteNoteDataSource.updateRemoteNote(remoteNote)
                     newLocalNoteLabels.forEach { remoteNoteLabelDataSource.createRemoteNoteLabel(it) }

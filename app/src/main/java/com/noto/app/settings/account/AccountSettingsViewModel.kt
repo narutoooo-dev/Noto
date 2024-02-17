@@ -90,7 +90,7 @@ class AccountSettingsViewModel(
         folderRepository.clearFolders()
         noteRepository.clearNotes()
         labelRepository.clearLabels()
-        localNoteLabelDataSource.clearNoteLabels()
+        localNoteLabelDataSource.clearLocalNoteLabels()
         settingsRepository.clearSettings()
     }
 

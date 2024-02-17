@@ -272,7 +272,7 @@ class SettingsRepositoryImpl(
             val folders = localFolderDataSource.getAllLocalFolders().first()
             val notes = localNoteDataSource.getAllLocalNotes().first()
             val labels = localLabelDataSource.getAllLocalLabels().first()
-            val noteLabels = localNoteLabelDataSource.getAllNoteLabels().first()
+            val noteLabels = localNoteLabelDataSource.getAllLocalNoteLabels().first()
             val config = config.first()
             val data = LocalNotoData(folders, notes, labels, noteLabels, config)
             jsonConverter.encodeToString(data)
@@ -337,7 +337,7 @@ class SettingsRepositoryImpl(
                 noteLabels.forEach { noteLabel ->
                     val noteId = noteIds.getValue(noteLabel.noteId)
                     val labelId = labelIds.getValue(noteLabel.labelId)
-                    localNoteLabelDataSource.createNoteLabel(noteLabel.copy(id = 0, noteId = noteId, labelId = labelId))
+                    localNoteLabelDataSource.createLocalNoteLabel(noteLabel.copy(id = 0, noteId = noteId, labelId = labelId))
                 }
                 updateConfig(settings)
             }
