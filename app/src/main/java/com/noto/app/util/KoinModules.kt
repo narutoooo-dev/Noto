@@ -18,6 +18,7 @@ import com.noto.app.crypto.salt.SecureRandomSaltGenerator
 import com.noto.app.crypto.tink.TinkAesCryptoManager
 import com.noto.app.crypto.tink.TinkCryptoManager
 import com.noto.app.crypto.tink.TinkEncryptionHandler
+import com.noto.app.data.GeneralFolderHandler
 import com.noto.app.data.cache.*
 import com.noto.app.data.database.NotoDatabase
 import com.noto.app.data.model.mapper.*
@@ -196,6 +197,8 @@ object KoinModules {
 
         single<CoroutineDispatcher>(Qualifiers.CoroutineDispatcher) { Dispatchers.IO }
 
+        single<GeneralFolderHandler> { GeneralFolderHandler(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
     }
 
     val LocalDataSource = module {
@@ -311,7 +314,7 @@ object KoinModules {
 
     val CacheHandler = module {
 
-        single<RemoteItemCacheHandler<RemoteFolder>>(Qualifiers.RemoteFolderCacheHandler) { RemoteFolderCacheHandler(get(), get()) }
+        single<RemoteItemCacheHandler<RemoteFolder>>(Qualifiers.RemoteFolderCacheHandler) { RemoteFolderCacheHandler(get(), get(), get()) }
 
         single<RemoteItemCacheHandler<RemoteNote>>(Qualifiers.RemoteNoteCacheHandler) { RemoteNoteCacheHandler(get(), get()) }
 

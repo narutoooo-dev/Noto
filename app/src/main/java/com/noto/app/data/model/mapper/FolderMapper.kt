@@ -1,7 +1,7 @@
 package com.noto.app.data.model.mapper
 
-import com.noto.app.crypto.tink.TinkEncryptionHandler
 import com.noto.app.crypto.tink.TinkCryptoManager
+import com.noto.app.crypto.tink.TinkEncryptionHandler
 import com.noto.app.data.model.local.LocalFolder
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.domain.model.Folder
@@ -22,11 +22,11 @@ class FolderMapper(
     private val propertyMapper: PropertyMapper,
 ) {
 
-    suspend fun mapDomainFolderToLocalFolder(domainFolder: Folder): LocalFolder {
+    suspend fun mapDomainFolderToLocalFolder(domainFolder: Folder, forceGenerateEncryptedKeyset: Boolean = false): LocalFolder {
         return with(domainFolder) {
             val localFolder = localFolderDataSource.getLocalFolderById(id).firstOrNull()
             val remoteId = localFolder?.remoteId ?: UUID.randomUUID().toString()
-            val keyset = if (settingsRepository.isUserLoggedIn.first()) {
+            val keyset = if (settingsRepository.isUserLoggedIn.first() || forceGenerateEncryptedKeyset) {
                 localFolder?.keyset ?: tinkCryptoManager.keysetGenerator.generateEncryptedKeyset()
             } else {
                 null
