@@ -31,7 +31,7 @@ class AndroidRemoteLabelService(context: Context) : RemoteLabelService, AndroidR
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(CreateRemoteLabelWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteLabelId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun updateRemoteLabel(remoteLabelId: String) {
@@ -40,7 +40,7 @@ class AndroidRemoteLabelService(context: Context) : RemoteLabelService, AndroidR
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(UpdateRemoteLabelWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteLabelId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun deleteRemoteLabel(remoteLabelId: String) {
@@ -49,14 +49,11 @@ class AndroidRemoteLabelService(context: Context) : RemoteLabelService, AndroidR
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(DeleteRemoteLabelWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteLabelId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     private companion object {
         private const val GetRemoteLabelsWorkName = "GetRemoteLabels"
-        private const val CreateRemoteLabelWorkName = "CreateRemoteLabel"
-        private const val UpdateRemoteLabelWorkName = "UpdateRemoteLabel"
-        private const val DeleteRemoteLabelWorkName = "DeleteRemoteLabel"
     }
 
 }

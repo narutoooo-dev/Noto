@@ -22,17 +22,17 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
 
     override fun createRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<CreateRemoteFolderWorker>(remoteFolderId)
-        workManager.enqueueUniqueWork(CreateRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun updateRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<UpdateRemoteFolderWorker>(remoteFolderId)
-        workManager.enqueueUniqueWork(UpdateRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun deleteRemoteFolder(remoteFolderId: String) {
         val workRequest = createOneTimeRequest<DeleteRemoteFolderWorker>(remoteFolderId)
-        workManager.enqueueUniqueWork(DeleteRemoteFolderWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteFolderId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     private inline fun <reified W : ListenableWorker> createOneTimeRequest(remoteFolderId: String): OneTimeWorkRequest {
@@ -48,9 +48,6 @@ class AndroidRemoteFolderService(context: Context) : RemoteFolderService, Androi
 
     private companion object {
         private const val GetRemoteFoldersWorkName = "GetRemoteFolders"
-        private const val CreateRemoteFolderWorkName = "CreateRemoteFolder"
-        private const val UpdateRemoteFolderWorkName = "UpdateRemoteFolder"
-        private const val DeleteRemoteFolderWorkName = "DeleteRemoteFolder"
     }
 
 }
