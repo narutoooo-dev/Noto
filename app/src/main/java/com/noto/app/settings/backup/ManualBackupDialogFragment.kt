@@ -123,7 +123,6 @@ class ManualBackupDialogFragment : BaseDialogFragment() {
                         }
 
                         else -> {
-                            state.exception.printStackTrace()
                             parentView?.snackbar(context.stringResource(R.string.something_went_wrong), R.drawable.ic_round_error_24)
                         }
                     }
