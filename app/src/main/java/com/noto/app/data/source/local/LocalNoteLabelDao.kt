@@ -17,6 +17,9 @@ interface LocalNoteLabelDao : LocalNoteLabelDataSource {
     @Query("SELECT * FROM note_labels WHERE note_id = :noteId")
     override fun getNoteLabelsByNoteId(noteId: Long): Flow<List<LocalNoteLabel>>
 
+    @Query("SELECT * FROM note_labels WHERE remote_id = :remoteNoteLabelId")
+    override fun getNoteLabelByRemoteId(remoteNoteLabelId: String): Flow<LocalNoteLabel?>
+
     @Insert
     override suspend fun createNoteLabel(noteLabel: LocalNoteLabel)
 

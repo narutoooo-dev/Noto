@@ -9,6 +9,8 @@ interface LocalNoteLabelDataSource {
 
     fun getNoteLabelsByNoteId(noteId: Long): Flow<List<LocalNoteLabel>>
 
+    fun getNoteLabelByRemoteId(remoteNoteLabelId: String): Flow<LocalNoteLabel?>
+
     suspend fun createNoteLabel(noteLabel: LocalNoteLabel)
 
     suspend fun deleteNoteLabel(noteLabel: LocalNoteLabel)
