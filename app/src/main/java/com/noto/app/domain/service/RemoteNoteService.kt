@@ -8,7 +8,7 @@ interface RemoteNoteService {
 
     fun createRemoteNote(remoteNoteId: String)
 
-    fun updateRemoteNote(remoteNoteId: String)
+    fun updateRemoteNote(remoteNoteId: String, oldRemoteNoteLabelIds: List<String>, newRemoteNoteLabelIds: List<String>)
 
     fun deleteRemoteNote(remoteNoteId: String)
 

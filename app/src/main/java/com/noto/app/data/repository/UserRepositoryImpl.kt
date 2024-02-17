@@ -6,6 +6,7 @@ import com.noto.app.data.cache.RemoteItemCacheHandler
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.data.model.remote.RemoteLabel
 import com.noto.app.data.model.remote.RemoteNote
+import com.noto.app.data.model.remote.RemoteNoteLabel
 import com.noto.app.domain.OtpType
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.User
@@ -22,6 +23,7 @@ class UserRepositoryImpl(
     private val remoteFolderDataSource: RemoteFolderDataSource,
     private val remoteNoteDataSource: RemoteNoteDataSource,
     private val remoteLabelDataSource: RemoteLabelDataSource,
+    private val remoteNoteLabelDataSource: RemoteNoteLabelDataSource,
     private val settingsRepository: SettingsRepository,
     private val accountPasswordKeyGenerator: Argon2KeyGenerator,
     private val accountKekGenerator: Argon2KeyGenerator,
@@ -29,6 +31,7 @@ class UserRepositoryImpl(
     private val remoteFolderCacheHandler: RemoteItemCacheHandler<RemoteFolder>,
     private val remoteNoteCacheHandler: RemoteItemCacheHandler<RemoteNote>,
     private val remoteLabelCacheHandler: RemoteItemCacheHandler<RemoteLabel>,
+    private val remoteNoteLabelCacheHandler: RemoteItemCacheHandler<RemoteNoteLabel>,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) : UserRepository {
 
@@ -135,6 +138,7 @@ class UserRepositoryImpl(
         remoteFolderDataSource.getAllRemoteFolders().also { remoteFolderCacheHandler.cacheRemoteItems(it) }
         remoteNoteDataSource.getAllRemoteNotes().also { remoteNoteCacheHandler.cacheRemoteItems(it) }
         remoteLabelDataSource.getAllRemoteLabels().also { remoteLabelCacheHandler.cacheRemoteItems(it) }
+        remoteNoteLabelDataSource.getAllRemoteNoteLabels().also { remoteNoteLabelCacheHandler.cacheRemoteItems(it) }
     }
 
 }

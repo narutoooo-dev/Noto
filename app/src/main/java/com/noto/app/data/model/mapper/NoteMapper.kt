@@ -1,9 +1,9 @@
 package com.noto.app.data.model.mapper
 
 import com.noto.app.crypto.tink.TinkEncryptionHandler
-import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.data.model.local.LocalNote
 import com.noto.app.data.model.remote.RemoteNote
+import com.noto.app.domain.model.Label
 import com.noto.app.domain.model.Note
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
@@ -15,7 +15,6 @@ class NoteMapper(
     private val localFolderDataSource: LocalFolderDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
     private val tinkEncryptionHandler: TinkEncryptionHandler,
-    private val labelMapper: LabelMapper,
     private val propertyMapper: PropertyMapper,
 ) {
 
@@ -41,9 +40,8 @@ class NoteMapper(
         }
     }
 
-    suspend fun mapLocalNoteToDomainNote(localNote: LocalNote, localLabels: List<LocalLabel>): Note {
+    suspend fun mapLocalNoteToDomainNote(localNote: LocalNote, labels: List<Label>): Note {
         return with(localNote) {
-            val labels = localLabels.map { labelMapper.mapLocalLabelToDomainLabel(it) }
             Note(
                 id = id,
                 folderId = folderId,

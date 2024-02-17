@@ -18,18 +18,13 @@ import com.noto.app.crypto.salt.SecureRandomSaltGenerator
 import com.noto.app.crypto.tink.TinkAesCryptoManager
 import com.noto.app.crypto.tink.TinkCryptoManager
 import com.noto.app.crypto.tink.TinkEncryptionHandler
-import com.noto.app.data.cache.RemoteFolderCacheHandler
-import com.noto.app.data.cache.RemoteItemCacheHandler
-import com.noto.app.data.cache.RemoteLabelCacheHandler
-import com.noto.app.data.cache.RemoteNoteCacheHandler
+import com.noto.app.data.cache.*
 import com.noto.app.data.database.NotoDatabase
-import com.noto.app.data.model.mapper.FolderMapper
-import com.noto.app.data.model.mapper.LabelMapper
-import com.noto.app.data.model.mapper.NoteMapper
-import com.noto.app.data.model.mapper.PropertyMapper
+import com.noto.app.data.model.mapper.*
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.data.model.remote.RemoteLabel
 import com.noto.app.data.model.remote.RemoteNote
+import com.noto.app.data.model.remote.RemoteNoteLabel
 import com.noto.app.data.repository.*
 import com.noto.app.data.service.AndroidRemoteFolderService
 import com.noto.app.data.service.AndroidRemoteLabelService
@@ -99,6 +94,7 @@ object KoinModules {
         val RemoteFolderCacheHandler = qualifier("RemoteFolderCacheHandler")
         val RemoteNoteCacheHandler = qualifier("RemoteNoteCacheHandler")
         val RemoteLabelCacheHandler = qualifier("RemoteLabelCacheHandler")
+        val RemoteNoteLabelCacheHandler = qualifier("RemoteNoteLabelCacheHandler")
         val AccountPasswordKeyGenerator = qualifier("AccountPasswordKeyGenerator")
         val AccountKekGenerator = qualifier("AccountKekGenerator")
         val VaultPasscodeKeyGenerator = qualifier("VaultPasscodeKeyGenerator")
@@ -159,7 +155,7 @@ object KoinModules {
 
         single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
@@ -186,12 +182,14 @@ object KoinModules {
                 get(),
                 get(),
                 get(),
+                get(),
                 get(Qualifiers.AccountPasswordKeyGenerator),
                 get(Qualifiers.AccountKekGenerator),
                 get(),
                 get(Qualifiers.RemoteFolderCacheHandler),
                 get(Qualifiers.RemoteNoteCacheHandler),
                 get(Qualifiers.RemoteLabelCacheHandler),
+                get(Qualifiers.RemoteNoteLabelCacheHandler),
                 get(Qualifiers.CoroutineDispatcher),
             )
         }
@@ -250,6 +248,8 @@ object KoinModules {
 
         single<RemoteLabelDataSource> { SupabaseLabelClient(get()) }
 
+        single<RemoteNoteLabelDataSource> { SupabaseNoteLabelClient(get()) }
+
     }
 
     val Crypto = module {
@@ -299,9 +299,11 @@ object KoinModules {
 
         single<FolderMapper> { FolderMapper(get(), get(), get(), get(), get(), get()) }
 
-        single<NoteMapper> { NoteMapper(get(), get(), get(), get(), get()) }
+        single<NoteMapper> { NoteMapper(get(), get(), get(), get()) }
 
         single<LabelMapper> { LabelMapper(get(), get(), get(), get()) }
+
+        single<NoteLabelMapper> { NoteLabelMapper(get(), get(), get(), get()) }
 
         single<PropertyMapper> { PropertyMapper() }
 
@@ -314,6 +316,8 @@ object KoinModules {
         single<RemoteItemCacheHandler<RemoteNote>>(Qualifiers.RemoteNoteCacheHandler) { RemoteNoteCacheHandler(get(), get()) }
 
         single<RemoteItemCacheHandler<RemoteLabel>>(Qualifiers.RemoteLabelCacheHandler) { RemoteLabelCacheHandler(get(), get()) }
+
+        single<RemoteItemCacheHandler<RemoteNoteLabel>>(Qualifiers.RemoteNoteLabelCacheHandler) { RemoteNoteLabelCacheHandler(get(), get()) }
 
     }
 

@@ -1,10 +1,7 @@
 package com.noto.app.data.service
 
 import android.content.Context
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
+import androidx.work.*
 import com.noto.app.data.worker.RemoteItemWorker
 import com.noto.app.data.worker.note.CreateRemoteNoteWorker
 import com.noto.app.data.worker.note.DeleteRemoteNoteWorker
@@ -40,16 +37,20 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(CreateRemoteNoteWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteNoteId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
-    override fun updateRemoteNote(remoteNoteId: String) {
-        val workData = workDataOf(RemoteItemWorker.RemoteNoteId to remoteNoteId)
+    override fun updateRemoteNote(remoteNoteId: String, oldRemoteNoteLabelIds: List<String>, newRemoteNoteLabelIds: List<String>) {
+        val workData = workDataOf(
+            RemoteItemWorker.RemoteNoteId to remoteNoteId,
+            RemoteItemWorker.OldRemoteNoteLabelIds to oldRemoteNoteLabelIds.toTypedArray(),
+            RemoteItemWorker.NewRemoteNoteLabelIds to newRemoteNoteLabelIds.toTypedArray(),
+        )
         val workRequest = OneTimeWorkRequestBuilder<UpdateRemoteNoteWorker>()
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(UpdateRemoteNoteWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteNoteId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     override fun deleteRemoteNote(remoteNoteId: String) {
@@ -58,15 +59,12 @@ class AndroidRemoteNoteService(context: Context) : RemoteNoteService, AndroidRem
             .setConstraints(buildConstraints())
             .setInputData(workData)
             .build()
-        workManager.enqueueUniqueWork(DeleteRemoteNoteWorkName, ExistingWorkPolicy.APPEND, workRequest)
+        workManager.enqueueUniqueWork(remoteNoteId, ExistingWorkPolicy.APPEND, workRequest)
     }
 
     private companion object {
         private const val GetAllRemoteNotesWorkName = "GetAllRemoteNotes"
         private const val GetRemoteNotesWorkName = "GetRemoteNotes"
-        private const val CreateRemoteNoteWorkName = "CreateRemoteNote"
-        private const val UpdateRemoteNoteWorkName = "UpdateRemoteNote"
-        private const val DeleteRemoteNoteWorkName = "DeleteRemoteNote"
     }
 
 }
