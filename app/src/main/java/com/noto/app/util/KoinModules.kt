@@ -333,7 +333,7 @@ object KoinModules {
 
         single<FolderSyncService> { FolderSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<NoteSyncService> { NoteSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<NoteSyncService> { NoteSyncService(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<LabelSyncService> { LabelSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 

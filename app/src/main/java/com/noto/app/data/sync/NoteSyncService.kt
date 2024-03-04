@@ -1,8 +1,11 @@
 package com.noto.app.data.sync
 
+import com.noto.app.data.model.mapper.NoteLabelMapper
 import com.noto.app.data.model.mapper.NoteMapper
 import com.noto.app.domain.source.local.LocalNoteDataSource
+import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.domain.source.remote.RemoteNoteDataSource
+import com.noto.app.domain.source.remote.RemoteNoteLabelDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.filter
@@ -13,8 +16,11 @@ import kotlinx.coroutines.withContext
 
 class NoteSyncService(
     private val remoteNoteDataSource: RemoteNoteDataSource,
+    private val remoteNoteLabelDataSource: RemoteNoteLabelDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
+    private val localNoteLabelDataSource: LocalNoteLabelDataSource,
     private val noteMapper: NoteMapper,
+    private val noteLabelMapper: NoteLabelMapper,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) {
 
@@ -22,16 +28,22 @@ class NoteSyncService(
         coroutineScope {
             withContext(coroutineDispatcher) {
                 launch { initCreateNoteListener() }
+                launch { initCreateNoteLabelListener() }
                 launch { initUpdateNoteListener() }
                 launch { initDeleteNoteListener() }
+                launch { initDeleteNoteLabelListener() }
                 launch { remoteNoteDataSource.subscribeToRemoteNoteListeners() }
+                launch { remoteNoteLabelDataSource.subscribeToRemoteNoteLabelListeners() }
             }
         }
     }
 
     suspend fun stopNoteSyncService() {
-        withContext(coroutineDispatcher) {
-            remoteNoteDataSource.unsubscribeToRemoteNoteListeners()
+        coroutineScope {
+            withContext(coroutineDispatcher) {
+                launch { remoteNoteDataSource.unsubscribeToRemoteNoteListeners() }
+                launch { remoteNoteLabelDataSource.unsubscribeToRemoteNoteLabelListeners() }
+            }
         }
     }
 
@@ -60,6 +72,22 @@ class NoteSyncService(
         withContext(coroutineDispatcher) {
             remoteNoteDataSource.deleteRemoteNoteListener()
                 .collect(localNoteDataSource::deleteLocalNoteByRemoteId)
+        }
+    }
+
+    private suspend fun initCreateNoteLabelListener() {
+        withContext(coroutineDispatcher) {
+            remoteNoteLabelDataSource.createRemoteNoteLabelListener()
+                .map(noteLabelMapper::mapRemoteNoteLabelToLocalNoteLabel)
+                .filter { localNoteLabelDataSource.getLocalNoteLabelByRemoteId(it.remoteId).first() == null }
+                .collect(localNoteLabelDataSource::createLocalNoteLabel)
+        }
+    }
+
+    private suspend fun initDeleteNoteLabelListener() {
+        withContext(coroutineDispatcher) {
+            remoteNoteLabelDataSource.deleteRemoteNoteLabelListener()
+                .collect(localNoteLabelDataSource::deleteLocalNoteLabelByRemoteId)
         }
     }
 

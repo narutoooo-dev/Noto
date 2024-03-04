@@ -54,6 +54,11 @@ data object SupabaseConstants {
             const val Delete = "delete_label"
         }
 
+        data object NoteLabel {
+            const val Insert = "insert_note_label"
+            const val Delete = "delete_note_label"
+        }
+
     }
 
 }
