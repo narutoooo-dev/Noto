@@ -32,6 +32,9 @@ interface LocalLabelDao : LocalLabelDataSource {
     @Delete
     override suspend fun deleteLocalLabel(localLabel: LocalLabel)
 
+    @Query("DELETE FROM labels WHERE remote_id = :remoteLabelId")
+    override suspend fun deleteLocalLabelByRemoteId(remoteLabelId: String)
+
     @Query("DELETE FROM labels")
     override suspend fun clearLabels()
 
