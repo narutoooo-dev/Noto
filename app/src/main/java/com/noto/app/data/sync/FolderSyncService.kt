@@ -23,6 +23,7 @@ class FolderSyncService(
             withContext(coroutineDispatcher) {
                 launch { initCreateFolderListener() }
                 launch { initUpdateFolderListener() }
+                launch { initDeleteFolderListener() }
                 launch { remoteFolderDataSource.subscribeToRemoteFolderListeners() }
             }
         }
@@ -52,6 +53,13 @@ class FolderSyncService(
                     it.copy(id = localId)
                 }
                 .collect(localFolderDataSource::updateLocalFolder)
+        }
+    }
+
+    private suspend fun initDeleteFolderListener() {
+        withContext(coroutineDispatcher) {
+            remoteFolderDataSource.deleteRemoteFolderListener()
+                .collect(localFolderDataSource::deleteLocalFolderByRemoteId)
         }
     }
 

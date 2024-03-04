@@ -2,6 +2,7 @@ package com.noto.app.data.source.remote
 
 data object SupabaseConstants {
 
+    const val Id = "id"
     const val Name = "name"
     const val Email = "email"
     const val PasswordParameters = "password_parameters"
@@ -38,6 +39,7 @@ data object SupabaseConstants {
         data object Folder {
             const val Insert = "insert_folder"
             const val Update = "update_folder"
+            const val Delete = "delete_folder"
         }
 
     }

@@ -8,11 +8,13 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.jsonPrimitive
 
 class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDataSource {
 
     private val insertFolderChannel by lazy { client.realtime.channel(SupabaseConstants.RealtimeChannelIds.Folder.Insert) }
     private val updateFolderChannel by lazy { client.realtime.channel(SupabaseConstants.RealtimeChannelIds.Folder.Update) }
+    private val deleteFolderChannel by lazy { client.realtime.channel(SupabaseConstants.RealtimeChannelIds.Folder.Delete) }
 
     override suspend fun getAllRemoteFolders(): List<RemoteFolder> {
         return tryCatching {
@@ -49,11 +51,13 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
         client.realtime.connect()
         insertFolderChannel.subscribe()
         updateFolderChannel.subscribe()
+        deleteFolderChannel.subscribe()
     }
 
     override suspend fun unsubscribeToRemoteFolderListeners() {
         insertFolderChannel.unsubscribe()
         updateFolderChannel.unsubscribe()
+        deleteFolderChannel.unsubscribe()
         client.realtime.disconnect()
     }
 
@@ -67,6 +71,12 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
         return updateFolderChannel.postgresChangeFlow<PostgresAction.Update>(SupabaseConstants.Schemas.Public) {
             table = SupabaseConstants.Tables.Folders
         }.map { it.decodeRecord<RemoteFolder>() }
+    }
+
+    override suspend fun deleteRemoteFolderListener(): Flow<String> {
+        return deleteFolderChannel.postgresChangeFlow<PostgresAction.Delete>(SupabaseConstants.Schemas.Public) {
+            table = SupabaseConstants.Tables.Folders
+        }.map { it.oldRecord.getValue(SupabaseConstants.Id).jsonPrimitive.content }
     }
 
 }

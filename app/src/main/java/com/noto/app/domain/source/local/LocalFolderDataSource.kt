@@ -27,6 +27,8 @@ interface LocalFolderDataSource {
 
     suspend fun deleteLocalFolder(folder: LocalFolder)
 
+    suspend fun deleteLocalFolderByRemoteId(remoteFolderId: String)
+
     suspend fun clearLocalFolders()
 
 }

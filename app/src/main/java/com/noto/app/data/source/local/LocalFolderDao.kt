@@ -41,6 +41,10 @@ interface LocalFolderDao : LocalFolderDataSource {
     @Delete
     override suspend fun deleteLocalFolder(folder: LocalFolder)
 
+    @Query("DELETE FROM folders WHERE remote_id = :remoteFolderId")
+    override suspend fun deleteLocalFolderByRemoteId(remoteFolderId: String)
+
     @Query("DELETE FROM folders")
     override suspend fun clearLocalFolders()
+
 }
