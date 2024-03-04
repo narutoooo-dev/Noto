@@ -5,8 +5,13 @@ import com.noto.app.domain.model.tryCatching
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.realtime.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDataSource {
+
+    private val insertFolderChannel by lazy { client.realtime.channel(SupabaseConstants.RealtimeChannelIds.Folder.Insert) }
 
     override suspend fun getAllRemoteFolders(): List<RemoteFolder> {
         return tryCatching {
@@ -37,6 +42,22 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
                     RemoteFolder::id eq remoteFolderId
                 }
             }
+    }
+
+    override suspend fun subscribeToRemoteFolderListeners() {
+        client.realtime.connect()
+        insertFolderChannel.subscribe()
+    }
+
+    override suspend fun unsubscribeToRemoteFolderListeners() {
+        insertFolderChannel.unsubscribe()
+        client.realtime.disconnect()
+    }
+
+    override suspend fun createRemoteFolderListener(): Flow<RemoteFolder> {
+        return insertFolderChannel.postgresChangeFlow<PostgresAction.Insert>(SupabaseConstants.Schemas.Public) {
+            table = SupabaseConstants.Tables.Folders
+        }.map { it.decodeRecord<RemoteFolder>() }
     }
 
 }

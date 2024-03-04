@@ -29,4 +29,16 @@ data object SupabaseConstants {
         const val NotoVerifyEmail = "https://noto.dev/verify"
     }
 
+    data object Schemas {
+        const val Public = "public"
+    }
+
+    data object RealtimeChannelIds {
+
+        data object Folder {
+            const val Insert = "insert_folder"
+        }
+
+    }
+
 }

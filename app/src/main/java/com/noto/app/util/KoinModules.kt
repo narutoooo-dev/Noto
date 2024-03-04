@@ -32,6 +32,7 @@ import com.noto.app.data.service.AndroidRemoteLabelService
 import com.noto.app.data.service.AndroidRemoteNoteService
 import com.noto.app.data.source.local.LocalSettingsDataSource
 import com.noto.app.data.source.remote.*
+import com.noto.app.data.sync.FolderSyncService
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
 import com.noto.app.domain.service.RemoteFolderService
@@ -71,6 +72,7 @@ import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
@@ -110,7 +112,7 @@ object KoinModules {
 
         viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
-        viewModel { AppViewModel(get(), get(), get()) }
+        viewModel { AppViewModel(get(), get(), get(), get()) }
 
         viewModel { SettingsViewModel(get()) }
 
@@ -236,6 +238,9 @@ object KoinModules {
                     host = SupabaseConstants.URLs.NotoHost
                 }
                 install(Postgrest)
+                install(Realtime) {
+                    connectOnSubscribe = false
+                }
             }
         }
 
@@ -321,6 +326,12 @@ object KoinModules {
         single<RemoteItemCacheHandler<RemoteLabel>>(Qualifiers.RemoteLabelCacheHandler) { RemoteLabelCacheHandler(get(), get()) }
 
         single<RemoteItemCacheHandler<RemoteNoteLabel>>(Qualifiers.RemoteNoteLabelCacheHandler) { RemoteNoteLabelCacheHandler(get(), get()) }
+
+    }
+
+    val SyncService = module {
+
+        single<FolderSyncService> { FolderSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 

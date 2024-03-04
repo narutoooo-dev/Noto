@@ -37,3 +37,4 @@
 -keepclassmembers class com.noto.app.domain.model.<1>$Companion {
     kotlinx.serialization.KSerializer serializer(...);
 }
+-dontwarn org.slf4j.impl.StaticLoggerBinder

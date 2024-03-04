@@ -102,7 +102,7 @@ tink-android = "1.12.0"
 
 ui-util = "1.1.0"
 
-supabase = "2.0.4"
+supabase = "2.1.5"
 
 [libraries]
 
@@ -237,5 +237,7 @@ bcprov-jdk18on = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.
 supabase-gotrue = { group = "io.github.jan-tennert.supabase", name = "gotrue-kt", version.ref = "supabase" }
 
 supabase-postgrest = { group = "io.github.jan-tennert.supabase", name = "postgrest-kt", version.ref = "supabase" }
+
+supabase-realtime = { group = "io.github.jan-tennert.supabase", name = "realtime-kt", version.ref = "supabase" }
 
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }

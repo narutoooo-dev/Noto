@@ -2,6 +2,7 @@ package com.noto.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.noto.app.data.sync.FolderSyncService
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
@@ -11,6 +12,7 @@ import com.noto.app.util.firstLineOrEmpty
 import com.noto.app.util.isGeneral
 import com.noto.app.util.takeAfterFirstLineOrEmpty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -24,6 +26,7 @@ class AppViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val settingsRepository: SettingsRepository,
+    private val folderSyncService: FolderSyncService,
 ) : ViewModel() {
 
     val userStatus = settingsRepository.userStatus
@@ -75,6 +78,8 @@ class AppViewModel(
 
     var currentTheme: Theme? = null
         private set
+
+    private var syncServicesJob: Job? = null
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val quickNoteFolder = settingsRepository.quickNoteFolderId
@@ -135,6 +140,19 @@ class AppViewModel(
 
     fun setQuickNote(noteId: Long) = viewModelScope.launch {
         mutableQuickNote.value = noteRepository.getNoteById(noteId).first()
+    }
+
+    fun startSyncServices() {
+        syncServicesJob = viewModelScope.launch {
+            folderSyncService.startFolderSyncService()
+        }
+    }
+
+    fun stopSyncServices() {
+        syncServicesJob?.cancel()
+        viewModelScope.launch {
+            folderSyncService.stopFolderSyncService()
+        }
     }
 
 }

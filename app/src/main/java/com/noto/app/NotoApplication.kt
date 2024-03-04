@@ -28,6 +28,7 @@ class NotoApplication : Application() {
                 KoinModules.LocalBackup,
                 KoinModules.Mapper,
                 KoinModules.CacheHandler,
+                KoinModules.SyncService,
             )
         }
     }

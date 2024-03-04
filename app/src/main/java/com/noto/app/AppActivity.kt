@@ -5,12 +5,15 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.eventFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -26,6 +29,7 @@ import com.noto.app.settings.backup.AutoBackupWorker
 import com.noto.app.util.*
 import com.noto.app.vault.VaultTimeoutWorker
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -53,6 +57,8 @@ class AppActivity : BaseActivity() {
     private val navController by lazy { navHostFragment.navController }
 
     private val workManager by lazy { WorkManager.getInstance(this) }
+
+    private val connectivityManager by lazy { getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -302,6 +308,24 @@ class AppActivity : BaseActivity() {
             } else {
                 workManager.cancelUniqueWork(Constants.AutoBackup)
                 viewModel.setScheduledAutoBackupDuration(null)
+            }
+        }.launchIn(lifecycleScope)
+
+        combine(
+            viewModel.userStatus.distinctUntilChanged(),
+            connectivityManager.isNetworkAvailableAsFlow(),
+            lifecycle.eventFlow.distinctUntilChanged(),
+        ) { userStatus, isNetworkAvailable, lifecycleEvent ->
+            if (lifecycleEvent == Lifecycle.Event.ON_START) {
+                if (userStatus == UserStatus.LoggedIn) {
+                    if (isNetworkAvailable) {
+                        viewModel.startSyncServices()
+                    } else {
+                        viewModel.stopSyncServices()
+                    }
+                }
+            } else if (lifecycleEvent == Lifecycle.Event.ON_STOP) {
+                viewModel.stopSyncServices()
             }
         }.launchIn(lifecycleScope)
     }
