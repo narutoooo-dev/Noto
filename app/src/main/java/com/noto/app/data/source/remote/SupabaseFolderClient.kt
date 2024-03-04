@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDataSource {
 
     private val insertFolderChannel by lazy { client.realtime.channel(SupabaseConstants.RealtimeChannelIds.Folder.Insert) }
+    private val updateFolderChannel by lazy { client.realtime.channel(SupabaseConstants.RealtimeChannelIds.Folder.Update) }
 
     override suspend fun getAllRemoteFolders(): List<RemoteFolder> {
         return tryCatching {
@@ -47,15 +48,23 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
     override suspend fun subscribeToRemoteFolderListeners() {
         client.realtime.connect()
         insertFolderChannel.subscribe()
+        updateFolderChannel.subscribe()
     }
 
     override suspend fun unsubscribeToRemoteFolderListeners() {
         insertFolderChannel.unsubscribe()
+        updateFolderChannel.unsubscribe()
         client.realtime.disconnect()
     }
 
     override suspend fun createRemoteFolderListener(): Flow<RemoteFolder> {
         return insertFolderChannel.postgresChangeFlow<PostgresAction.Insert>(SupabaseConstants.Schemas.Public) {
+            table = SupabaseConstants.Tables.Folders
+        }.map { it.decodeRecord<RemoteFolder>() }
+    }
+
+    override suspend fun updateRemoteFolderListener(): Flow<RemoteFolder> {
+        return updateFolderChannel.postgresChangeFlow<PostgresAction.Update>(SupabaseConstants.Schemas.Public) {
             table = SupabaseConstants.Tables.Folders
         }.map { it.decodeRecord<RemoteFolder>() }
     }

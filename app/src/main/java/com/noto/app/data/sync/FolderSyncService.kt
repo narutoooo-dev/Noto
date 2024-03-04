@@ -22,6 +22,7 @@ class FolderSyncService(
         coroutineScope {
             withContext(coroutineDispatcher) {
                 launch { initCreateFolderListener() }
+                launch { initUpdateFolderListener() }
                 launch { remoteFolderDataSource.subscribeToRemoteFolderListeners() }
             }
         }
@@ -39,6 +40,18 @@ class FolderSyncService(
                 .map(folderMapper::mapRemoteFolderToLocalFolder)
                 .filter { localFolderDataSource.getLocalFolderByRemoteId(it.remoteId).first() == null }
                 .collect(localFolderDataSource::createLocalFolder)
+        }
+    }
+
+    private suspend fun initUpdateFolderListener() {
+        withContext(coroutineDispatcher) {
+            remoteFolderDataSource.updateRemoteFolderListener()
+                .map(folderMapper::mapRemoteFolderToLocalFolder)
+                .map {
+                    val localId = localFolderDataSource.getLocalFolderByRemoteId(it.remoteId).first()?.id ?: 0L
+                    it.copy(id = localId)
+                }
+                .collect(localFolderDataSource::updateLocalFolder)
         }
     }
 

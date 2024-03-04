@@ -37,6 +37,7 @@ data object SupabaseConstants {
 
         data object Folder {
             const val Insert = "insert_folder"
+            const val Update = "update_folder"
         }
 
     }

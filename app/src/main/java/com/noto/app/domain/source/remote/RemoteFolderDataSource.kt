@@ -19,4 +19,6 @@ interface RemoteFolderDataSource {
 
     suspend fun createRemoteFolderListener(): Flow<RemoteFolder>
 
+    suspend fun updateRemoteFolderListener(): Flow<RemoteFolder>
+
 }
