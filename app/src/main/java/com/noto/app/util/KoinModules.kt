@@ -33,6 +33,7 @@ import com.noto.app.data.service.AndroidRemoteNoteService
 import com.noto.app.data.source.local.LocalSettingsDataSource
 import com.noto.app.data.source.remote.*
 import com.noto.app.data.sync.FolderSyncService
+import com.noto.app.data.sync.NoteSyncService
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
 import com.noto.app.domain.service.RemoteFolderService
@@ -68,7 +69,6 @@ import com.noto.app.vault.VaultPasscodeViewModel
 import com.noto.app.widget.FolderListWidgetConfigViewModel
 import com.noto.app.widget.NoteListWidgetConfigViewModel
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.postgrest.Postgrest
@@ -112,7 +112,7 @@ object KoinModules {
 
         viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
-        viewModel { AppViewModel(get(), get(), get(), get()) }
+        viewModel { AppViewModel(get(), get(), get(), get(), get()) }
 
         viewModel { SettingsViewModel(get()) }
 
@@ -219,7 +219,6 @@ object KoinModules {
 
     }
 
-    @OptIn(SupabaseInternal::class)
     val RemoteDataSource = module {
 
         single<SupabaseClient> {
@@ -332,6 +331,8 @@ object KoinModules {
     val SyncService = module {
 
         single<FolderSyncService> { FolderSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
+        single<NoteSyncService> { NoteSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 

@@ -42,6 +42,12 @@ data object SupabaseConstants {
             const val Delete = "delete_folder"
         }
 
+        data object Note {
+            const val Insert = "insert_note"
+            const val Update = "update_note"
+            const val Delete = "delete_note"
+        }
+
     }
 
 }

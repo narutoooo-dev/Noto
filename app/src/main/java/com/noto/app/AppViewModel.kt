@@ -3,6 +3,7 @@ package com.noto.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.data.sync.FolderSyncService
+import com.noto.app.data.sync.NoteSyncService
 import com.noto.app.domain.model.*
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.NoteRepository
@@ -27,6 +28,7 @@ class AppViewModel(
     private val noteRepository: NoteRepository,
     private val settingsRepository: SettingsRepository,
     private val folderSyncService: FolderSyncService,
+    private val noteSyncService: NoteSyncService,
 ) : ViewModel() {
 
     val userStatus = settingsRepository.userStatus
@@ -144,14 +146,16 @@ class AppViewModel(
 
     fun startSyncServices() {
         syncServicesJob = viewModelScope.launch {
-            folderSyncService.startFolderSyncService()
+            launch { folderSyncService.startFolderSyncService() }
+            launch { noteSyncService.startNoteSyncService() }
         }
     }
 
     fun stopSyncServices() {
         syncServicesJob?.cancel()
         viewModelScope.launch {
-            folderSyncService.stopFolderSyncService()
+            launch { folderSyncService.stopFolderSyncService() }
+            launch { noteSyncService.stopNoteSyncService() }
         }
     }
 

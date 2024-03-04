@@ -41,6 +41,9 @@ interface LocalNoteDao : LocalNoteDataSource {
     @Delete
     override suspend fun deleteLocalNote(localNote: LocalNote)
 
+    @Query("DELETE FROM notes WHERE remote_id = :remoteNoteId")
+    override suspend fun deleteLocalNoteByRemoteId(remoteNoteId: String)
+
     @Query("DELETE FROM notes")
     override suspend fun clearLocalNotes()
 

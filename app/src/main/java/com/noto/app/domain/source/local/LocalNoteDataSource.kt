@@ -27,6 +27,8 @@ interface LocalNoteDataSource {
 
     suspend fun deleteLocalNote(localNote: LocalNote)
 
+    suspend fun deleteLocalNoteByRemoteId(remoteNoteId: String)
+
     suspend fun clearLocalNotes()
 
 }
