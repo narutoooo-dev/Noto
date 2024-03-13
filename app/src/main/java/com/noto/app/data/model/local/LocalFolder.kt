@@ -2,12 +2,13 @@ package com.noto.app.data.model.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-@Entity(tableName = "folders")
+@Entity(tableName = "folders", indices = [Index("remote_id", name = "index_folders_remote_id", unique = true)])
 data class LocalFolder(
 
     @PrimaryKey(autoGenerate = true)

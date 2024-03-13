@@ -1,9 +1,6 @@
 package com.noto.app.data.model.local
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -23,7 +20,8 @@ import kotlinx.serialization.Transient
             childColumns = ["label_id"],
             onDelete = ForeignKey.CASCADE,
         ),
-    ]
+    ],
+    indices = [Index("remote_id", name = "index_note_labels_remote_id", unique = true)]
 )
 data class LocalNoteLabel(
     @PrimaryKey(autoGenerate = true)

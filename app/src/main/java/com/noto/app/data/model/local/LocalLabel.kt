@@ -1,9 +1,6 @@
 package com.noto.app.data.model.local
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -15,7 +12,8 @@ import kotlinx.serialization.Transient
         parentColumns = ["id"],
         childColumns = ["folder_id"],
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    indices = [Index("remote_id", name = "index_notes_remote_id", unique = true)]
 )
 data class LocalLabel(
 

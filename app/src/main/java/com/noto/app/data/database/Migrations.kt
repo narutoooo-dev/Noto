@@ -145,6 +145,12 @@ object Migrations {
                 }
             }
 
+            // Add UNIQUE INDEX on RemoteIds
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_folders_remote_id ON folders (remote_id);")
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_notes_remote_id ON notes (remote_id);")
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_labels_remote_id ON labels (remote_id);")
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_note_labels_remote_id ON note_labels (remote_id);")
+
             database.setTransactionSuccessful()
         } finally {
             database.endTransaction()
