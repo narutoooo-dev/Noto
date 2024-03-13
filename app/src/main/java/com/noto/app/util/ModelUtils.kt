@@ -342,3 +342,19 @@ fun CharSequence.indicesOf(string: String, startIndex: Int = 0, ignoreCase: Bool
     }
     return indices
 }
+
+fun CharSequence.capitalizeFirstLetter(): String {
+    var isCapitalized = false
+    val builder = StringBuilder(this)
+    for ((index, char) in this.withIndex()) {
+        if (char.isLetter()) {
+            if (!isCapitalized) {
+                isCapitalized = true
+                builder[index] = char.uppercaseChar()
+            } else {
+                break
+            }
+        }
+    }
+    return builder.toString()
+}
