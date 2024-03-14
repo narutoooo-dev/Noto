@@ -108,7 +108,7 @@ class FolderMapper(
                 id = UUID.fromString(remoteId),
                 keyset = keyset,
                 encryptedContent = encryptedContent,
-                updatedAt = Clock.System.now().toString(),
+                metaData = RemoteFolder.MetaData(updatedAt = Clock.System.now().toString()),
             )
         }
     }

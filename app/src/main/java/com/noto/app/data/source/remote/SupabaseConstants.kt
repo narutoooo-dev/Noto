@@ -9,6 +9,7 @@ data object SupabaseConstants {
     const val Type = "type"
     const val SignUp = "signup"
     const val EmailChange = "email_change"
+    const val MetaDataUpdatedAtColumn = "meta_data->>updated_at"
 
     data object RPCs {
         const val IsEmailExist = "is_email_exist"

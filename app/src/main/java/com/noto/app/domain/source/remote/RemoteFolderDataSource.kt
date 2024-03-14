@@ -7,6 +7,8 @@ interface RemoteFolderDataSource {
 
     suspend fun getAllRemoteFolders(): List<RemoteFolder>
 
+    suspend fun getRemoteFoldersSince(timestamp: String): List<RemoteFolder>
+
     suspend fun createRemoteFolder(remoteFolder: RemoteFolder)
 
     suspend fun updateRemoteFolder(remoteFolder: RemoteFolder)

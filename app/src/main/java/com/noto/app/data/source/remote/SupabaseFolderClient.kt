@@ -24,6 +24,18 @@ class SupabaseFolderClient(private val client: SupabaseClient) : RemoteFolderDat
         }
     }
 
+    override suspend fun getRemoteFoldersSince(timestamp: String): List<RemoteFolder> {
+        return tryCatching {
+            client.postgrest[SupabaseConstants.Tables.Folders]
+                .select {
+                    filter {
+                        gt(SupabaseConstants.MetaDataUpdatedAtColumn, timestamp)
+                    }
+                }
+                .decodeList()
+        }
+    }
+
     override suspend fun createRemoteFolder(remoteFolder: RemoteFolder) {
         client.postgrest[SupabaseConstants.Tables.Folders]
             .insert(remoteFolder)
