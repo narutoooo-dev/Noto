@@ -270,13 +270,13 @@
         },
         "indices": [
           {
-            "name": "index_labels_remote_id",
+            "name": "index_notes_remote_id",
             "unique": true,
             "columnNames": [
               "remote_id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_labels_remote_id` ON `${TABLE_NAME}` (`remote_id`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_notes_remote_id` ON `${TABLE_NAME}` (`remote_id`)"
           }
         ],
         "foreignKeys": [
@@ -343,13 +343,13 @@
         },
         "indices": [
           {
-            "name": "index_notes_remote_id",
+            "name": "index_labels_remote_id",
             "unique": true,
             "columnNames": [
               "remote_id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_notes_remote_id` ON `${TABLE_NAME}` (`remote_id`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_labels_remote_id` ON `${TABLE_NAME}` (`remote_id`)"
           }
         ],
         "foreignKeys": [

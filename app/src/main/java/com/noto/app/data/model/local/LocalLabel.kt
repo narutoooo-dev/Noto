@@ -13,7 +13,7 @@ import kotlinx.serialization.Transient
         childColumns = ["folder_id"],
         onDelete = ForeignKey.CASCADE
     )],
-    indices = [Index("remote_id", name = "index_notes_remote_id", unique = true)]
+    indices = [Index("remote_id", name = "index_labels_remote_id", unique = true)]
 )
 data class LocalLabel(
 
