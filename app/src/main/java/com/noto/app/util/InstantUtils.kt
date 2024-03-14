@@ -7,7 +7,7 @@ import com.noto.app.R
 import kotlinx.datetime.*
 import java.time.format.DateTimeFormatter
 
-fun Instant.format(context: Context): String {
+fun Instant.format(context: Context, includeDateTimeInThisWeek: Boolean = true): String {
     val timeZone = TimeZone.currentSystemDefault()
     val localDate = this.toLocalDate()
     val localDateTime = this.toLocalDateTime(timeZone)
@@ -26,7 +26,7 @@ fun Instant.format(context: Context): String {
         when {
             this.isNow -> context.stringResource(R.string.just_now)
             localDate.isToday -> timeSpan
-            localDate.isThisWeek -> "$timeSpan ($formattedDateTime)"
+            localDate.isThisWeek -> if (includeDateTimeInThisWeek) "$timeSpan ($formattedDateTime)" else timeSpan
             else -> formattedDateTime
         }
     } else {
