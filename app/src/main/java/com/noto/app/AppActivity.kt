@@ -328,6 +328,14 @@ class AppActivity : BaseActivity() {
                 viewModel.stopSyncServices()
             }
         }.launchIn(lifecycleScope)
+
+        combine(
+            viewModel.userStatus.distinctUntilChanged(),
+            connectivityManager.isNetworkAvailableAsFlow(),
+        ) { userStatus, isNetworkAvailable ->
+            if (userStatus == UserStatus.LoggedIn && isNetworkAvailable) viewModel.runManualSync()
+        }.launchIn(lifecycleScope)
+
     }
 
     private fun createVaultTimeoutWorkRequest(duration: Long, timeUnit: TimeUnit) = OneTimeWorkRequestBuilder<VaultTimeoutWorker>()
