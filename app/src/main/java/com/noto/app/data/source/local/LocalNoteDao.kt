@@ -1,5 +1,6 @@
 package com.noto.app.data.source.local
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 import com.noto.app.data.model.local.LocalNote
 import com.noto.app.domain.source.local.LocalNoteDataSource
@@ -37,6 +38,15 @@ interface LocalNoteDao : LocalNoteDataSource {
 
     @Update
     override suspend fun updateLocalNote(localNote: LocalNote)
+
+    @Transaction
+    override suspend fun upsertLocalNote(localNote: LocalNote) {
+        try {
+            createLocalNote(localNote)
+        } catch (_: SQLiteConstraintException) {
+            updateLocalNote(localNote)
+        }
+    }
 
     @Delete
     override suspend fun deleteLocalNote(localNote: LocalNote)

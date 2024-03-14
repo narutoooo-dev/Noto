@@ -338,7 +338,7 @@ object KoinModules {
 
         single<LabelSyncService> { LabelSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<ManualSyncServiceManager> { ManualSyncServiceManager(get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<ManualSyncServiceManager> { ManualSyncServiceManager(get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 

@@ -18,6 +18,14 @@ class LabelSyncService(
     private val coroutineDispatcher: CoroutineDispatcher,
 ) {
 
+    suspend fun runManualLabelSyncService(timestamp: String) = runCatching {
+        withContext(coroutineDispatcher) {
+            remoteLabelDataSource.getRemoteLabelsSince(timestamp)
+                .map { labelMapper.mapRemoteLabelToLocalLabel(it) }
+                .forEach { localLabelDataSource.upsertLocalLabel(it) }
+        }
+    }
+
     suspend fun startLabelSyncService() {
         coroutineScope {
             withContext(coroutineDispatcher) {

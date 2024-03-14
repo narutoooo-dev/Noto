@@ -19,6 +19,8 @@ interface LocalLabelDataSource {
 
     suspend fun updateLocalLabel(localLabel: LocalLabel)
 
+    suspend fun upsertLocalLabel(localLabel: LocalLabel)
+
     suspend fun deleteLocalLabel(localLabel: LocalLabel)
 
     suspend fun deleteLocalLabelByRemoteId(remoteLabelId: String)

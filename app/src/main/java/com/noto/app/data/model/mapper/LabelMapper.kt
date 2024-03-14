@@ -8,6 +8,7 @@ import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.Clock
 import java.util.UUID
 
 class LabelMapper(
@@ -53,6 +54,7 @@ class LabelMapper(
                 id = UUID.fromString(remoteId),
                 folderId = UUID.fromString(localFolder.remoteId),
                 encryptedContent = encryptedContent,
+                metaData = RemoteLabel.MetaData(updatedAt = Clock.System.now().toString()),
             )
         }
     }

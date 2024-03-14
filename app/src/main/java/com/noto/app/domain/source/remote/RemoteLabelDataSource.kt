@@ -7,6 +7,8 @@ interface RemoteLabelDataSource {
 
     suspend fun getAllRemoteLabels(): List<RemoteLabel>
 
+    suspend fun getRemoteLabelsSince(timestamp: String): List<RemoteLabel>
+
     suspend fun getRemoteLabelsByFolderId(remoteFolderId: String): List<RemoteLabel>
 
     suspend fun createRemoteLabel(remoteLabel: RemoteLabel)

@@ -23,6 +23,18 @@ class SupabaseNoteLabelClient(private val client: SupabaseClient) : RemoteNoteLa
         }
     }
 
+    override suspend fun getRemoteNoteLabelsSince(timestamp: String): List<RemoteNoteLabel> {
+        return tryCatching {
+            client.postgrest[SupabaseConstants.Tables.NoteLabels]
+                .select {
+                    filter {
+                        gt(SupabaseConstants.MetaDataCreatedAtColumn, timestamp)
+                    }
+                }
+                .decodeList()
+        }
+    }
+
     override suspend fun getRemoteNoteLabelsByNoteId(remoteNoteId: String): List<RemoteNoteLabel> {
         return tryCatching {
             client.postgrest[SupabaseConstants.Tables.NoteLabels]

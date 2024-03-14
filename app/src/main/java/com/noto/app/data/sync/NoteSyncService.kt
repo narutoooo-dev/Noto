@@ -24,6 +24,23 @@ class NoteSyncService(
     private val coroutineDispatcher: CoroutineDispatcher,
 ) {
 
+    suspend fun runManualNoteSyncService(timestamp: String) = runCatching {
+        withContext(coroutineDispatcher) {
+            remoteNoteDataSource.getRemoteNotesSince(timestamp)
+                .map { noteMapper.mapRemoteNoteToLocalNote(it) }
+                .forEach { localNoteDataSource.upsertLocalNote(it) }
+        }
+    }
+
+    suspend fun runManualNoteLabelSyncService(timestamp: String) = runCatching {
+        withContext(coroutineDispatcher) {
+            remoteNoteLabelDataSource.getRemoteNoteLabelsSince(timestamp)
+                .map { noteLabelMapper.mapRemoteNoteLabelToLocalNoteLabel(it) }
+                .filter { localNoteLabelDataSource.getLocalNoteLabelByRemoteId(it.remoteId).first() == null }
+                .forEach { localNoteLabelDataSource.createLocalNoteLabel(it) }
+        }
+    }
+
     suspend fun startNoteSyncService() {
         coroutineScope {
             withContext(coroutineDispatcher) {

@@ -7,6 +7,8 @@ interface RemoteNoteDataSource {
 
     suspend fun getAllRemoteNotes(): List<RemoteNote>
 
+    suspend fun getRemoteNotesSince(timestamp: String): List<RemoteNote>
+
     suspend fun getRemoteNotesByFolderId(remoteFolderId: String): List<RemoteNote>
 
     suspend fun createRemoteNote(remoteNote: RemoteNote)

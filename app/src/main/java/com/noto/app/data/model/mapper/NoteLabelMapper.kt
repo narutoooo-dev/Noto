@@ -9,6 +9,7 @@ import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.Clock
 import java.util.UUID
 
 class NoteLabelMapper(
@@ -39,6 +40,7 @@ class NoteLabelMapper(
                 id = UUID.fromString(remoteId),
                 noteId = UUID.fromString(localNote.remoteId),
                 labelId = UUID.fromString(localLabel.remoteId),
+                metaData = RemoteNoteLabel.MetaData(createdAt = Clock.System.now().toString()),
             )
         }
     }

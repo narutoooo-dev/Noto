@@ -9,6 +9,7 @@ import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.Clock
 import java.util.UUID
 
 class NoteMapper(
@@ -69,6 +70,7 @@ class NoteMapper(
                 id = UUID.fromString(remoteId),
                 folderId = UUID.fromString(localFolder.remoteId),
                 encryptedContent = encryptedContent,
+                metaData = RemoteNote.MetaData(updatedAt = Clock.System.now().toString()),
             )
         }
     }

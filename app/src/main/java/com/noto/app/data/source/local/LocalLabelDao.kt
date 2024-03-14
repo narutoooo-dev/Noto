@@ -1,5 +1,6 @@
 package com.noto.app.data.source.local
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.domain.source.local.LocalLabelDataSource
@@ -28,6 +29,15 @@ interface LocalLabelDao : LocalLabelDataSource {
 
     @Update
     override suspend fun updateLocalLabel(localLabel: LocalLabel)
+
+    @Transaction
+    override suspend fun upsertLocalLabel(localLabel: LocalLabel) {
+        try {
+            createLocalLabel(localLabel)
+        } catch (_: SQLiteConstraintException) {
+            updateLocalLabel(localLabel)
+        }
+    }
 
     @Delete
     override suspend fun deleteLocalLabel(localLabel: LocalLabel)

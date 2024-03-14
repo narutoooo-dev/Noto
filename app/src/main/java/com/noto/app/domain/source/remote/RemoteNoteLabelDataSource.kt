@@ -7,6 +7,8 @@ interface RemoteNoteLabelDataSource {
 
     suspend fun getAllRemoteNoteLabels(): List<RemoteNoteLabel>
 
+    suspend fun getRemoteNoteLabelsSince(timestamp: String): List<RemoteNoteLabel>
+
     suspend fun getRemoteNoteLabelsByNoteId(remoteNoteId: String): List<RemoteNoteLabel>
 
     suspend fun createRemoteNoteLabel(remoteNoteLabel: RemoteNoteLabel)

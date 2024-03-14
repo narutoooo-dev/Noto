@@ -24,6 +24,18 @@ class SupabaseNoteClient(private val client: SupabaseClient) : RemoteNoteDataSou
         }
     }
 
+    override suspend fun getRemoteNotesSince(timestamp: String): List<RemoteNote> {
+        return tryCatching {
+            client.postgrest[SupabaseConstants.Tables.Notes]
+                .select {
+                    filter {
+                        gt(SupabaseConstants.MetaDataUpdatedAtColumn, timestamp)
+                    }
+                }
+                .decodeList()
+        }
+    }
+
     override suspend fun getRemoteNotesByFolderId(remoteFolderId: String): List<RemoteNote> {
         return tryCatching {
             client.postgrest[SupabaseConstants.Tables.Notes]

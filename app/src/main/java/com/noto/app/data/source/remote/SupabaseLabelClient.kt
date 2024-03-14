@@ -24,6 +24,18 @@ class SupabaseLabelClient(private val client: SupabaseClient) : RemoteLabelDataS
         }
     }
 
+    override suspend fun getRemoteLabelsSince(timestamp: String): List<RemoteLabel> {
+        return tryCatching {
+            client.postgrest[SupabaseConstants.Tables.Labels]
+                .select {
+                    filter {
+                        gt(SupabaseConstants.MetaDataUpdatedAtColumn, timestamp)
+                    }
+                }
+                .decodeList()
+        }
+    }
+
     override suspend fun getRemoteLabelsByFolderId(remoteFolderId: String): List<RemoteLabel> {
         return tryCatching {
             client.postgrest[SupabaseConstants.Tables.Labels]

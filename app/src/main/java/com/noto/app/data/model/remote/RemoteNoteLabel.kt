@@ -11,4 +11,10 @@ data class RemoteNoteLabel(
     val noteId: UUID,
     @Serializable(with = UUIDSerializer::class)
     val labelId: UUID,
-)
+    val metaData: MetaData,
+) {
+
+    @Serializable
+    data class MetaData(val createdAt: String)
+
+}
