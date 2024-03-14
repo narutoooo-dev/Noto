@@ -23,6 +23,8 @@ interface LocalFolderDataSource {
 
     suspend fun updateLocalFolder(folder: LocalFolder)
 
+    suspend fun upsertLocalFolder(folder: LocalFolder)
+
     suspend fun updateLocalFolderRemoteIdById(id: Long, remoteId: String)
 
     suspend fun deleteLocalFolder(folder: LocalFolder)

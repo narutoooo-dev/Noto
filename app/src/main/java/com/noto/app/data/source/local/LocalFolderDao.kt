@@ -1,5 +1,6 @@
 package com.noto.app.data.source.local
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 import com.noto.app.data.model.local.LocalFolder
 import com.noto.app.domain.source.local.LocalFolderDataSource
@@ -34,6 +35,15 @@ interface LocalFolderDao : LocalFolderDataSource {
 
     @Update
     override suspend fun updateLocalFolder(folder: LocalFolder)
+
+    @Transaction
+    override suspend fun upsertLocalFolder(folder: LocalFolder) {
+        try {
+            createLocalFolder(folder)
+        } catch (_: SQLiteConstraintException) {
+            updateLocalFolder(folder)
+        }
+    }
 
     @Query("UPDATE folders SET remote_id = :remoteId WHERE id = :id")
     override suspend fun updateLocalFolderRemoteIdById(id: Long, remoteId: String)
