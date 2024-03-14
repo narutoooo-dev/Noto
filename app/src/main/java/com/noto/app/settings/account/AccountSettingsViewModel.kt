@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
 import com.noto.app.components.material.TextFieldStatus
+import com.noto.app.data.sync.ManualSyncServiceManager
 import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.repository.*
 import com.noto.app.toUiState
 import com.noto.app.util.Constants
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 class AccountSettingsViewModel(
     private val userRepository: UserRepository,
@@ -17,6 +19,7 @@ class AccountSettingsViewModel(
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
     private val settingsRepository: SettingsRepository,
+    private val manualSyncServiceManager: ManualSyncServiceManager,
 ) : ViewModel() {
 
     val userState = userRepository.user
@@ -40,6 +43,12 @@ class AccountSettingsViewModel(
 
     private val mutableEmailState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
     val emailState get() = mutableEmailState.asStateFlow()
+
+    private val mutableManualSyncState = MutableStateFlow<UiState<Unit>>(UiState.Empty)
+    val manualSyncState get() = mutableManualSyncState.asStateFlow()
+
+    val lastSyncTimestamp = settingsRepository.lastSyncTimestamp
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Clock.System.now())
 
     init {
         settingsRepository.name
@@ -94,6 +103,11 @@ class AccountSettingsViewModel(
     fun deleteUser() = viewModelScope.launch {
         logOutUser().join()
         userRepository.delete()
+    }
+
+    fun runManualSync() = viewModelScope.launch {
+        mutableManualSyncState.value = UiState.Loading
+        mutableManualSyncState.value = manualSyncServiceManager.runManualSyncServices().toUiState()
     }
 
 }

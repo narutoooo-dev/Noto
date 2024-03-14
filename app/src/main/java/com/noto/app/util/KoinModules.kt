@@ -34,6 +34,7 @@ import com.noto.app.data.source.local.LocalSettingsDataSource
 import com.noto.app.data.source.remote.*
 import com.noto.app.data.sync.FolderSyncService
 import com.noto.app.data.sync.LabelSyncService
+import com.noto.app.data.sync.ManualSyncServiceManager
 import com.noto.app.data.sync.NoteSyncService
 import com.noto.app.domain.model.DeepLinksHandler
 import com.noto.app.domain.repository.*
@@ -141,7 +142,7 @@ object KoinModules {
 
         viewModel { VaultPasscodeViewModel(get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
 
-        viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get()) }
+        viewModel { AccountSettingsViewModel(get(), get(), get(), get(), get(), get()) }
 
         viewModel { ReadingModeSettingsViewModel(get()) }
 
@@ -336,6 +337,8 @@ object KoinModules {
         single<NoteSyncService> { NoteSyncService(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<LabelSyncService> { LabelSyncService(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
+        single<ManualSyncServiceManager> { ManualSyncServiceManager(get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
     }
 

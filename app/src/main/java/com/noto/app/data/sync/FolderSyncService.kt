@@ -18,6 +18,14 @@ class FolderSyncService(
     private val coroutineDispatcher: CoroutineDispatcher,
 ) {
 
+    suspend fun runManualFolderSyncService(timestamp: String) = runCatching {
+        withContext(coroutineDispatcher) {
+            remoteFolderDataSource.getRemoteFoldersSince(timestamp)
+                .map { folderMapper.mapRemoteFolderToLocalFolder(it) }
+                .forEach { localFolderDataSource.upsertLocalFolder(it) }
+        }
+    }
+
     suspend fun startFolderSyncService() {
         coroutineScope {
             withContext(coroutineDispatcher) {

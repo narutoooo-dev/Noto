@@ -24,9 +24,11 @@ import com.noto.app.settings.SettingsItemType
 import com.noto.app.settings.SettingsSection
 import com.noto.app.theme.warning
 import com.noto.app.util.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.time.Duration.Companion.minutes
 
 class AccountSettingsFragment : Fragment() {
 
@@ -66,6 +68,20 @@ class AccountSettingsFragment : Fragment() {
                         ?.getStateFlow(Constants.IsConfirmed, false) ?: MutableStateFlow(false)
                 }.collectAsState()
 
+                val manualSyncState by viewModel.manualSyncState.collectAsState()
+                val lastSyncTimestamp by viewModel.lastSyncTimestamp.collectAsState()
+                val lastSyncTimestampFormatted by produceState(initialValue = "", lastSyncTimestamp) {
+                    while (true) {
+                        value = lastSyncTimestamp
+                            .format(context, includeDateTimeInThisWeek = false)
+                            .capitalizeFirstLetter()
+                        delay(1.minutes)
+                    }
+                }
+                val syncingText = stringResource(id = R.string.syncing)
+                val dataIsSyncedText = stringResource(id = R.string.data_is_synced)
+                val dataSyncFailedText = stringResource(id = R.string.data_sync_failed)
+
                 Screen(
                     title = stringResource(id = R.string.account),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -85,6 +101,22 @@ class AccountSettingsFragment : Fragment() {
                                     type = SettingsItemType.Text(user.email),
                                     onClick = { navController?.navigateSafely(AccountSettingsFragmentDirections.actionAccountSettingsFragmentToChangeEmailDialogFragment()) },
                                 )
+                            }
+
+                            SettingsSection {
+
+                                SettingsItem(
+                                    title = stringResource(id = R.string.sync_manually),
+                                    type = SettingsItemType.None,
+                                    onClick = viewModel::runManualSync,
+                                )
+
+                                SettingsItem(
+                                    title = stringResource(id = R.string.last_synced),
+                                    type = SettingsItemType.Text(lastSyncTimestampFormatted),
+                                    equalWeights = false,
+                                )
+
                             }
 
                             SettingsSection {
@@ -138,6 +170,23 @@ class AccountSettingsFragment : Fragment() {
                             val text = stringResource(id = R.string.something_went_wrong)
                             scope.launch { snackbarHostState.showSnackbar(text) }
                         },
+                    )
+                }
+
+                LaunchedEffect(manualSyncState) {
+                    manualSyncState.fold(
+                        onLoading = {
+                            navController?.navigateSafely(
+                                AccountSettingsFragmentDirections.actionAccountSettingsFragmentToProgressIndicatorDialogFragment(syncingText)
+                            )
+                        },
+                        onSuccess = {
+                            navController?.navigateUp()
+                            scope.launch { snackbarHostState.showSnackbar(dataIsSyncedText) }
+                        },
+                        onFailure = {
+                            scope.launch { snackbarHostState.showSnackbar(dataSyncFailedText) }
+                        }
                     )
                 }
 
