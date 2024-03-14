@@ -38,6 +38,7 @@ object SettingsKeys {
     val AutoBackupFormat = stringPreferencesKey("AutoBackupFormat")
     val KeyEncryptionKeyParameters = stringPreferencesKey("KeyEncryptionKeyParameters")
     val AutoBackupEncryptionParameters = stringPreferencesKey("AutoBackupEncryptionParameters")
+    val LastSyncTimestamp = stringPreferencesKey("LastSyncTimestamp")
 
     fun FilteredItemModel(model: FilteredItemModel) = intPreferencesKey("Filtered_Item_Model_${model.id}")
 

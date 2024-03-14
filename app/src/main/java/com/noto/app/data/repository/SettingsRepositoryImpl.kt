@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -110,6 +112,9 @@ class SettingsRepositoryImpl(
     override val keyEncryptionKeyParameters: Flow<String?> = localSettingsDataSource.getOrNull(SettingsKeys.KeyEncryptionKeyParameters)
 
     override val autoBackupLocation: Flow<String?> = localSettingsDataSource.getOrNull(SettingsKeys.AutoBackupLocation)
+
+    override val lastSyncTimestamp: Flow<Instant> = localSettingsDataSource.getOrNull(SettingsKeys.LastSyncTimestamp)
+        .map { it?.let(Instant::parse) ?: Clock.System.now() }
 
     override fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int> =
         localSettingsDataSource.getOrDefault(SettingsKeys.FilteredItemModel(model), 0)
@@ -265,6 +270,10 @@ class SettingsRepositoryImpl(
             keyStoreManager.deleteKey(KeyStoreManager.AutoBackupPasscodeId)
             localSettingsDataSource.set(SettingsKeys.AutoBackupEncryptionParameters, null)
         }
+    }
+
+    override suspend fun updateLastSyncTimestamp(timestamp: Instant) {
+        localSettingsDataSource.set(SettingsKeys.LastSyncTimestamp, timestamp.toString())
     }
 
     override suspend fun exportNotoData(): Result<String> = runCatching {

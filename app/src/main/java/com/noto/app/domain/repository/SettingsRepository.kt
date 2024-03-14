@@ -3,6 +3,7 @@ package com.noto.app.domain.repository
 import com.noto.app.domain.model.*
 import com.noto.app.filtered.FilteredItemModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 
 interface SettingsRepository {
 
@@ -71,6 +72,8 @@ interface SettingsRepository {
     val autoBackupFormat: Flow<BackupFormat>
 
     val keyEncryptionKeyParameters: Flow<String?>
+
+    val lastSyncTimestamp: Flow<Instant>
 
     fun getFilteredNotesScrollingPosition(model: FilteredItemModel): Flow<Int>
 
@@ -181,6 +184,8 @@ interface SettingsRepository {
     suspend fun updateKeyEncryptionKeyParameters(parameters: String)
 
     suspend fun updateAutoBackupPasscode(passcode: String?)
+
+    suspend fun updateLastSyncTimestamp(timestamp: Instant)
 
     suspend fun exportNotoData(): Result<String>
 
