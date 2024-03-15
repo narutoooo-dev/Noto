@@ -16,11 +16,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.eventFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.noto.app.components.activity.BaseActivity
+import com.noto.app.data.sync.SyncServiceWorker
 import com.noto.app.databinding.AppActivityBinding
 import com.noto.app.domain.model.*
 import com.noto.app.filtered.FilteredItemModel
@@ -33,6 +31,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -45,6 +44,9 @@ private val AppIntents = listOf(
     Constants.Intent.ActionOpenVault,
     Constants.Intent.ActionSettings,
 )
+
+private const val SyncServiceWorkerName = "SyncServiceWorker"
+private const val SyncServiceWorkerDurationInDays = 1L
 
 class AppActivity : BaseActivity() {
 
@@ -215,7 +217,7 @@ class AppActivity : BaseActivity() {
         }
     }
 
-    private fun AppActivityBinding.setupState() {
+    private fun setupState() {
         viewModel.icon
             .onEach { icon -> if (icon != viewModel.currentIcon.await()) setupIcon(icon) }
             .launchIn(lifecycleScope)
@@ -336,6 +338,9 @@ class AppActivity : BaseActivity() {
             if (userStatus == UserStatus.LoggedIn && isNetworkAvailable) viewModel.runManualSync()
         }.launchIn(lifecycleScope)
 
+        viewModel.userStatus
+            .onEach { userStatus -> if (userStatus == UserStatus.LoggedIn) setupSyncServiceWorker() }
+            .launchIn(lifecycleScope)
     }
 
     private fun createVaultTimeoutWorkRequest(duration: Long, timeUnit: TimeUnit) = OneTimeWorkRequestBuilder<VaultTimeoutWorker>()
@@ -386,4 +391,17 @@ class AppActivity : BaseActivity() {
                 ShortcutManagerCompat.updateShortcuts(this, shortcuts)
             }
     }
+
+    private fun setupSyncServiceWorker() {
+        val workConstraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val duration = Duration.ofDays(SyncServiceWorkerDurationInDays)
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<SyncServiceWorker>(duration)
+            .setConstraints(workConstraints)
+            .build()
+        workManager.enqueueUniquePeriodicWork(SyncServiceWorkerName, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, periodicWorkRequest)
+    }
+
 }
