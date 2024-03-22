@@ -38,10 +38,6 @@ class RawAesCryptoManager(private val secureRandom: SecureRandom = SecureRandom(
         return decryptData(secretKey, iv, encryptedData)
     }
 
-    fun encodeDataToString(value: ByteArray): String = Base64.encode(value)
-
-    fun decodeStringToData(value: String): ByteArray = Base64.decode(value)
-
     private fun createParameterSpec(ivParameterSpec: IvParameterSpec) = GCMParameterSpec(AuthenticationTagSize, ivParameterSpec.iv)
 
     companion object {
@@ -54,6 +50,11 @@ class RawAesCryptoManager(private val secureRandom: SecureRandom = SecureRandom(
 
         const val SecretKeyAlgorithm = "AES"
         val FixedIv = ByteArray(InitializationVectorSize)
+
+        fun encodeDataToString(value: ByteArray): String = Base64.encode(value)
+
+        fun decodeStringToData(value: String): ByteArray = Base64.decode(value)
+
     }
 
 }
