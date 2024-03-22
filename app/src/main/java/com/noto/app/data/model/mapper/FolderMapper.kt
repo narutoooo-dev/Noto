@@ -1,8 +1,12 @@
 package com.noto.app.data.model.mapper
 
+import com.noto.app.crypto.RawAesCryptoManager
+import com.noto.app.crypto.RawAesEncryptionHandler
+import com.noto.app.crypto.key.PasswordBasedKeyGenerator
 import com.noto.app.crypto.tink.TinkCryptoManager
 import com.noto.app.crypto.tink.TinkEncryptionHandler
 import com.noto.app.data.model.local.LocalFolder
+import com.noto.app.data.model.local.encrypted.LocalEncryptedFolder
 import com.noto.app.data.model.remote.RemoteFolder
 import com.noto.app.domain.model.Folder
 import com.noto.app.domain.repository.SettingsRepository
@@ -20,6 +24,8 @@ class FolderMapper(
     private val tinkCryptoManager: TinkCryptoManager,
     private val tinkEncryptionHandler: TinkEncryptionHandler,
     private val propertyMapper: PropertyMapper,
+    private val vaultPasscodeKeyGenerator: PasswordBasedKeyGenerator,
+    private val encryptionHandler: RawAesEncryptionHandler,
 ) {
 
     suspend fun mapDomainFolderToLocalFolder(domainFolder: Folder, forceGenerateEncryptedKeyset: Boolean = false): LocalFolder {
@@ -99,6 +105,27 @@ class FolderMapper(
             // Required for swiping left/right to nest folders.
             folder.copy(childFolders = childFolders.map { it.copy(parentFolder = folder) })
         }
+    }
+
+    suspend fun mapLocalFolderToLocalEncryptedFolder(localFolder: LocalFolder): LocalEncryptedFolder {
+        val vaultPasscode = settingsRepository.vaultPasscode.first()!!
+        val key = vaultPasscodeKeyGenerator.decodeStringToKey(vaultPasscode)
+        val bytes = encryptionHandler.encryptItem(key, localFolder)
+        val content = RawAesCryptoManager.encodeDataToString(bytes)
+        return with(localFolder) {
+            LocalEncryptedFolder(
+                id = id,
+                parentId = parentId,
+                content = content,
+            )
+        }
+    }
+
+    suspend fun mapLocalEncryptedFolderToLocalFolder(localEncryptedFolder: LocalEncryptedFolder): LocalFolder {
+        val vaultPasscode = settingsRepository.vaultPasscode.first()!!
+        val key = vaultPasscodeKeyGenerator.decodeStringToKey(vaultPasscode)
+        val bytes = RawAesCryptoManager.decodeStringToData(localEncryptedFolder.content)
+        return encryptionHandler.decryptItem<LocalFolder>(key, bytes)
     }
 
     suspend fun mapLocalFolderToRemoteFolder(localFolder: LocalFolder): RemoteFolder {
