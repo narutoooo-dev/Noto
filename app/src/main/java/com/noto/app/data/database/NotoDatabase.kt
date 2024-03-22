@@ -8,6 +8,7 @@ import com.noto.app.data.model.local.LocalNote
 import com.noto.app.data.model.local.LocalNoteLabel
 import com.noto.app.data.model.local.encrypted.LocalEncryptedFolder
 import com.noto.app.data.source.local.*
+import com.noto.app.data.source.local.encrypted.LocalEncryptedFolderDao
 
 private const val NOTO_DATABASE = "Noto Database"
 
@@ -63,6 +64,8 @@ abstract class NotoDatabase : RoomDatabase() {
     abstract val labelDao: LocalLabelDao
 
     abstract val noteLabelDao: LocalNoteLabelDao
+
+    abstract val encryptedFolderDao: LocalEncryptedFolderDao
 
     companion object {
 

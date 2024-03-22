@@ -18,9 +18,6 @@ interface LocalFolderDao : LocalFolderDataSource {
     @Query("SELECT * FROM folders WHERE is_archived = 1 AND is_vaulted = 0 AND parent_id IS NULL")
     override fun getArchivedLocalFolders(): Flow<List<LocalFolder>>
 
-    @Query("SELECT * FROM folders WHERE is_vaulted = 1 AND is_archived = 0 AND parent_id IS NULL")
-    override fun getVaultedLocalFolders(): Flow<List<LocalFolder>>
-
     @Query("SELECT * FROM folders WHERE parent_id = :localFolderId")
     override fun getChildLocalFolders(localFolderId: Long): Flow<List<LocalFolder>>
 
@@ -29,6 +26,9 @@ interface LocalFolderDao : LocalFolderDataSource {
 
     @Query("SELECT * FROM folders WHERE remote_id = :remoteFolderId")
     override fun getLocalFolderByRemoteId(remoteFolderId: String): Flow<LocalFolder?>
+
+    @Query("SELECT COUNT(1) FROM folders WHERE id = :localFolderId")
+    override suspend fun checkIfLocalFolderExistsById(localFolderId: Long): Boolean
 
     @Insert
     override suspend fun createLocalFolder(folder: LocalFolder): Long

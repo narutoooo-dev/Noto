@@ -9,10 +9,12 @@ import com.noto.app.BuildConfig
 import com.noto.app.crypto.AndroidKeyStoreManager
 import com.noto.app.crypto.KeyStoreManager
 import com.noto.app.crypto.RawAesCryptoManager
+import com.noto.app.crypto.RawAesEncryptionHandler
 import com.noto.app.crypto.key.Argon2KeyGenerator
 import com.noto.app.crypto.key.DefaultArgon2KeyGenerator
 import com.noto.app.crypto.key.PasswordBasedKeyGenerator
 import com.noto.app.crypto.key.VaultPasscodeKeyGenerator
+import com.noto.app.crypto.salt.EmptySaltGenerator
 import com.noto.app.crypto.salt.SaltGenerator
 import com.noto.app.crypto.salt.SecureRandomSaltGenerator
 import com.noto.app.crypto.tink.TinkAesCryptoManager
@@ -45,6 +47,7 @@ import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
 import com.noto.app.domain.source.remote.*
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
@@ -104,6 +107,8 @@ object KoinModules {
         val AccountKekGenerator = qualifier("AccountKekGenerator")
         val VaultPasscodeKeyGenerator = qualifier("VaultPasscodeKeyGenerator")
         val BackupPasscodeKeyGenerator = qualifier("BackupPasscodeKeyGenerator")
+        val SecureRandomSaltGenerator = qualifier("SecureRandomSaltGenerator")
+        val EmptySaltGenerator = qualifier("EmptySaltGenerator")
     }
 
     val ViewModel = module {
@@ -158,7 +163,7 @@ object KoinModules {
 
     val Repository = module {
 
-        single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
@@ -219,6 +224,8 @@ object KoinModules {
 
         single<LocalSettingsDataSource> { LocalSettingsDataSource(get()) }
 
+        single<LocalEncryptedFolderDataSource> { NotoDatabase.getInstance(androidContext()).encryptedFolderDao }
+
     }
 
     val RemoteDataSource = module {
@@ -263,13 +270,13 @@ object KoinModules {
 
     val Crypto = module {
 
-        single<Argon2KeyGenerator>(Qualifiers.AccountPasswordKeyGenerator) { DefaultArgon2KeyGenerator(get()) }
+        single<Argon2KeyGenerator>(Qualifiers.AccountPasswordKeyGenerator) { DefaultArgon2KeyGenerator(get(Qualifiers.SecureRandomSaltGenerator)) }
 
-        single<Argon2KeyGenerator>(Qualifiers.AccountKekGenerator) { DefaultArgon2KeyGenerator(get(), saltSize = 0) }
+        single<Argon2KeyGenerator>(Qualifiers.AccountKekGenerator) { DefaultArgon2KeyGenerator(get(Qualifiers.SecureRandomSaltGenerator), saltSize = 0) }
 
-        single<Argon2KeyGenerator>(Qualifiers.BackupPasscodeKeyGenerator) { DefaultArgon2KeyGenerator(get(), saltSize = 0) }
+        single<Argon2KeyGenerator>(Qualifiers.BackupPasscodeKeyGenerator) { DefaultArgon2KeyGenerator(get(Qualifiers.SecureRandomSaltGenerator), saltSize = 0) }
 
-        single<PasswordBasedKeyGenerator>(Qualifiers.VaultPasscodeKeyGenerator) { VaultPasscodeKeyGenerator(get()) }
+        single<PasswordBasedKeyGenerator>(Qualifiers.VaultPasscodeKeyGenerator) { VaultPasscodeKeyGenerator(get(Qualifiers.EmptySaltGenerator)) }
 
         single<TinkCryptoManager> { TinkAesCryptoManager() }
 
@@ -284,7 +291,11 @@ object KoinModules {
 
         single<RawAesCryptoManager> { RawAesCryptoManager() }
 
-        single<SaltGenerator> { SecureRandomSaltGenerator() }
+        single<SaltGenerator>(Qualifiers.SecureRandomSaltGenerator) { SecureRandomSaltGenerator() }
+
+        single<SaltGenerator>(Qualifiers.EmptySaltGenerator) { EmptySaltGenerator }
+
+        single<RawAesEncryptionHandler> { RawAesEncryptionHandler(get(), get(Qualifiers.CryptoJson)) }
 
     }
 
@@ -306,7 +317,7 @@ object KoinModules {
 
     val Mapper = module {
 
-        single<FolderMapper> { FolderMapper(get(), get(), get(), get(), get(), get()) }
+        single<FolderMapper> { FolderMapper(get(), get(), get(), get(), get(), get(), get(Qualifiers.VaultPasscodeKeyGenerator), get()) }
 
         single<NoteMapper> { NoteMapper(get(), get(), get(), get()) }
 

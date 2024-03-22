@@ -6,6 +6,7 @@ import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.service.RemoteFolderService
 import com.noto.app.domain.source.local.LocalFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
 import com.noto.app.domain.source.remote.RemoteFolderDataSource
 import com.noto.app.util.isGeneral
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,6 +16,7 @@ import kotlinx.coroutines.withContext
 class FolderRepositoryImpl(
     private val remoteFolderDataSource: RemoteFolderDataSource,
     private val localFolderDataSource: LocalFolderDataSource,
+    private val localEncryptedFolderDataSource: LocalEncryptedFolderDataSource,
     private val settingsRepository: SettingsRepository,
     private val remoteFolderService: RemoteFolderService,
     private val folderMapper: FolderMapper,
@@ -29,13 +31,25 @@ class FolderRepositoryImpl(
         .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
         .flowOn(coroutineDispatcher)
 
-    override fun getVaultedFolders(): Flow<List<Folder>> = localFolderDataSource.getVaultedLocalFolders()
-        .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
+    override fun getVaultedFolders(): Flow<List<Folder>> = localEncryptedFolderDataSource.getAllLocalEncryptedFolders()
+        .map {
+            it.map { localEncryptedFolder ->
+                folderMapper.mapLocalEncryptedFolderToLocalFolder(localEncryptedFolder)
+                    .let { localFolder -> folderMapper.mapLocalFolderToDomainFolder(localFolder) }
+            }
+        }
         .flowOn(coroutineDispatcher)
 
-    override fun getFolderById(folderId: Long): Flow<Folder> = localFolderDataSource.getLocalFolderById(folderId)
+    override fun getFolderById(folderId: Long): Flow<Folder> = combine(
+        localFolderDataSource.getLocalFolderById(folderId)
+            .map { localFolder -> localFolder?.let { folderMapper.mapLocalFolderToDomainFolder(it) } },
+        localEncryptedFolderDataSource.getLocalEncryptedFolderById(folderId)
+            .map { localEncryptedFolder ->
+                localEncryptedFolder?.let { folderMapper.mapLocalEncryptedFolderToLocalFolder(it) }
+                    ?.let { folderMapper.mapLocalFolderToDomainFolder(it) }
+            },
+    ) { folder, vaultedFolder -> folder ?: vaultedFolder }
         .filterNotNull()
-        .map { folderMapper.mapLocalFolderToDomainFolder(it) }
         .flowOn(coroutineDispatcher)
 
     override suspend fun createGeneralFolder(): Result<Unit> = runCatching {
@@ -62,21 +76,48 @@ class FolderRepositoryImpl(
     override suspend fun updateFolder(folder: Folder) = runCatching {
         withContext(coroutineDispatcher) {
             val localFolder = folderMapper.mapDomainFolderToLocalFolder(folder.copy(title = folder.correctTitle))
-            localFolderDataSource.updateLocalFolder(localFolder)
+            val localEncryptedFolder = folderMapper.mapLocalFolderToLocalEncryptedFolder(localFolder)
+            val isDatabaseFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folder.id)
+            if (folder.isVaulted) {
+                if (isDatabaseFolderVaulted) {
+                    // The folder is vaulted, and just updated some properties.
+                    localEncryptedFolderDataSource.updateLocalEncryptedFolder(localEncryptedFolder)
+                } else {
+                    // The folder was never vaulted, now it is.
+                    localFolderDataSource.deleteLocalFolder(localFolder)
+                    localEncryptedFolderDataSource.createLocalEncryptedFolder(localEncryptedFolder)
+                }
+            } else {
+                if (isDatabaseFolderVaulted) {
+                    // The folder was vaulted, now it's not.
+                    localEncryptedFolderDataSource.deleteLocalEncryptedFolder(localEncryptedFolder)
+                    localFolderDataSource.createLocalFolder(localFolder)
+                } else {
+                    // The folder was never vaulted.
+                    localFolderDataSource.updateLocalFolder(localFolder)
+                }
+            }
             if (isUserLoggedIn()) remoteFolderService.updateRemoteFolder(localFolder.remoteId)
         }
     }
 
     override suspend fun deleteFolder(folder: Folder) = runCatching {
         withContext(coroutineDispatcher) {
+            val isDatabaseFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folder.id)
             val localFolder = folderMapper.mapDomainFolderToLocalFolder(folder)
-            localFolderDataSource.deleteLocalFolder(localFolder)
+            if (isDatabaseFolderVaulted) {
+                val localEncryptedFolder = folderMapper.mapLocalFolderToLocalEncryptedFolder(localFolder)
+                localEncryptedFolderDataSource.deleteLocalEncryptedFolder(localEncryptedFolder)
+            } else {
+                localFolderDataSource.deleteLocalFolder(localFolder)
+            }
             if (isUserLoggedIn()) remoteFolderService.deleteRemoteFolder(localFolder.remoteId)
         }
     }
 
     override suspend fun clearFolders() = withContext(coroutineDispatcher) {
         localFolderDataSource.clearLocalFolders()
+        localEncryptedFolderDataSource.clearLocalEncryptedFolders()
     }
 
     private suspend fun getFolderPosition() = withContext(coroutineDispatcher) {
