@@ -11,6 +11,8 @@ interface LocalEncryptedFolderDataSource {
 
     fun getLocalEncryptedFolderById(localFolderId: Long): Flow<LocalEncryptedFolder?>
 
+    suspend fun checkIfLocalEncryptedFolderExistsById(localFolderId: Long): Boolean
+
     suspend fun createLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder): Long
 
     suspend fun updateLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder)
