@@ -11,7 +11,7 @@ interface LocalLabelDataSource {
 
     fun getLocalLabelsByFolderId(localFolderId: Long): Flow<List<LocalLabel>>
 
-    fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel>
+    fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel?>
 
     fun getLocalLabelByRemoteId(remoteLabelId: String): Flow<LocalLabel?>
 
@@ -25,6 +25,6 @@ interface LocalLabelDataSource {
 
     suspend fun deleteLocalLabelByRemoteId(remoteLabelId: String)
 
-    suspend fun clearLabels()
+    suspend fun clearLocalLabels()
 
 }

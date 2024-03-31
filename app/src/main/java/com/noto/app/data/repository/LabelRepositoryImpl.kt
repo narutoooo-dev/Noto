@@ -63,7 +63,7 @@ class LabelRepositoryImpl(
     }
 
     override suspend fun clearLabels() = withContext(coroutineDispatcher) {
-        localLabelDataSource.clearLabels()
+        localLabelDataSource.clearLocalLabels()
     }
 
     private suspend fun getLabelPosition(folderId: Long) = withContext(coroutineDispatcher) {

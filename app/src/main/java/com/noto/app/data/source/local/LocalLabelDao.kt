@@ -19,7 +19,7 @@ interface LocalLabelDao : LocalLabelDataSource {
     override fun getLocalLabelsByFolderId(localFolderId: Long): Flow<List<LocalLabel>>
 
     @Query("SELECT * FROM labels WHERE id = :localLabelId")
-    override fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel>
+    override fun getLocalLabelById(localLabelId: Long): Flow<LocalLabel?>
 
     @Query("SELECT * FROM labels WHERE remote_id = :remoteLabelId")
     override fun getLocalLabelByRemoteId(remoteLabelId: String): Flow<LocalLabel?>
@@ -46,6 +46,6 @@ interface LocalLabelDao : LocalLabelDataSource {
     override suspend fun deleteLocalLabelByRemoteId(remoteLabelId: String)
 
     @Query("DELETE FROM labels")
-    override suspend fun clearLabels()
+    override suspend fun clearLocalLabels()
 
 }
