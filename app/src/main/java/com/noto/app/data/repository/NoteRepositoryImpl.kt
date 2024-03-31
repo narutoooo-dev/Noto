@@ -10,6 +10,8 @@ import com.noto.app.domain.service.RemoteNoteService
 import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedNoteDataSource
 import com.noto.app.domain.source.remote.RemoteNoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
@@ -20,6 +22,8 @@ class NoteRepositoryImpl(
     private val localNoteDataSource: LocalNoteDataSource,
     private val localLabelDataSource: LocalLabelDataSource,
     private val localNoteLabelDataSource: LocalNoteLabelDataSource,
+    private val localEncryptedFolderDataSource: LocalEncryptedFolderDataSource,
+    private val localEncryptedNoteDataSource: LocalEncryptedNoteDataSource,
     private val remoteNoteDataSource: RemoteNoteDataSource,
     private val remoteNoteService: RemoteNoteService,
     private val settingsRepository: SettingsRepository,
@@ -36,33 +40,59 @@ class NoteRepositoryImpl(
         .toDomainNotes(folderId = null)
         .flowOn(coroutineDispatcher)
 
-    override fun getMainNotesByFolderId(folderId: Long): Flow<List<Note>> = localNoteDataSource.getLocalNotesByFolderId(folderId)
-        .toDomainNotes(folderId)
-        .flowOn(coroutineDispatcher)
+    override fun getMainNotesByFolderId(folderId: Long): Flow<List<Note>> = combine(
+        localNoteDataSource.getMainLocalNotesByFolderId(folderId)
+            .toDomainNotes(folderId),
+        localEncryptedNoteDataSource.getMainLocalEncryptedNotesByFolderId(folderId)
+            .map { it.map { localEncryptedNote -> noteMapper.mapLocalEncryptedNoteToLocalNote(localEncryptedNote) } }
+            .toDomainNotes(folderId),
+    ) { notes, encryptedNotes ->
+        val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folderId)
+        if (isLocalFolderVaulted) encryptedNotes else notes
+    }.flowOn(coroutineDispatcher)
 
-    override fun getArchivedNotesByFolderId(folderId: Long): Flow<List<Note>> = localNoteDataSource.getArchivedLocalNotesByFolderId(folderId)
-        .toDomainNotes(folderId)
-        .flowOn(coroutineDispatcher)
+    override fun getArchivedNotesByFolderId(folderId: Long): Flow<List<Note>> = combine(
+        localNoteDataSource.getArchivedLocalNotesByFolderId(folderId)
+            .toDomainNotes(folderId),
+        localEncryptedNoteDataSource.getArchivedLocalEncryptedNotesByFolderId(folderId)
+            .map { it.map { localEncryptedNote -> noteMapper.mapLocalEncryptedNoteToLocalNote(localEncryptedNote) } }
+            .toDomainNotes(folderId),
+    ) { notes, encryptedNotes ->
+        val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folderId)
+        if (isLocalFolderVaulted) encryptedNotes else notes
+    }.flowOn(coroutineDispatcher)
 
     override fun getNoteById(noteId: Long): Flow<Note> = combine(
-        localNoteDataSource.getLocalNoteById(noteId)
-            .filterNotNull(),
+        localNoteDataSource.getLocalNoteById(noteId),
+        localEncryptedNoteDataSource.getLocalEncryptedNoteById(noteId),
         localLabelDataSource.getMainLocalLabels(),
         localNoteLabelDataSource.getLocalNoteLabelsByNoteId(noteId),
-    ) { localNote, localLabels, localNoteLabels ->
-        val localFolderLabels = localLabels.filter { it.folderId == localNote.folderId }
+    ) { localNote, localEncryptedNote, localLabels, localNoteLabels ->
+        val localFolderLabels = localLabels.filter { it.folderId == localNote?.folderId }
         val labels = localNoteLabels.map { localNoteLabel ->
             noteLabelMapper.mapLocalNoteLabelToDomainLabel(localNoteLabel, localFolderLabels)
         }
-        noteMapper.mapLocalNoteToDomainNote(localNote, labels)
-    }.flowOn(coroutineDispatcher)
+        if (localEncryptedNote != null) {
+            noteMapper.mapLocalEncryptedNoteToLocalNote(localEncryptedNote).let { noteMapper.mapLocalNoteToDomainNote(it, labels) }
+        } else if (localNote != null) {
+            noteMapper.mapLocalNoteToDomainNote(localNote, labels)
+        } else {
+            null
+        }
+    }.filterNotNull().flowOn(coroutineDispatcher)
 
     override suspend fun createNote(note: Note): Result<Long> = runCatching {
         withContext(coroutineDispatcher) {
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(note.folderId)
             val position = getNotePosition(note.folderId)
             val positionedNote = note.copy(position = position)
             val localNote = noteMapper.mapDomainNoteToLocalNote(positionedNote)
-            val localNoteId = localNoteDataSource.createLocalNote(localNote)
+            val localNoteId = if (isLocalFolderVaulted) {
+                val localEncryptedNote = noteMapper.mapLocalNoteToLocalEncryptedNote(localNote)
+                localEncryptedNoteDataSource.createLocalEncryptedNote(localEncryptedNote)
+            } else {
+                localNoteDataSource.createLocalNote(localNote)
+            }
 
             val noteLabels = note.labels.map { label -> noteLabelMapper.mapDomainLabelToLocalNoteLabel(label, localNoteId) }
             noteLabels.forEach { launch { localNoteLabelDataSource.createLocalNoteLabel(it) } }
@@ -75,8 +105,14 @@ class NoteRepositoryImpl(
 
     override suspend fun updateNote(note: Note) = runCatching {
         withContext(coroutineDispatcher) {
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(note.folderId)
             val localNote = noteMapper.mapDomainNoteToLocalNote(note)
-            localNoteDataSource.updateLocalNote(localNote)
+            if (isLocalFolderVaulted) {
+                val localEncryptedNote = noteMapper.mapLocalNoteToLocalEncryptedNote(localNote)
+                localEncryptedNoteDataSource.updateLocalEncryptedNote(localEncryptedNote)
+            } else {
+                localNoteDataSource.updateLocalNote(localNote)
+            }
 
             val databaseNoteLabels = localNoteLabelDataSource.getLocalNoteLabelsByNoteId(note.id).first()
             val updatedNoteLabels = note.labels.map { noteLabelMapper.mapDomainLabelToLocalNoteLabel(it, note.id) }
@@ -98,8 +134,14 @@ class NoteRepositoryImpl(
 
     override suspend fun deleteNote(note: Note) = runCatching {
         withContext(coroutineDispatcher) {
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(note.folderId)
             val localNote = noteMapper.mapDomainNoteToLocalNote(note)
-            localNoteDataSource.deleteLocalNote(localNote)
+            if (isLocalFolderVaulted) {
+                val localEncryptedNote = noteMapper.mapLocalNoteToLocalEncryptedNote(localNote)
+                localEncryptedNoteDataSource.deleteLocalEncryptedNote(localEncryptedNote)
+            } else {
+                localNoteDataSource.deleteLocalNote(localNote)
+            }
             if (settingsRepository.isUserLoggedIn.first()) remoteNoteService.deleteRemoteNote(localNote.remoteId)
         }
     }
@@ -107,10 +149,11 @@ class NoteRepositoryImpl(
     override suspend fun clearNotes() = withContext(coroutineDispatcher) {
         localNoteDataSource.clearLocalNotes()
         localNoteLabelDataSource.clearLocalNoteLabels()
+        localEncryptedNoteDataSource.clearLocalEncryptedNotes()
     }
 
     private suspend fun getNotePosition(folderId: Long) = withContext(coroutineDispatcher) {
-        localNoteDataSource.getLocalNotesByFolderId(folderId)
+        localNoteDataSource.getMainLocalNotesByFolderId(folderId)
             .filterNotNull()
             .first()
             .count()

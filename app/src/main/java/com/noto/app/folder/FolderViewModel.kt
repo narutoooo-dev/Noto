@@ -4,10 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.noto.app.UiState
 import com.noto.app.domain.model.*
-import com.noto.app.domain.repository.FolderRepository
-import com.noto.app.domain.repository.LabelRepository
-import com.noto.app.domain.repository.NoteRepository
-import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.domain.repository.*
 import com.noto.app.getOrDefault
 import com.noto.app.label.LabelItemModel
 import com.noto.app.map
@@ -24,6 +21,7 @@ class FolderViewModel(
     private val noteRepository: NoteRepository,
     private val labelRepository: LabelRepository,
     private val settingsRepository: SettingsRepository,
+    private val vaultRepository: VaultRepository,
     private val folderId: Long,
     private val selectedNoteIds: LongArray = longArrayOf(),
 ) : ViewModel() {
@@ -206,22 +204,10 @@ class FolderViewModel(
     }
 
     fun toggleFolderIsVaulted() = viewModelScope.launch {
-        folderRepository.updateFolder(
-            folder.value.copy(
-                isVaulted = !folder.value.isVaulted,
-                isArchived = false,
-                parentFolder = null,
-            )
-        )
-        folder.value.childFolders.forEachRecursively { folder, _ ->
-            launch {
-                folderRepository.updateFolder(
-                    folder.copy(
-                        isVaulted = !folder.isVaulted,
-                        isArchived = false
-                    )
-                )
-            }
+        if (folder.value.isVaulted) {
+            vaultRepository.removeFolderFromVault(folderId).getOrThrow()
+        } else {
+            vaultRepository.addFolderToVault(folderId).getOrThrow()
         }
     }
 

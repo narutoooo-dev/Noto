@@ -10,6 +10,8 @@ import com.noto.app.domain.model.Folder
 import com.noto.app.domain.repository.SettingsRepository
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedNoteDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
@@ -18,6 +20,8 @@ import java.util.UUID
 class FolderMapper(
     private val localFolderDataSource: LocalFolderDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
+    private val localEncryptedFolderDataSource: LocalEncryptedFolderDataSource,
+    private val localEncryptedNoteDataSource: LocalEncryptedNoteDataSource,
     private val settingsRepository: SettingsRepository,
     private val tinkCryptoManager: TinkCryptoManager,
     private val tinkEncryptionHandler: TinkEncryptionHandler,
@@ -27,13 +31,10 @@ class FolderMapper(
 
     suspend fun mapDomainFolderToLocalFolder(domainFolder: Folder, forceGenerateEncryptedKeyset: Boolean = false): LocalFolder {
         return with(domainFolder) {
-            val localFolder = localFolderDataSource.getLocalFolderById(id).firstOrNull()
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(id)
+            val localFolder = getLocalFolderById(id, isLocalFolderVaulted)
             val remoteId = localFolder?.remoteId ?: UUID.randomUUID().toString()
-            val keyset = if (settingsRepository.isUserLoggedIn.first() || forceGenerateEncryptedKeyset) {
-                localFolder?.keyset ?: tinkCryptoManager.keysetGenerator.generateEncryptedKeyset()
-            } else {
-                null
-            }
+            val keyset = localFolder?.getOrGenerateLocalFolderKeyset(forceGenerateEncryptedKeyset)
             LocalFolder(
                 id = id,
                 remoteId = remoteId,
@@ -63,17 +64,10 @@ class FolderMapper(
 
     suspend fun mapLocalFolderToDomainFolder(localFolder: LocalFolder): Folder {
         return with(localFolder) {
-
-            val parentFolder = parentId?.let { localFolderDataSource.getLocalFolderById(parentId) }
-                ?.firstOrNull()
-                ?.let { mapLocalFolderToDomainFolder(it) }
-
-            val childFolders = localFolderDataSource.getChildLocalFolders(id)
-                .first()
-                .map { mapLocalFolderToDomainFolder(it.copy(parentId = null)) }
-
-            val notesCount = localNoteDataSource.countMainLocalNotesByFolderId(id).first()
-
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(id)
+            val parentFolder = getLocalFolderById(parentId, isLocalFolderVaulted)?.let { mapLocalFolderToDomainFolder(it) }
+            val childFolders = getChildDomainFoldersById(id, isLocalFolderVaulted)
+            val notesCount = countMainNotesByFolderId(id, isLocalFolderVaulted)
             val folder = Folder(
                 id = id,
                 parentFolder = parentFolder,
@@ -100,7 +94,7 @@ class FolderMapper(
             )
 
             // Required for swiping left/right to nest folders.
-            folder.copy(childFolders = childFolders.map { it.copy(parentFolder = folder) })
+            folder.setAsParentForChildFolders()
         }
     }
 
@@ -108,14 +102,22 @@ class FolderMapper(
         return with(localFolder) {
             LocalEncryptedFolder(
                 id = id,
+                remoteId = remoteId,
+                keyset = keyset,
                 parentId = parentId,
-                content = vaultEncryptionHandler.encryptItem(localFolder),
+                content = vaultEncryptionHandler.encryptItem(this),
             )
         }
     }
 
     suspend fun mapLocalEncryptedFolderToLocalFolder(localEncryptedFolder: LocalEncryptedFolder): LocalFolder {
-        return vaultEncryptionHandler.decryptItem<LocalFolder>(localEncryptedFolder.content)
+        return with(localEncryptedFolder) {
+            vaultEncryptionHandler.decryptItem<LocalFolder>(content)
+                .copy(
+                    remoteId = remoteId,
+                    keyset = keyset,
+                )
+        }
     }
 
     suspend fun mapLocalFolderToRemoteFolder(localFolder: LocalFolder): RemoteFolder {
@@ -136,5 +138,54 @@ class FolderMapper(
             decryptedContent.copy(id = 0L, remoteId = id.toString(), keyset = keyset)
         }
     }
+
+    private suspend fun LocalFolder.getOrGenerateLocalFolderKeyset(forceGenerateEncryptedKeyset: Boolean): String? {
+        return if (settingsRepository.isUserLoggedIn.first() || forceGenerateEncryptedKeyset) {
+            keyset ?: tinkCryptoManager.keysetGenerator.generateEncryptedKeyset()
+        } else {
+            null
+        }
+    }
+
+    suspend fun getLocalFolderById(folderId: Long?, isLocalFolderVaulted: Boolean): LocalFolder? {
+        return folderId?.let { id ->
+            if (isLocalFolderVaulted) {
+                localEncryptedFolderDataSource.getLocalEncryptedFolderById(id).firstOrNull()
+                    ?.let { mapLocalEncryptedFolderToLocalFolder(it) }
+            } else {
+                localFolderDataSource.getLocalFolderById(id).firstOrNull()
+            }
+        }
+    }
+
+    suspend fun getLocalFolderByRemoteId(remoteFolderId: String?, isLocalFolderVaulted: Boolean): LocalFolder? {
+        return remoteFolderId?.let { id ->
+            if (isLocalFolderVaulted) {
+                localEncryptedFolderDataSource.getLocalEncryptedFolderByRemoteId(id).firstOrNull()
+                    ?.let { mapLocalEncryptedFolderToLocalFolder(it) }
+            } else {
+                localFolderDataSource.getLocalFolderByRemoteId(id).firstOrNull()
+            }
+        }
+    }
+
+    private suspend fun getChildDomainFoldersById(folderId: Long, isLocalFolderVaulted: Boolean): List<Folder> {
+        return if (isLocalFolderVaulted) {
+            localEncryptedFolderDataSource.getChildLocalEncryptedFolders(folderId).first()
+                .map { mapLocalEncryptedFolderToLocalFolder(it) }
+        } else {
+            localFolderDataSource.getChildLocalFolders(folderId).first()
+        }.map { mapLocalFolderToDomainFolder(it.copy(parentId = null)) }
+    }
+
+    private suspend fun countMainNotesByFolderId(folderId: Long, isLocalFolderVaulted: Boolean): Int {
+        return if (isLocalFolderVaulted) {
+            localEncryptedNoteDataSource.countMainLocalEncryptedNotesByFolderId(folderId)
+        } else {
+            localNoteDataSource.countMainLocalNotesByFolderId(folderId)
+        }.first()
+    }
+
+    private fun Folder.setAsParentForChildFolders() = copy(childFolders = childFolders.map { it.copy(parentFolder = this) })
 
 }

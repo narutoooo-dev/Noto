@@ -11,11 +11,11 @@ interface LocalNoteDataSource {
 
     fun getArchivedLocalNotes(): Flow<List<LocalNote>>
 
-    fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
+    fun getMainLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
     fun getArchivedLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
-    fun getLocalNoteById(localNoteId: Long): Flow<LocalNote>
+    fun getLocalNoteById(localNoteId: Long): Flow<LocalNote?>
 
     fun getLocalNoteByRemoteId(remoteNoteId: String): Flow<LocalNote?>
 

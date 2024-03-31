@@ -10,6 +10,7 @@ import com.noto.app.domain.model.NotoException
 import com.noto.app.domain.model.VaultTimeout
 import com.noto.app.domain.repository.FolderRepository
 import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.domain.repository.VaultRepository
 import com.noto.app.util.Constants
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class VaultSettingsViewModel(
     private val folderRepository: FolderRepository,
     private val settingsRepository: SettingsRepository,
+    private val vaultRepository: VaultRepository,
     private val vaultPasscodeKeyGenerator: PasswordBasedKeyGenerator,
 ) : ViewModel() {
 
@@ -112,9 +114,7 @@ class VaultSettingsViewModel(
     }
 
     fun disableVault() = viewModelScope.launch {
-        folderRepository.getVaultedFolders().first()
-            .map { it.copy(isVaulted = false) }
-            .forEach { folderRepository.updateFolder(it) }
+        folderRepository.getVaultedFolders().first().forEach { vaultRepository.removeFolderFromVault(it.id) }
         settingsRepository.updateVaultPasscode(passcode = null)
         settingsRepository.updateVaultTimeout(timeout = VaultTimeout.Immediately)
         settingsRepository.updateScheduledVaultTimeout(timeout = null)

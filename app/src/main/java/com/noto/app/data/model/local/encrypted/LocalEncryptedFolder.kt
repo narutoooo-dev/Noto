@@ -9,6 +9,10 @@ data class LocalEncryptedFolder(
     @PrimaryKey
     @ColumnInfo("id")
     val id: Long,
+    @ColumnInfo(name = "remote_id")
+    val remoteId: String,
+    @ColumnInfo(name = "keyset", defaultValue = "NULL")
+    val keyset: String?,
     @ColumnInfo(name = "parent_id", defaultValue = "NULL")
     val parentId: Long?,
     @ColumnInfo("content")

@@ -11,14 +11,23 @@ interface LocalEncryptedFolderDao : LocalEncryptedFolderDataSource {
     @Query("SELECT * FROM encrypted_folders")
     override fun getAllLocalEncryptedFolders(): Flow<List<LocalEncryptedFolder>>
 
+    @Query("SELECT * FROM encrypted_folders WHERE parent_id IS NULL")
+    override fun getMainLocalEncryptedFolders(): Flow<List<LocalEncryptedFolder>>
+
     @Query("SELECT * FROM encrypted_folders WHERE parent_id = :localFolderId")
     override fun getChildLocalEncryptedFolders(localFolderId: Long): Flow<List<LocalEncryptedFolder>>
 
     @Query("SELECT * FROM encrypted_folders WHERE id = :localFolderId")
     override fun getLocalEncryptedFolderById(localFolderId: Long): Flow<LocalEncryptedFolder?>
 
+    @Query("SELECT * FROM encrypted_folders WHERE remote_id = :remoteFolderId")
+    override fun getLocalEncryptedFolderByRemoteId(remoteFolderId: String): Flow<LocalEncryptedFolder?>
+
     @Query("SELECT COUNT(1) FROM encrypted_folders WHERE id = :localFolderId")
     override suspend fun checkIfLocalEncryptedFolderExistsById(localFolderId: Long): Boolean
+
+    @Query("SELECT COUNT(1) FROM encrypted_folders WHERE remote_id = :remoteFolderId")
+    override suspend fun checkIfLocalEncryptedFolderExistsByRemoteId(remoteFolderId: String): Boolean
 
     @Insert
     override suspend fun createLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder): Long

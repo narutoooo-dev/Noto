@@ -1,13 +1,17 @@
 package com.noto.app.data.model.mapper
 
+import com.noto.app.crypto.VaultEncryptionHandler
 import com.noto.app.crypto.tink.TinkEncryptionHandler
+import com.noto.app.data.model.local.LocalFolder
 import com.noto.app.data.model.local.LocalNote
+import com.noto.app.data.model.local.encrypted.LocalEncryptedNote
 import com.noto.app.data.model.remote.RemoteNote
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.model.Note
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
-import kotlinx.coroutines.flow.first
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedNoteDataSource
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
 import java.util.UUID
@@ -15,14 +19,18 @@ import java.util.UUID
 class NoteMapper(
     private val localFolderDataSource: LocalFolderDataSource,
     private val localNoteDataSource: LocalNoteDataSource,
+    private val localEncryptedFolderDataSource: LocalEncryptedFolderDataSource,
+    private val localEncryptedNoteDataSource: LocalEncryptedNoteDataSource,
     private val tinkEncryptionHandler: TinkEncryptionHandler,
+    private val folderMapper: FolderMapper,
     private val propertyMapper: PropertyMapper,
+    private val vaultEncryptionHandler: VaultEncryptionHandler,
 ) {
 
     suspend fun mapDomainNoteToLocalNote(domainNote: Note): LocalNote {
         return with(domainNote) {
-            val localNote = localNoteDataSource.getLocalNoteById(id).firstOrNull()
-            val remoteId = localNote?.remoteId ?: UUID.randomUUID().toString()
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folderId)
+            val remoteId = getLocalNoteById(id, isLocalFolderVaulted)?.remoteId ?: UUID.randomUUID().toString()
             LocalNote(
                 id = id,
                 remoteId = remoteId,
@@ -61,9 +69,28 @@ class NoteMapper(
         }
     }
 
+    suspend fun mapLocalNoteToLocalEncryptedNote(localNote: LocalNote): LocalEncryptedNote {
+        return with(localNote) {
+            LocalEncryptedNote(
+                id = id,
+                remoteId = remoteId,
+                folderId = folderId,
+                isArchived = isArchived,
+                content = vaultEncryptionHandler.encryptItem(this),
+            )
+        }
+    }
+
+    suspend fun mapLocalEncryptedNoteToLocalNote(localEncryptedNote: LocalEncryptedNote): LocalNote {
+        return with(localEncryptedNote) {
+            vaultEncryptionHandler.decryptItem<LocalNote>(content).copy(remoteId = remoteId)
+        }
+    }
+
     suspend fun mapLocalNoteToRemoteNote(localNote: LocalNote): RemoteNote {
         return with(localNote) {
-            val localFolder = localFolderDataSource.getLocalFolderById(folderId).first()!!
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folderId)
+            val localFolder = folderMapper.getLocalFolderById(folderId, isLocalFolderVaulted)!!
             val keyset = localFolder.keyset!!
             val encryptedContent = tinkEncryptionHandler.encryptItem(keyset, this.copy(id = 0L, folderId = 0L))
             RemoteNote(
@@ -77,10 +104,22 @@ class NoteMapper(
 
     suspend fun mapRemoteNoteToLocalNote(remoteNote: RemoteNote): LocalNote {
         return with(remoteNote) {
-            val localFolder = localFolderDataSource.getLocalFolderByRemoteId(folderId.toString()).first()!!
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsByRemoteId(folderId.toString())
+            val localFolder = folderMapper.getLocalFolderByRemoteId(folderId.toString(), isLocalFolderVaulted)!!
             val keyset = localFolder.keyset!!
             val decryptedContent = tinkEncryptionHandler.decryptItem<LocalNote>(keyset, encryptedContent)
             decryptedContent.copy(id = 0L, remoteId = id.toString(), folderId = localFolder.id)
+        }
+    }
+
+    private suspend fun getLocalNoteById(noteId: Long?, isLocalFolderVaulted: Boolean): LocalNote? {
+        return noteId?.let { id ->
+            if (isLocalFolderVaulted) {
+                localEncryptedNoteDataSource.getLocalEncryptedNoteById(id).firstOrNull()
+                    ?.let { mapLocalEncryptedNoteToLocalNote(it) }
+            } else {
+                localNoteDataSource.getLocalNoteById(id).firstOrNull()
+            }
         }
     }
 

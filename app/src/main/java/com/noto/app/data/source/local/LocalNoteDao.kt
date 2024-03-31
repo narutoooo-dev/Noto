@@ -19,13 +19,13 @@ interface LocalNoteDao : LocalNoteDataSource {
     override fun getArchivedLocalNotes(): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 0")
-    override fun getLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
+    override fun getMainLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE folder_id = :localFolderId AND is_archived = 1")
     override fun getArchivedLocalNotesByFolderId(localFolderId: Long): Flow<List<LocalNote>>
 
     @Query("SELECT * FROM notes WHERE id = :localNoteId")
-    override fun getLocalNoteById(localNoteId: Long): Flow<LocalNote>
+    override fun getLocalNoteById(localNoteId: Long): Flow<LocalNote?>
 
     @Query("SELECT * FROM notes WHERE remote_id = :remoteNoteId")
     override fun getLocalNoteByRemoteId(remoteNoteId: String): Flow<LocalNote?>

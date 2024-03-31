@@ -34,7 +34,7 @@ class NoteLabelMapper(
 
     suspend fun mapLocalNoteLabelToRemoteNoteLabel(localNoteLabel: LocalNoteLabel): RemoteNoteLabel {
         return with(localNoteLabel) {
-            val localNote = localNoteDataSource.getLocalNoteById(noteId).first()
+            val localNote = localNoteDataSource.getLocalNoteById(noteId).first()!!
             val localLabel = localLabelDataSource.getLocalLabelById(labelId).first()
             RemoteNoteLabel(
                 id = UUID.fromString(remoteId),

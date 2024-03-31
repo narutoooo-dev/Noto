@@ -31,7 +31,7 @@ class FolderRepositoryImpl(
         .map { it.map { folderMapper.mapLocalFolderToDomainFolder(it) } }
         .flowOn(coroutineDispatcher)
 
-    override fun getVaultedFolders(): Flow<List<Folder>> = localEncryptedFolderDataSource.getAllLocalEncryptedFolders()
+    override fun getVaultedFolders(): Flow<List<Folder>> = localEncryptedFolderDataSource.getMainLocalEncryptedFolders()
         .map {
             it.map { localEncryptedFolder ->
                 folderMapper.mapLocalEncryptedFolderToLocalFolder(localEncryptedFolder)
@@ -75,27 +75,13 @@ class FolderRepositoryImpl(
 
     override suspend fun updateFolder(folder: Folder) = runCatching {
         withContext(coroutineDispatcher) {
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folder.id)
             val localFolder = folderMapper.mapDomainFolderToLocalFolder(folder.copy(title = folder.correctTitle))
-            val localEncryptedFolder = folderMapper.mapLocalFolderToLocalEncryptedFolder(localFolder)
-            val isDatabaseFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folder.id)
-            if (folder.isVaulted) {
-                if (isDatabaseFolderVaulted) {
-                    // The folder is vaulted, and just updated some properties.
-                    localEncryptedFolderDataSource.updateLocalEncryptedFolder(localEncryptedFolder)
-                } else {
-                    // The folder was never vaulted, now it is.
-                    localFolderDataSource.deleteLocalFolder(localFolder)
-                    localEncryptedFolderDataSource.createLocalEncryptedFolder(localEncryptedFolder)
-                }
+            if (isLocalFolderVaulted) {
+                val localEncryptedFolder = folderMapper.mapLocalFolderToLocalEncryptedFolder(localFolder)
+                localEncryptedFolderDataSource.updateLocalEncryptedFolder(localEncryptedFolder)
             } else {
-                if (isDatabaseFolderVaulted) {
-                    // The folder was vaulted, now it's not.
-                    localEncryptedFolderDataSource.deleteLocalEncryptedFolder(localEncryptedFolder)
-                    localFolderDataSource.createLocalFolder(localFolder)
-                } else {
-                    // The folder was never vaulted.
-                    localFolderDataSource.updateLocalFolder(localFolder)
-                }
+                localFolderDataSource.updateLocalFolder(localFolder)
             }
             if (isUserLoggedIn()) remoteFolderService.updateRemoteFolder(localFolder.remoteId)
         }
@@ -103,9 +89,9 @@ class FolderRepositoryImpl(
 
     override suspend fun deleteFolder(folder: Folder) = runCatching {
         withContext(coroutineDispatcher) {
-            val isDatabaseFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folder.id)
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folder.id)
             val localFolder = folderMapper.mapDomainFolderToLocalFolder(folder)
-            if (isDatabaseFolderVaulted) {
+            if (isLocalFolderVaulted) {
                 val localEncryptedFolder = folderMapper.mapLocalFolderToLocalEncryptedFolder(localFolder)
                 localEncryptedFolderDataSource.deleteLocalEncryptedFolder(localEncryptedFolder)
             } else {

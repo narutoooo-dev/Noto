@@ -7,11 +7,17 @@ interface LocalEncryptedFolderDataSource {
 
     fun getAllLocalEncryptedFolders(): Flow<List<LocalEncryptedFolder>>
 
+    fun getMainLocalEncryptedFolders(): Flow<List<LocalEncryptedFolder>>
+
     fun getChildLocalEncryptedFolders(localFolderId: Long): Flow<List<LocalEncryptedFolder>>
 
     fun getLocalEncryptedFolderById(localFolderId: Long): Flow<LocalEncryptedFolder?>
 
+    fun getLocalEncryptedFolderByRemoteId(remoteFolderId: String): Flow<LocalEncryptedFolder?>
+
     suspend fun checkIfLocalEncryptedFolderExistsById(localFolderId: Long): Boolean
+
+    suspend fun checkIfLocalEncryptedFolderExistsByRemoteId(remoteFolderId: String): Boolean
 
     suspend fun createLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder): Long
 

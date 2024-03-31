@@ -45,6 +45,7 @@ import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedNoteDataSource
 import com.noto.app.domain.source.remote.*
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
@@ -112,7 +113,7 @@ object KoinModules {
 
         viewModel { MainViewModel(get(), get(), get()) }
 
-        viewModel { FolderViewModel(get(), get(), get(), get(), it.get(), it.getOrNull() ?: longArrayOf()) }
+        viewModel { FolderViewModel(get(), get(), get(), get(), get(), it.get(), it.getOrNull() ?: longArrayOf()) }
 
         viewModel { NoteViewModel(get(), get(), get(), get(), it[0], it[1], it.getOrNull(), it.getOrNull() ?: longArrayOf()) }
 
@@ -140,7 +141,7 @@ object KoinModules {
 
         viewModel { NewLabelViewModel(get(), get(), it[0], it[1]) }
 
-        viewModel { VaultSettingsViewModel(get(), get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
+        viewModel { VaultSettingsViewModel(get(), get(), get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
 
         viewModel { VaultPasscodeViewModel(get(), get(Qualifiers.VaultPasscodeKeyGenerator)) }
 
@@ -162,7 +163,21 @@ object KoinModules {
 
         single<FolderRepository> { FolderRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<NoteRepository> {
+            NoteRepositoryImpl(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(Qualifiers.CoroutineDispatcher)
+            )
+        }
 
         single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
@@ -205,6 +220,8 @@ object KoinModules {
 
         single<GeneralFolderHandler> { GeneralFolderHandler(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
+        single<VaultRepository> { VaultRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+
     }
 
     val LocalDataSource = module {
@@ -222,6 +239,8 @@ object KoinModules {
         single<LocalSettingsDataSource> { LocalSettingsDataSource(get()) }
 
         single<LocalEncryptedFolderDataSource> { NotoDatabase.getInstance(androidContext()).encryptedFolderDao }
+
+        single<LocalEncryptedNoteDataSource> { NotoDatabase.getInstance(androidContext()).encryptedNoteDao }
 
     }
 
@@ -326,9 +345,9 @@ object KoinModules {
 
     val Mapper = module {
 
-        single<FolderMapper> { FolderMapper(get(), get(), get(), get(), get(), get(), get()) }
+        single<FolderMapper> { FolderMapper(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-        single<NoteMapper> { NoteMapper(get(), get(), get(), get()) }
+        single<NoteMapper> { NoteMapper(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         single<LabelMapper> { LabelMapper(get(), get(), get(), get()) }
 
