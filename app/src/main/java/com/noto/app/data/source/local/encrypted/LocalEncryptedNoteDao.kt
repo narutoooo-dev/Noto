@@ -20,6 +20,9 @@ interface LocalEncryptedNoteDao : LocalEncryptedNoteDataSource {
     @Query("SELECT * FROM encrypted_notes WHERE id = :localNoteId")
     override fun getLocalEncryptedNoteById(localNoteId: Long): Flow<LocalEncryptedNote?>
 
+    @Query("SELECT * FROM encrypted_notes WHERE remote_id = :remoteNoteId")
+    override fun getLocalEncryptedNoteByRemoteId(remoteNoteId: String): Flow<LocalEncryptedNote?>
+
     @Query("SELECT COUNT(*) FROM encrypted_notes WHERE folder_id = :localFolderId AND is_archived = 0")
     override fun countMainLocalEncryptedNotesByFolderId(localFolderId: Long): Flow<Int>
 

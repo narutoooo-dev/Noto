@@ -13,6 +13,8 @@ interface LocalEncryptedNoteDataSource {
 
     fun getLocalEncryptedNoteById(localNoteId: Long): Flow<LocalEncryptedNote?>
 
+    fun getLocalEncryptedNoteByRemoteId(remoteNoteId: String): Flow<LocalEncryptedNote?>
+
     fun countMainLocalEncryptedNotesByFolderId(localFolderId: Long): Flow<Int>
 
     suspend fun checkIfLocalEncryptedNoteExistsById(localNoteId: Long): Boolean
