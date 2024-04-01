@@ -7,15 +7,28 @@ import com.noto.app.data.model.local.LocalLabel
 import com.noto.app.data.model.local.LocalNote
 import com.noto.app.data.model.local.LocalNoteLabel
 import com.noto.app.data.model.local.encrypted.LocalEncryptedFolder
+import com.noto.app.data.model.local.encrypted.LocalEncryptedLabel
 import com.noto.app.data.model.local.encrypted.LocalEncryptedNote
+import com.noto.app.data.model.local.encrypted.LocalEncryptedNoteLabel
 import com.noto.app.data.source.local.*
 import com.noto.app.data.source.local.encrypted.LocalEncryptedFolderDao
+import com.noto.app.data.source.local.encrypted.LocalEncryptedLabelDao
 import com.noto.app.data.source.local.encrypted.LocalEncryptedNoteDao
+import com.noto.app.data.source.local.encrypted.LocalEncryptedNoteLabelDao
 
 private const val NOTO_DATABASE = "Noto Database"
 
 @Database(
-    entities = [LocalFolder::class, LocalNote::class, LocalLabel::class, LocalNoteLabel::class, LocalEncryptedFolder::class, LocalEncryptedNote::class],
+    entities = [
+        LocalFolder::class,
+        LocalNote::class,
+        LocalLabel::class,
+        LocalNoteLabel::class,
+        LocalEncryptedFolder::class,
+        LocalEncryptedNote::class,
+        LocalEncryptedLabel::class,
+        LocalEncryptedNoteLabel::class,
+    ],
     version = 36,
     autoMigrations = [
         AutoMigration(from = 6, to = 7),
@@ -70,6 +83,10 @@ abstract class NotoDatabase : RoomDatabase() {
     abstract val encryptedFolderDao: LocalEncryptedFolderDao
 
     abstract val encryptedNoteDao: LocalEncryptedNoteDao
+
+    abstract val encryptedLabelDao: LocalEncryptedLabelDao
+
+    abstract val encryptedNoteLabelDao: LocalEncryptedNoteLabelDao
 
     companion object {
 
