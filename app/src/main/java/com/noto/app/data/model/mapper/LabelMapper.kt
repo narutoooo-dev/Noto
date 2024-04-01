@@ -1,12 +1,15 @@
 package com.noto.app.data.model.mapper
 
+import com.noto.app.crypto.VaultEncryptionHandler
 import com.noto.app.crypto.tink.TinkEncryptionHandler
 import com.noto.app.data.model.local.LocalLabel
+import com.noto.app.data.model.local.encrypted.LocalEncryptedLabel
 import com.noto.app.data.model.remote.RemoteLabel
 import com.noto.app.domain.model.Label
 import com.noto.app.domain.source.local.LocalFolderDataSource
 import com.noto.app.domain.source.local.LocalLabelDataSource
-import kotlinx.coroutines.flow.first
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedLabelDataSource
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
 import java.util.UUID
@@ -14,14 +17,18 @@ import java.util.UUID
 class LabelMapper(
     private val localFolderDataSource: LocalFolderDataSource,
     private val localLabelDataSource: LocalLabelDataSource,
+    private val localEncryptedFolderDataSource: LocalEncryptedFolderDataSource,
+    private val localEncryptedLabelDataSource: LocalEncryptedLabelDataSource,
     private val tinkEncryptionHandler: TinkEncryptionHandler,
+    private val folderMapper: FolderMapper,
     private val propertyMapper: PropertyMapper,
+    private val vaultEncryptionHandler: VaultEncryptionHandler,
 ) {
 
     suspend fun mapDomainLabelToLocalLabel(domainLabel: Label): LocalLabel {
         return with(domainLabel) {
-            val localLabel = localLabelDataSource.getLocalLabelById(id).firstOrNull()
-            val remoteId = localLabel?.remoteId ?: UUID.randomUUID().toString()
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folderId)
+            val remoteId = getLocalLabelById(id, isLocalFolderVaulted)?.remoteId ?: UUID.randomUUID().toString()
             LocalLabel(
                 id = id,
                 remoteId = remoteId,
@@ -45,9 +52,27 @@ class LabelMapper(
         }
     }
 
+    suspend fun mapLocalLabelToLocalEncryptedLabel(localLabel: LocalLabel): LocalEncryptedLabel {
+        return with(localLabel) {
+            LocalEncryptedLabel(
+                id = id,
+                remoteId = remoteId,
+                folderId = folderId,
+                content = vaultEncryptionHandler.encryptItem(this),
+            )
+        }
+    }
+
+    suspend fun mapLocalEncryptedLabelToLocalLabel(localEncryptedLabel: LocalEncryptedLabel): LocalLabel {
+        return with(localEncryptedLabel) {
+            vaultEncryptionHandler.decryptItem<LocalLabel>(content).copy(remoteId = remoteId)
+        }
+    }
+
     suspend fun mapLocalLabelToRemoteLabel(localLabel: LocalLabel): RemoteLabel {
         return with(localLabel) {
-            val localFolder = localFolderDataSource.getLocalFolderById(folderId).first()!!
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsById(folderId)
+            val localFolder = folderMapper.getLocalFolderById(folderId, isLocalFolderVaulted)!!
             val keyset = localFolder.keyset!!
             val encryptedContent = tinkEncryptionHandler.encryptItem(keyset, this.copy(id = 0L, folderId = 0L))
             RemoteLabel(
@@ -61,10 +86,22 @@ class LabelMapper(
 
     suspend fun mapRemoteLabelToLocalLabel(remoteLabel: RemoteLabel): LocalLabel {
         return with(remoteLabel) {
-            val localFolder = localFolderDataSource.getLocalFolderByRemoteId(folderId.toString()).first()!!
+            val isLocalFolderVaulted = localEncryptedFolderDataSource.checkIfLocalEncryptedFolderExistsByRemoteId(folderId.toString())
+            val localFolder = folderMapper.getLocalFolderByRemoteId(folderId.toString(), isLocalFolderVaulted)!!
             val keyset = localFolder.keyset!!
             val decryptedContent = tinkEncryptionHandler.decryptItem<LocalLabel>(keyset, encryptedContent)
             decryptedContent.copy(id = 0L, remoteId = id.toString(), folderId = localFolder.id)
+        }
+    }
+
+    private suspend fun getLocalLabelById(labelId: Long?, isLocalFolderVaulted: Boolean): LocalLabel? {
+        return labelId?.let { id ->
+            if (isLocalFolderVaulted) {
+                localEncryptedLabelDataSource.getLocalEncryptedLabelById(id).firstOrNull()
+                    ?.let { mapLocalEncryptedLabelToLocalLabel(it) }
+            } else {
+                localLabelDataSource.getLocalLabelById(id).firstOrNull()
+            }
         }
     }
 

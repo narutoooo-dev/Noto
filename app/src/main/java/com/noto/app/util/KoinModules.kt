@@ -45,7 +45,9 @@ import com.noto.app.domain.source.local.LocalLabelDataSource
 import com.noto.app.domain.source.local.LocalNoteDataSource
 import com.noto.app.domain.source.local.LocalNoteLabelDataSource
 import com.noto.app.domain.source.local.encrypted.LocalEncryptedFolderDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedLabelDataSource
 import com.noto.app.domain.source.local.encrypted.LocalEncryptedNoteDataSource
+import com.noto.app.domain.source.local.encrypted.LocalEncryptedNoteLabelDataSource
 import com.noto.app.domain.source.remote.*
 import com.noto.app.filtered.FilteredViewModel
 import com.noto.app.folder.FolderViewModel
@@ -175,11 +177,14 @@ object KoinModules {
                 get(),
                 get(),
                 get(),
-                get(Qualifiers.CoroutineDispatcher)
+                get(),
+                get(),
+                get(),
+                get(Qualifiers.CoroutineDispatcher),
             )
         }
 
-        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<LabelRepository> { LabelRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
         single<SettingsRepository> {
             SettingsRepositoryImpl(
@@ -220,7 +225,23 @@ object KoinModules {
 
         single<GeneralFolderHandler> { GeneralFolderHandler(get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
 
-        single<VaultRepository> { VaultRepositoryImpl(get(), get(), get(), get(), get(), get(), get(Qualifiers.CoroutineDispatcher)) }
+        single<VaultRepository> {
+            VaultRepositoryImpl(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(Qualifiers.CoroutineDispatcher),
+            )
+        }
 
     }
 
@@ -241,6 +262,10 @@ object KoinModules {
         single<LocalEncryptedFolderDataSource> { NotoDatabase.getInstance(androidContext()).encryptedFolderDao }
 
         single<LocalEncryptedNoteDataSource> { NotoDatabase.getInstance(androidContext()).encryptedNoteDao }
+
+        single<LocalEncryptedLabelDataSource> { NotoDatabase.getInstance(androidContext()).encryptedLabelDao }
+
+        single<LocalEncryptedNoteLabelDataSource> { NotoDatabase.getInstance(androidContext()).encryptedNoteLabelDao }
 
     }
 
@@ -349,9 +374,9 @@ object KoinModules {
 
         single<NoteMapper> { NoteMapper(get(), get(), get(), get(), get(), get(), get(), get()) }
 
-        single<LabelMapper> { LabelMapper(get(), get(), get(), get()) }
+        single<LabelMapper> { LabelMapper(get(), get(), get(), get(), get(), get(), get(), get()) }
 
-        single<NoteLabelMapper> { NoteLabelMapper(get(), get(), get(), get()) }
+        single<NoteLabelMapper> { NoteLabelMapper(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         single<PropertyMapper> { PropertyMapper() }
 
