@@ -2,19 +2,22 @@ package com.noto.app.data.database
 
 import android.content.Context
 import androidx.room.*
-import com.noto.app.data.model.local.LocalFolder
-import com.noto.app.data.model.local.LocalLabel
-import com.noto.app.data.model.local.LocalNote
-import com.noto.app.data.model.local.LocalNoteLabel
-import com.noto.app.data.model.local.encrypted.LocalEncryptedFolder
-import com.noto.app.data.model.local.encrypted.LocalEncryptedLabel
-import com.noto.app.data.model.local.encrypted.LocalEncryptedNote
-import com.noto.app.data.model.local.encrypted.LocalEncryptedNoteLabel
-import com.noto.app.data.source.local.*
-import com.noto.app.data.source.local.encrypted.LocalEncryptedFolderDao
-import com.noto.app.data.source.local.encrypted.LocalEncryptedLabelDao
-import com.noto.app.data.source.local.encrypted.LocalEncryptedNoteDao
-import com.noto.app.data.source.local.encrypted.LocalEncryptedNoteLabelDao
+import com.noto.app.data.folder.model.LocalEncryptedFolder
+import com.noto.app.data.folder.model.LocalFolder
+import com.noto.app.data.folder.source.LocalEncryptedFolderDao
+import com.noto.app.data.folder.source.LocalFolderDao
+import com.noto.app.data.label.model.LocalEncryptedLabel
+import com.noto.app.data.label.model.LocalLabel
+import com.noto.app.data.label.source.LocalEncryptedLabelDao
+import com.noto.app.data.label.source.LocalLabelDao
+import com.noto.app.data.note.label.model.LocalEncryptedNoteLabel
+import com.noto.app.data.note.label.model.LocalNoteLabel
+import com.noto.app.data.note.label.source.LocalEncryptedNoteLabelDao
+import com.noto.app.data.note.label.source.LocalNoteLabelDao
+import com.noto.app.data.note.model.LocalEncryptedNote
+import com.noto.app.data.note.model.LocalNote
+import com.noto.app.data.note.source.LocalEncryptedNoteDao
+import com.noto.app.data.note.source.LocalNoteDao
 
 private const val NOTO_DATABASE = "Noto Database"
 

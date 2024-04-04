@@ -2,7 +2,6 @@ package com.noto.app.crypto.key
 
 import android.util.Base64
 import com.noto.app.crypto.salt.SaltGenerator
-import com.noto.app.domain.model.KeyData
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 

@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.noto.app.util.PreviewRecyclerView
+        <com.noto.app.ui.util.PreviewRecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

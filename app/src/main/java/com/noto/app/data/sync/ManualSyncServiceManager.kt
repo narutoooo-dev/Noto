@@ -1,6 +1,9 @@
 package com.noto.app.data.sync
 
-import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.data.folder.FolderSyncService
+import com.noto.app.data.label.LabelSyncService
+import com.noto.app.data.note.NoteSyncService
+import com.noto.app.domain.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext

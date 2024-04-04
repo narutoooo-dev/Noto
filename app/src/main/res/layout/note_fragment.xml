@@ -175,7 +175,7 @@
                     tools:text="Today, 7:30 PM" />
             </LinearLayout>
 
-            <com.noto.app.util.CustomEditText
+            <com.noto.app.ui.util.CustomEditText
                 android:id="@+id/et_note_title"
                 style="@style/NoteTitleEditText"
                 android:autoLink="all"
@@ -189,7 +189,7 @@
                 android:inputType="text|textCapSentences|textMultiLine"
                 tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry." />
 
-            <com.noto.app.util.CustomEditText
+            <com.noto.app.ui.util.CustomEditText
                 android:id="@+id/et_note_body"
                 style="@style/NoteBodyEditText"
                 android:autoLink="all"

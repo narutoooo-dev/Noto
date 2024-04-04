@@ -1,0 +1,58 @@
+package com.noto.app.ui.login
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.fragment.navArgs
+import com.noto.app.R
+import com.noto.app.domain.RegexConstants
+import com.noto.app.ui.component.dialog.BaseDialogFragment
+import com.noto.app.ui.component.dialog.BottomSheetDialog
+import com.noto.app.ui.component.util.Group
+import com.noto.app.ui.settings.SettingsItem
+import com.noto.app.ui.settings.SettingsItemType
+
+class PasswordRequirementsDialogFragment : BaseDialogFragment() {
+
+    private val args by navArgs<PasswordRequirementsDialogFragmentArgs>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? = context?.let { context ->
+        ComposeView(context).apply {
+            setContent {
+                BottomSheetDialog(title = stringResource(id = R.string.password_requirements)) {
+                    Group(modifier = Modifier.fillMaxWidth()) {
+                        PasswordRequirements.entries.forEach { requirement ->
+                            val isValid = remember(requirement) { args.password.matches(requirement.regex) }
+                            SettingsItem(
+                                title = stringResource(id = requirement.titleStringResourceId),
+                                type = SettingsItemType.None,
+                                painter = if (isValid) painterResource(id = R.drawable.ic_round_check_24) else painterResource(id = R.drawable.ic_round_cancel_24),
+                                painterColor = if (isValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private enum class PasswordRequirements(val titleStringResourceId: Int, val regex: Regex) {
+    MinChars(R.string.password_requirement_min_chars, RegexConstants.MinChars),
+    UppercaseChars(R.string.password_requirement_uppercase_chars, RegexConstants.UppercaseChars),
+    LowercaseChars(R.string.password_requirement_lowercase_chars, RegexConstants.LowercaseChars),
+    NumberChars(R.string.password_requirement_number_chars, RegexConstants.NumberChars),
+    SpecialChars(R.string.password_requirement_special_chars, RegexConstants.SpecialChars),
+}

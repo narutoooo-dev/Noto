@@ -1,0 +1,30 @@
+package com.noto.app.data.folder.source
+
+import com.noto.app.data.folder.model.LocalEncryptedFolder
+import kotlinx.coroutines.flow.Flow
+
+interface LocalEncryptedFolderDataSource {
+
+    fun getAllLocalEncryptedFolders(): Flow<List<LocalEncryptedFolder>>
+
+    fun getMainLocalEncryptedFolders(): Flow<List<LocalEncryptedFolder>>
+
+    fun getChildLocalEncryptedFolders(localFolderId: Long): Flow<List<LocalEncryptedFolder>>
+
+    fun getLocalEncryptedFolderById(localFolderId: Long): Flow<LocalEncryptedFolder?>
+
+    fun getLocalEncryptedFolderByRemoteId(remoteFolderId: String): Flow<LocalEncryptedFolder?>
+
+    suspend fun checkIfLocalEncryptedFolderExistsById(localFolderId: Long): Boolean
+
+    suspend fun checkIfLocalEncryptedFolderExistsByRemoteId(remoteFolderId: String): Boolean
+
+    suspend fun createLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder): Long
+
+    suspend fun updateLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder)
+
+    suspend fun deleteLocalEncryptedFolder(localEncryptedFolder: LocalEncryptedFolder)
+
+    suspend fun clearLocalEncryptedFolders()
+
+}

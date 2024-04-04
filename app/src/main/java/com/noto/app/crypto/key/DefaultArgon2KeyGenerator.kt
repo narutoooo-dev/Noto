@@ -1,7 +1,6 @@
 package com.noto.app.crypto.key
 
 import com.noto.app.crypto.salt.SaltGenerator
-import com.noto.app.domain.model.KeyData
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
 
 class DefaultArgon2KeyGenerator(

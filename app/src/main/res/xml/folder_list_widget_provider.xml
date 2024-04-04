@@ -13,6 +13,6 @@
     android:previewImage="@drawable/folder_list_widget_preview"
     android:previewLayout="@layout/folder_list_widget_preview"
     android:initialLayout="@layout/folder_list_widget"
-    android:configure="com.noto.app.widget.FolderListWidgetConfigActivity"
+    android:configure="com.noto.app.widget.folder.FolderListWidgetConfigActivity"
     android:widgetFeatures="reconfigurable"
     tools:targetApi="s" />

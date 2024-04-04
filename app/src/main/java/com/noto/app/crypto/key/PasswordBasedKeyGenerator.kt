@@ -1,6 +1,5 @@
 package com.noto.app.crypto.key
 
-import com.noto.app.domain.model.KeyData
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 

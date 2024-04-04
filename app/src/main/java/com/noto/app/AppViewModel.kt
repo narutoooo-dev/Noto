@@ -2,18 +2,15 @@ package com.noto.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.noto.app.data.sync.FolderSyncService
-import com.noto.app.data.sync.LabelSyncService
+import com.noto.app.data.folder.FolderSyncService
+import com.noto.app.data.label.LabelSyncService
+import com.noto.app.data.note.NoteSyncService
 import com.noto.app.data.sync.ManualSyncServiceManager
-import com.noto.app.data.sync.NoteSyncService
-import com.noto.app.domain.model.*
-import com.noto.app.domain.repository.FolderRepository
-import com.noto.app.domain.repository.NoteRepository
-import com.noto.app.domain.repository.SettingsRepository
-import com.noto.app.util.Constants
-import com.noto.app.util.firstLineOrEmpty
-import com.noto.app.util.isGeneral
-import com.noto.app.util.takeAfterFirstLineOrEmpty
+import com.noto.app.domain.*
+import com.noto.app.domain.folder.FolderRepository
+import com.noto.app.domain.note.Note
+import com.noto.app.domain.note.NoteRepository
+import com.noto.app.domain.settings.SettingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -65,7 +62,7 @@ class AppViewModel(
         .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
     val mainInterfaceId = settingsRepository.mainInterfaceId
-        .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.AllFoldersId)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, FilteredItem.AllFoldersId)
 
     val autoBackupLocation = settingsRepository.autoBackupLocation
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)

@@ -1,7 +1,7 @@
 package com.noto.app.crypto
 
 import com.noto.app.crypto.key.PasswordBasedKeyGenerator
-import com.noto.app.domain.repository.SettingsRepository
+import com.noto.app.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.first
 
 class VaultEncryptionHandler(

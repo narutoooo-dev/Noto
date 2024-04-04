@@ -5,7 +5,7 @@
     app:startDestination="@id/mainFragment">
     <dialog
         android:id="@+id/mainFragment"
-        android:name="com.noto.app.main.MainFragment"
+        android:name="com.noto.app.ui.main.MainFragment"
         android:label="MainFragment">
         <action
             android:id="@+id/action_mainFragment_to_folderFragment"
@@ -44,7 +44,7 @@
     </dialog>
     <fragment
         android:id="@+id/folderFragment"
-        android:name="com.noto.app.folder.FolderFragment"
+        android:name="com.noto.app.ui.folder.FolderFragment"
         android:label="FolderFragment">
         <action
             android:id="@+id/action_folderFragment_to_noteFragment"
@@ -86,7 +86,7 @@
     </fragment>
     <fragment
         android:id="@+id/newFolderFragment"
-        android:name="com.noto.app.folder.NewFolderFragment"
+        android:name="com.noto.app.ui.folder.NewFolderFragment"
         android:label="NewFolderFragment">
         <argument
             android:name="folder_id"
@@ -103,7 +103,7 @@
     </fragment>
     <fragment
         android:id="@+id/noteFragment"
-        android:name="com.noto.app.note.NoteFragment"
+        android:name="com.noto.app.ui.note.NoteFragment"
         android:label="NoteFragment">
         <argument
             android:name="folder_id"
@@ -168,7 +168,7 @@
     </fragment>
     <fragment
         android:id="@+id/folderArchiveFragment"
-        android:name="com.noto.app.folder.FolderArchiveFragment"
+        android:name="com.noto.app.ui.folder.FolderArchiveFragment"
         android:label="FolderArchiveFragment">
         <argument
             android:name="folder_id"
@@ -186,7 +186,7 @@
     </fragment>
     <dialog
         android:id="@+id/noteReminderDialogFragment"
-        android:name="com.noto.app.note.NoteReminderDialogFragment"
+        android:name="com.noto.app.ui.note.NoteReminderDialogFragment"
         android:label="NoteReminderDialogFragment">
         <argument
             android:name="folder_id"
@@ -198,7 +198,7 @@
     </dialog>
     <dialog
         android:id="@+id/noteDialogFragment"
-        android:name="com.noto.app.note.NoteDialogFragment"
+        android:name="com.noto.app.ui.note.NoteDialogFragment"
         android:label="NoteDialogFragment">
         <argument
             android:name="folder_id"
@@ -240,11 +240,11 @@
     </dialog>
     <dialog
         android:id="@+id/themeDialogFragment"
-        android:name="com.noto.app.settings.general.ThemeDialogFragment"
+        android:name="com.noto.app.ui.settings.general.ThemeDialogFragment"
         android:label="ThemeDialogFragment" />
     <dialog
         android:id="@+id/folderDialogFragment"
-        android:name="com.noto.app.folder.FolderDialogFragment"
+        android:name="com.noto.app.ui.folder.FolderDialogFragment"
         android:label="FolderDialogFragment">
         <argument
             android:name="folder_id"
@@ -262,7 +262,7 @@
     </dialog>
     <dialog
         android:id="@+id/confirmationDialogFragment"
-        android:name="com.noto.app.components.dialog.ConfirmationDialogFragment"
+        android:name="com.noto.app.ui.component.dialog.ConfirmationDialogFragment"
         android:label="ConfirmationDialogFragment">
         <argument
             android:name="confirmation"
@@ -290,7 +290,7 @@
     </dialog>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.noto.app.settings.SettingsFragment"
+        android:name="com.noto.app.ui.settings.SettingsFragment"
         android:label="SettingsFragment">
         <action
             android:id="@+id/action_settingsFragment_to_generalSettingsFragment"
@@ -328,7 +328,7 @@
     </fragment>
     <dialog
         android:id="@+id/selectFolderDialogFragment"
-        android:name="com.noto.app.main.SelectFolderDialogFragment"
+        android:name="com.noto.app.ui.main.SelectFolderDialogFragment"
         android:label="SelectFolderDialogFragment">
         <argument
             android:name="filtered_folder_ids"
@@ -376,15 +376,15 @@
     </dialog>
     <dialog
         android:id="@+id/folderListSortingDialogFragment"
-        android:name="com.noto.app.main.FolderListSortingDialogFragment"
+        android:name="com.noto.app.ui.main.FolderListSortingDialogFragment"
         android:label="FolderListSortingDialogFragment" />
     <dialog
         android:id="@+id/fontDialogFragment"
-        android:name="com.noto.app.settings.general.FontDialogFragment"
+        android:name="com.noto.app.ui.settings.general.FontDialogFragment"
         android:label="FontDialogFragment" />
     <dialog
         android:id="@+id/noteListSortingDialogFragment"
-        android:name="com.noto.app.folder.NoteListSortingDialogFragment"
+        android:name="com.noto.app.ui.folder.NoteListSortingDialogFragment"
         android:label="NoteListSortingDialogFragment">
         <argument
             android:name="folder_id"
@@ -392,7 +392,7 @@
     </dialog>
     <dialog
         android:id="@+id/newLabelDialogFragment"
-        android:name="com.noto.app.label.NewLabelDialogFragment"
+        android:name="com.noto.app.ui.label.NewLabelDialogFragment"
         android:label="NewLabelDialogFragment">
         <argument
             android:name="folder_id"
@@ -404,7 +404,7 @@
     </dialog>
     <dialog
         android:id="@+id/labelDialogFragment"
-        android:name="com.noto.app.label.LabelDialogFragment"
+        android:name="com.noto.app.ui.label.LabelDialogFragment"
         android:label="LabelDialogFragment">
         <action
             android:id="@+id/action_labelDialogFragment_to_newLabelDialogFragment"
@@ -429,7 +429,7 @@
     </dialog>
     <dialog
         android:id="@+id/reorderLabelDialogFragment"
-        android:name="com.noto.app.label.ReorderLabelDialogFragment"
+        android:name="com.noto.app.ui.label.ReorderLabelDialogFragment"
         android:label="ReorderLabelDialogFragment">
         <argument
             android:name="folder_id"
@@ -441,7 +441,7 @@
     </dialog>
     <dialog
         android:id="@+id/noteListGroupingDialogFragment"
-        android:name="com.noto.app.folder.NoteListGroupingDialogFragment"
+        android:name="com.noto.app.ui.folder.NoteListGroupingDialogFragment"
         android:label="NoteListGroupingDialogFragment">
         <argument
             android:name="folder_id"
@@ -449,7 +449,7 @@
     </dialog>
     <dialog
         android:id="@+id/noteListViewDialogFragment"
-        android:name="com.noto.app.folder.NoteListViewDialogFragment"
+        android:name="com.noto.app.ui.folder.NoteListViewDialogFragment"
         android:label="noteListViewDialogFragment">
         <argument
             android:name="folder_id"
@@ -469,11 +469,11 @@
     </dialog>
     <dialog
         android:id="@+id/languageDialogFragment"
-        android:name="com.noto.app.settings.general.LanguageDialogFragment"
+        android:name="com.noto.app.ui.settings.general.LanguageDialogFragment"
         android:label="LanguageDialogFragment" />
     <dialog
         android:id="@+id/manualBackupDialogFragment"
-        android:name="com.noto.app.settings.backup.ManualBackupDialogFragment"
+        android:name="com.noto.app.ui.settings.backup.ManualBackupDialogFragment"
         android:label="ManualBackupDialogFragment">
         <action
             android:id="@+id/action_manualBackupDialogFragment_to_progressIndicatorDialogFragment"
@@ -484,7 +484,7 @@
     </dialog>
     <dialog
         android:id="@+id/progressIndicatorDialogFragment"
-        android:name="com.noto.app.components.dialog.ProgressIndicatorDialogFragment"
+        android:name="com.noto.app.ui.component.dialog.ProgressIndicatorDialogFragment"
         android:label="ProgressIndicatorDialogFragment">
         <argument
             android:name="title"
@@ -492,19 +492,19 @@
     </dialog>
     <dialog
         android:id="@+id/vaultPasscodeDialogFragment"
-        android:name="com.noto.app.vault.VaultPasscodeDialogFragment"
+        android:name="com.noto.app.ui.vault.VaultPasscodeDialogFragment"
         android:label="VaultPasscodeDialogFragment" />
     <dialog
         android:id="@+id/vaultTimeoutDialogFragment"
-        android:name="com.noto.app.settings.vault.VaultTimeoutDialogFragment"
+        android:name="com.noto.app.ui.settings.vault.VaultTimeoutDialogFragment"
         android:label="VaultTimeoutDialogFragment" />
     <dialog
         android:id="@+id/whatsNewDialogFragment"
-        android:name="com.noto.app.settings.whatsnew.WhatsNewDialogFragment"
+        android:name="com.noto.app.ui.settings.whatsnew.WhatsNewDialogFragment"
         android:label="WhatsNewDialogFragment" />
     <dialog
         android:id="@+id/undoRedoDialogFragment"
-        android:name="com.noto.app.note.UndoRedoDialogFragment"
+        android:name="com.noto.app.ui.note.UndoRedoDialogFragment"
         android:label="UndoRedoDialogFragment">
         <argument
             android:name="folder_id"
@@ -536,11 +536,11 @@
     </dialog>
     <dialog
         android:id="@+id/iconDialogFragment"
-        android:name="com.noto.app.settings.general.IconDialogFragment"
+        android:name="com.noto.app.ui.settings.general.IconDialogFragment"
         android:label="IconDialogFragment" />
     <fragment
         android:id="@+id/generalSettingsFragment"
-        android:name="com.noto.app.settings.general.GeneralSettingsFragment"
+        android:name="com.noto.app.ui.settings.general.GeneralSettingsFragment"
         android:label="GeneralSettingsFragment">
         <action
             android:id="@+id/action_generalSettingsFragment_to_selectFolderDialogFragment"
@@ -560,7 +560,7 @@
     </fragment>
     <fragment
         android:id="@+id/vaultSettingsFragment"
-        android:name="com.noto.app.settings.vault.VaultSettingsFragment"
+        android:name="com.noto.app.ui.settings.vault.VaultSettingsFragment"
         android:label="VaultSettingsFragment">
         <action
             android:id="@+id/action_vaultSettingsFragment_to_vaultTimeoutDialogFragment"
@@ -574,7 +574,7 @@
     </fragment>
     <fragment
         android:id="@+id/readingModeSettingsFragment"
-        android:name="com.noto.app.settings.readingmode.ReadingModeSettingsFragment"
+        android:name="com.noto.app.ui.settings.readingmode.ReadingModeSettingsFragment"
         android:label="ReadingModeSettingsFragment">
         <action
             android:id="@+id/action_readingModeSettingsFragment_to_screenBrightnessLevelDialogFragment"
@@ -582,7 +582,7 @@
     </fragment>
     <fragment
         android:id="@+id/whatsNewFragment"
-        android:name="com.noto.app.settings.whatsnew.WhatsNewFragment"
+        android:name="com.noto.app.ui.settings.whatsnew.WhatsNewFragment"
         android:label="WhatsNewFragment">
         <action
             android:id="@+id/action_whatsNewFragment_to_releaseFragment"
@@ -590,11 +590,11 @@
     </fragment>
     <dialog
         android:id="@+id/validateVaultPasscodeDialogFragment"
-        android:name="com.noto.app.vault.ValidateVaultPasscodeDialogFragment"
+        android:name="com.noto.app.ui.vault.ValidateVaultPasscodeDialogFragment"
         android:label="ValidateVaultPasscodeDialogFragment" />
     <dialog
         android:id="@+id/noteSelectionDialogFragment"
-        android:name="com.noto.app.note.NoteSelectionDialogFragment"
+        android:name="com.noto.app.ui.note.NoteSelectionDialogFragment"
         android:label="NoteSelectionDialogFragment">
         <argument
             android:name="folder_id"
@@ -617,7 +617,7 @@
     </dialog>
     <fragment
         android:id="@+id/aboutSettingsFragment"
-        android:name="com.noto.app.settings.about.AboutSettingsFragment"
+        android:name="com.noto.app.ui.settings.about.AboutSettingsFragment"
         android:label="AboutSettingsFragment">
         <action
             android:id="@+id/action_aboutSettingsFragment_to_translationsSettingsFragment"
@@ -628,15 +628,15 @@
     </fragment>
     <fragment
         android:id="@+id/translationsSettingsFragment"
-        android:name="com.noto.app.settings.about.TranslationsSettingsFragment"
+        android:name="com.noto.app.ui.settings.about.TranslationsSettingsFragment"
         android:label="TranslationsSettingsFragment" />
     <fragment
         android:id="@+id/creditsSettingsFragment"
-        android:name="com.noto.app.settings.about.CreditsSettingsFragment"
+        android:name="com.noto.app.ui.settings.about.CreditsSettingsFragment"
         android:label="CreditsSettingsFragment" />
     <fragment
         android:id="@+id/notePagerFragment"
-        android:name="com.noto.app.note.NotePagerFragment"
+        android:name="com.noto.app.ui.note.NotePagerFragment"
         android:label="NotePagerFragment">
         <argument
             android:name="folder_id"
@@ -663,11 +663,11 @@
     </fragment>
     <dialog
         android:id="@+id/screenBrightnessLevelDialogFragment"
-        android:name="com.noto.app.settings.readingmode.ScreenBrightnessLevelDialogFragment"
+        android:name="com.noto.app.ui.settings.readingmode.ScreenBrightnessLevelDialogFragment"
         android:label="ScreenBrightnessLevelDialogFragment" />
     <dialog
         android:id="@+id/noteListFilteringDialogFragment"
-        android:name="com.noto.app.folder.NoteListFilteringDialogFragment"
+        android:name="com.noto.app.ui.folder.NoteListFilteringDialogFragment"
         android:label="NoteListFilteringDialogFragment">
         <argument
             android:name="folder_id"
@@ -675,7 +675,7 @@
     </dialog>
     <dialog
         android:id="@+id/noteListOrderingDialogFragment"
-        android:name="com.noto.app.folder.NoteListOrderingDialogFragment"
+        android:name="com.noto.app.ui.folder.NoteListOrderingDialogFragment"
         android:label="NoteListOrderingDialogFragment">
         <argument
             android:name="folder_id"
@@ -686,7 +686,7 @@
     </dialog>
     <dialog
         android:id="@+id/folderListViewDialogFragment"
-        android:name="com.noto.app.main.FolderListViewDialogFragment"
+        android:name="com.noto.app.ui.main.FolderListViewDialogFragment"
         android:label="FolderListViewDialogFragment">
         <action
             android:id="@+id/action_folderListViewDialogFragment_to_folderListOrderingDialogFragment"
@@ -697,15 +697,15 @@
     </dialog>
     <dialog
         android:id="@+id/folderListOrderingDialogFragment"
-        android:name="com.noto.app.main.FolderListOrderingDialogFragment"
+        android:name="com.noto.app.ui.main.FolderListOrderingDialogFragment"
         android:label="FolderListOrderingDialogFragment" />
     <fragment
         android:id="@+id/filteredFragment"
-        android:name="com.noto.app.filtered.FilteredFragment"
+        android:name="com.noto.app.ui.filtered.FilteredFragment"
         android:label="FilteredFragment">
         <argument
             android:name="model"
-            app:argType="com.noto.app.filtered.FilteredItemModel" />
+            app:argType="com.noto.app.domain.FilteredItem" />
         <action
             android:id="@+id/action_filteredFragment_to_selectFolderDialogFragment"
             app:destination="@id/selectFolderDialogFragment" />
@@ -730,11 +730,11 @@
     </fragment>
     <dialog
         android:id="@+id/reportIssueDialogFragment"
-        android:name="com.noto.app.settings.ReportIssueDialogFragment"
+        android:name="com.noto.app.ui.settings.ReportIssueDialogFragment"
         android:label="ReportIssueDialogFragment" />
     <fragment
         android:id="@+id/releaseFragment"
-        android:name="com.noto.app.settings.whatsnew.ReleaseFragment"
+        android:name="com.noto.app.ui.settings.whatsnew.ReleaseFragment"
         android:label="ReleaseFragment">
         <argument
             android:name="release_id"
@@ -763,7 +763,7 @@
         app:destination="@id/mainFragment" />
     <fragment
         android:id="@+id/introFragment"
-        android:name="com.noto.app.intro.IntroFragment"
+        android:name="com.noto.app.ui.intro.IntroFragment"
         android:label="IntroFragment">
         <action
             android:id="@+id/action_introFragment_to_themeDialogFragment"
@@ -780,7 +780,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.noto.app.login.LoginFragment"
+        android:name="com.noto.app.ui.login.LoginFragment"
         android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_progressIndicatorDialogFragment"
@@ -796,7 +796,7 @@
     </fragment>
     <dialog
         android:id="@+id/verifyOtpDialogFragment"
-        android:name="com.noto.app.login.VerifyOtpDialogFragment"
+        android:name="com.noto.app.ui.login.VerifyOtpDialogFragment"
         android:label="VerifyOtpDialogFragment">
         <argument
             android:name="email"
@@ -826,7 +826,7 @@
     </dialog>
     <fragment
         android:id="@+id/startFragment"
-        android:name="com.noto.app.StartFragment"
+        android:name="com.noto.app.ui.StartFragment"
         android:label="StartFragment">
         <action
             android:id="@+id/action_startFragment_to_introFragment"
@@ -837,7 +837,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountSettingsFragment"
-        android:name="com.noto.app.settings.account.AccountSettingsFragment"
+        android:name="com.noto.app.ui.settings.account.AccountSettingsFragment"
         android:label="AccountSettingsFragment">
         <action
             android:id="@+id/action_accountSettingsFragment_to_progressIndicatorDialogFragment"
@@ -860,7 +860,7 @@
     </fragment>
     <dialog
         android:id="@+id/changeEmailDialogFragment"
-        android:name="com.noto.app.settings.account.ChangeEmailDialogFragment"
+        android:name="com.noto.app.ui.settings.account.ChangeEmailDialogFragment"
         android:label="ChangeEmailDialogFragment">
         <action
             android:id="@+id/action_changeEmailDialogFragment_to_progressIndicatorDialogFragment"
@@ -871,7 +871,7 @@
     </dialog>
     <dialog
         android:id="@+id/editNameDialogFragment"
-        android:name="com.noto.app.settings.account.EditNameDialogFragment"
+        android:name="com.noto.app.ui.settings.account.EditNameDialogFragment"
         android:label="EditNameDialogFragment">
         <action
             android:id="@+id/action_editNameDialogFragment_to_progressIndicatorDialogFragment"
@@ -879,7 +879,7 @@
     </dialog>
     <dialog
         android:id="@+id/passwordRequirementsDialogFragment"
-        android:name="com.noto.app.login.PasswordRequirementsDialogFragment"
+        android:name="com.noto.app.ui.login.PasswordRequirementsDialogFragment"
         android:label="PasswordRequirementsDialogFragment">
         <argument
             android:name="password"
@@ -887,7 +887,7 @@
     </dialog>
     <fragment
         android:id="@+id/createAccountFragment"
-        android:name="com.noto.app.login.CreateAccountFragment"
+        android:name="com.noto.app.ui.login.CreateAccountFragment"
         android:label="CreateAccountFragment">
         <action
             android:id="@+id/action_createAccountFragment_to_progressIndicatorDialogFragment"
@@ -909,15 +909,15 @@
         app:destination="@id/progressIndicatorDialogFragment" />
     <dialog
         android:id="@+id/changeVaultPasscodeDialogFragment"
-        android:name="com.noto.app.settings.vault.ChangeVaultPasscodeDialogFragment"
+        android:name="com.noto.app.ui.settings.vault.ChangeVaultPasscodeDialogFragment"
         android:label="ChangeVaultPasscodeDialogFragment" />
     <dialog
         android:id="@+id/autoBackupDurationDialogFragment"
-        android:name="com.noto.app.settings.backup.AutoBackupDurationDialogFragment"
+        android:name="com.noto.app.ui.settings.backup.AutoBackupDurationDialogFragment"
         android:label="AutoBackupDurationDialogFragment" />
     <fragment
         android:id="@+id/localBackupSettingsFragment"
-        android:name="com.noto.app.settings.backup.LocalBackupSettingsFragment"
+        android:name="com.noto.app.ui.settings.backup.LocalBackupSettingsFragment"
         android:label="LocalBackupSettingsFragment" >
         <action
             android:id="@+id/action_localBackupSettingsFragment_to_autoBackupDurationDialogFragment"
@@ -937,18 +937,18 @@
     </fragment>
     <dialog
         android:id="@+id/backupFormatDialogFragment"
-        android:name="com.noto.app.settings.backup.BackupFormatDialogFragment"
+        android:name="com.noto.app.ui.settings.backup.BackupFormatDialogFragment"
         android:label="BackupFormatDialogFragment" >
         <argument
             android:name="selected_format"
-            app:argType="com.noto.app.domain.model.BackupFormat" />
+            app:argType="com.noto.app.domain.BackupFormat" />
         <action
             android:id="@+id/action_backupFormatDialogFragment_to_backupPasscodeDialogFragment"
             app:destination="@id/backupPasscodeDialogFragment" />
     </dialog>
     <dialog
         android:id="@+id/backupPasscodeDialogFragment"
-        android:name="com.noto.app.settings.backup.BackupPasscodeDialogFragment"
+        android:name="com.noto.app.ui.settings.backup.BackupPasscodeDialogFragment"
         android:label="BackupPasscodeDialogFragment" >
         <action
             android:id="@+id/action_backupPasscodeDialogFragment_to_backupPasscodeRequirementsDialogFragment"
@@ -956,7 +956,7 @@
     </dialog>
     <dialog
         android:id="@+id/backupPasscodeRequirementsDialogFragment"
-        android:name="com.noto.app.settings.backup.BackupPasscodeRequirementsDialogFragment"
+        android:name="com.noto.app.ui.settings.backup.BackupPasscodeRequirementsDialogFragment"
         android:label="BackupPasscodeRequirementsDialogFragment" >
         <argument
             android:name="passcode"

@@ -17,15 +17,16 @@ import androidx.lifecycle.eventFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.work.*
-import com.noto.app.components.activity.BaseActivity
 import com.noto.app.data.sync.SyncServiceWorker
 import com.noto.app.databinding.AppActivityBinding
-import com.noto.app.domain.model.*
-import com.noto.app.filtered.FilteredItemModel
-import com.noto.app.main.MainFragment
-import com.noto.app.settings.backup.AutoBackupWorker
-import com.noto.app.util.*
-import com.noto.app.vault.VaultTimeoutWorker
+import com.noto.app.domain.*
+import com.noto.app.domain.folder.Folder
+import com.noto.app.domain.settings.*
+import com.noto.app.ui.component.activity.BaseActivity
+import com.noto.app.ui.main.MainFragment
+import com.noto.app.ui.settings.backup.AutoBackupWorker
+import com.noto.app.ui.util.*
+import com.noto.app.ui.vault.VaultTimeoutWorker
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -37,12 +38,12 @@ import java.util.concurrent.TimeUnit
 
 private val AppIntents = listOf(
     Intent.ACTION_SEND,
-    Constants.Intent.ActionCreateFolder,
-    Constants.Intent.ActionCreateNote,
-    Constants.Intent.ActionOpenFolder,
-    Constants.Intent.ActionOpenNote,
-    Constants.Intent.ActionOpenVault,
-    Constants.Intent.ActionSettings,
+    IntentConstants.ActionCreateFolder,
+    IntentConstants.ActionCreateNote,
+    IntentConstants.ActionOpenFolder,
+    IntentConstants.ActionOpenNote,
+    IntentConstants.ActionOpenVault,
+    IntentConstants.ActionSettings,
 )
 
 private const val SyncServiceWorkerName = "SyncServiceWorker"
@@ -89,13 +90,13 @@ class AppActivity : BaseActivity() {
                     UserStatus.NotLoggedIn, UserStatus.LoggedIn -> {
                         if (intent?.action !in AppIntents) { // Default action (i.e. opening the app from the home screen.)
                             when (val interfaceId = viewModel.mainInterfaceId.value) { // Set the start destination according to user preference.
-                                in FilteredItemModel.Ids -> {
-                                    val model = FilteredItemModel.entries.first { it.id == interfaceId }
+                                in FilteredItem.Ids -> {
+                                    val model = FilteredItem.entries.first { it.id == interfaceId }
                                     val args = bundleOf(Constants.Model to model)
                                     inflateGraphAndSetStartDestination(R.id.filteredFragment, args)
                                 }
 
-                                Constants.AllFoldersId -> { // MainFragment + General folder
+                                FilteredItem.AllFoldersId -> { // MainFragment + General worker
                                     val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
                                     inflateGraphAndSetStartDestination(R.id.folderFragment, args)
                                     if (navController.currentDestination?.id != R.id.mainFragment && viewModel.shouldNavigateToMainFragment) {
@@ -104,14 +105,14 @@ class AppActivity : BaseActivity() {
                                     }
                                 }
 
-                                else -> { // Custom folder
+                                else -> { // Custom worker
                                     val args = bundleOf(Constants.FolderId to interfaceId)
                                     inflateGraphAndSetStartDestination(R.id.folderFragment, args)
                                 }
                             }
                         } else { // Custom action (i.e. opening the app from a shortcut, notification, or another app)
                             val args = bundleOf(Constants.FolderId to Folder.GeneralFolderId)
-                            inflateGraphAndSetStartDestination(R.id.folderFragment, args) // Set the start destination to the General folder.
+                            inflateGraphAndSetStartDestination(R.id.folderFragment, args) // Set the start destination to the General worker.
                         }
                     }
 
@@ -128,12 +129,12 @@ class AppActivity : BaseActivity() {
                 showSelectFolderDialog(content)
             }
 
-            Constants.Intent.ActionCreateFolder -> {
+            IntentConstants.ActionCreateFolder -> {
                 if (navController.currentDestination?.id != R.id.newFolderFragment)
                     navController.navigateSafely(NavGraphDirections.actionGlobalNewFolderFragment())
             }
 
-            Constants.Intent.ActionCreateNote -> {
+            IntentConstants.ActionCreateNote -> {
                 val folderId = intent.getLongExtra(Constants.FolderId, 0)
                 if (folderId == 0L) {
                     showSelectFolderDialog(null)
@@ -152,7 +153,7 @@ class AppActivity : BaseActivity() {
                 }
             }
 
-            Constants.Intent.ActionOpenFolder -> {
+            IntentConstants.ActionOpenFolder -> {
                 val folderId = intent.getLongExtra(Constants.FolderId, 0)
                 navController.navigateSafely(NavGraphDirections.actionGlobalFolderFragment(folderId = folderId)) {
                     popUpTo(R.id.folderFragment) {
@@ -161,7 +162,7 @@ class AppActivity : BaseActivity() {
                 }
             }
 
-            Constants.Intent.ActionOpenNote -> {
+            IntentConstants.ActionOpenNote -> {
                 val folderId = intent.getLongExtra(Constants.FolderId, 0)
                 val noteId = intent.getLongExtra(Constants.NoteId, 0)
                 navController.navigateSafely(NavGraphDirections.actionGlobalFolderFragment(folderId = folderId)) {
@@ -178,12 +179,12 @@ class AppActivity : BaseActivity() {
                 )
             }
 
-            Constants.Intent.ActionOpenVault -> {
+            IntentConstants.ActionOpenVault -> {
                 if (navController.currentDestination?.id != R.id.mainFragment)
                     navController.navigateSafely(NavGraphDirections.actionGlobalMainFragment())
             }
 
-            Constants.Intent.ActionSettings -> {
+            IntentConstants.ActionSettings -> {
                 if (navController.currentDestination?.id != R.id.settingsFragment)
                     navController.navigateSafely(NavGraphDirections.actionGlobalSettingsFragment())
             }

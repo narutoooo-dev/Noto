@@ -1,9 +1,9 @@
 package com.noto.app.data
 
-import com.noto.app.data.model.mapper.FolderMapper
-import com.noto.app.domain.model.Folder
-import com.noto.app.domain.source.local.LocalFolderDataSource
-import com.noto.app.domain.source.remote.RemoteFolderDataSource
+import com.noto.app.data.folder.FolderMapper
+import com.noto.app.data.folder.source.LocalFolderDataSource
+import com.noto.app.data.folder.source.RemoteFolderDataSource
+import com.noto.app.domain.folder.Folder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 

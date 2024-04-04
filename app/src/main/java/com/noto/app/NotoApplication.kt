@@ -1,7 +1,7 @@
 package com.noto.app
 
 import android.app.Application
-import com.noto.app.util.KoinModules
+import com.noto.app.di.KoinModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

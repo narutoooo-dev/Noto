@@ -52,7 +52,7 @@
         </activity>
 
         <activity
-            android:name=".components.activity.TransparentActivity"
+            android:name=".ui.component.activity.TransparentActivity"
             android:exported="true"
             android:theme="@style/TransparentTheme">
 
@@ -315,14 +315,14 @@
         </activity-alias>
 
         <activity
-            android:name=".widget.FolderListWidgetConfigActivity"
+            android:name=".widget.folder.FolderListWidgetConfigActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".widget.NoteListWidgetConfigActivity"
+            android:name=".widget.note.NoteListWidgetConfigActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -330,12 +330,12 @@
         </activity>
 
         <receiver
-            android:name=".note.NoteReminderReceiver"
+            android:name=".ui.note.NoteReminderReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <receiver
-            android:name=".widget.FolderListWidgetProvider"
+            android:name=".widget.folder.FolderListWidgetProvider"
             android:exported="true"
             android:label="@string/folders">
 
@@ -349,11 +349,11 @@
         </receiver>
 
         <service
-            android:name=".widget.FolderListWidgetService"
+            android:name=".widget.folder.FolderListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver
-            android:name=".widget.NoteListWidgetProvider"
+            android:name=".widget.note.NoteListWidgetProvider"
             android:exported="true"
             android:label="@string/notes">
             <intent-filter>
@@ -366,16 +366,16 @@
         </receiver>
 
         <service
-            android:name=".widget.NoteListWidgetService"
+            android:name=".widget.note.NoteListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver
-            android:name=".vault.VaultReceiver"
+            android:name=".ui.vault.VaultReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <service
-            android:name=".note.QuickNoteTileService"
+            android:name=".ui.note.QuickNoteTileService"
             android:exported="true"
             android:icon="@drawable/ic_round_edit_24"
             android:label="@string/quick_note"

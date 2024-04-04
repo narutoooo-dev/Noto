@@ -1,0 +1,72 @@
+package com.noto.app.widget.note
+
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.Context
+import com.noto.app.domain.folder.FolderRepository
+import com.noto.app.domain.label.LabelRepository
+import com.noto.app.domain.note.NoteRepository
+import com.noto.app.domain.settings.SettingsRepository
+import com.noto.app.ui.folder.NoteItemModel
+import com.noto.app.ui.util.Comparator
+import com.noto.app.ui.util.filterByLabels
+import com.noto.app.ui.util.mapToNoteItemModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+class NoteListWidgetProvider : AppWidgetProvider(), KoinComponent {
+
+    private val folderRepository by inject<FolderRepository>()
+    private val noteRepository by inject<NoteRepository>()
+    private val labelRepository by inject<LabelRepository>()
+    private val settingsRepository by inject<SettingsRepository>()
+
+    override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager?, appWidgetIds: IntArray?) {
+        val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+        appWidgetIds?.forEach { appWidgetId ->
+            coroutineScope.launch {
+                val folderId = settingsRepository.getWidgetFolderId(appWidgetId).filter { it != 0L }.first()
+                val folder = folderRepository.getFolderById(folderId).first()
+                val filteringType = settingsRepository.getWidgetFilteringType(appWidgetId)
+                    .filterNotNull()
+                    .first()
+                val labels = labelRepository.getLabelsByFolderId(folderId)
+                    .filterNotNull()
+                    .first()
+                val labelIds = settingsRepository.getWidgetSelectedLabelIds(appWidgetId, folderId).first()
+                val selectedLabels = labels.filter { it.id in labelIds }
+                val isEmpty = noteRepository.getMainNotesByFolderId(folderId)
+                    .filterNotNull()
+                    .map {
+                        it.mapToNoteItemModel()
+                            .filterByLabels(selectedLabels, filteringType)
+                            .sortedWith(NoteItemModel.Comparator(folder.sortingOrder, folder.sortingType))
+                            .sortedByDescending { it.note.isPinned }
+                    }
+                    .first()
+                    .isEmpty()
+                val remoteViews = context?.createNoteListWidgetRemoteViews(
+                    appWidgetId,
+                    settingsRepository.getIsWidgetHeaderEnabled(appWidgetId).first(),
+                    settingsRepository.getIsWidgetEditButtonEnabled(appWidgetId).first(),
+                    settingsRepository.getIsWidgetAppIconEnabled(appWidgetId).first(),
+                    settingsRepository.getIsWidgetNewItemButtonEnabled(appWidgetId).first(),
+                    settingsRepository.getWidgetRadius(appWidgetId).first(),
+                    folder,
+                    isEmpty,
+                    noteRepository.getMainNotesByFolderId(folderId).first().isEmpty(),
+                    settingsRepository.icon.first(),
+                )
+                appWidgetManager?.updateAppWidget(appWidgetId, remoteViews)
+            }
+        }
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+    }
+}

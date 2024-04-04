@@ -13,6 +13,6 @@
     android:previewImage="@drawable/note_list_widget_preview"
     android:previewLayout="@layout/note_list_widget_preview"
     android:initialLayout="@layout/note_list_widget"
-    android:configure="com.noto.app.widget.NoteListWidgetConfigActivity"
+    android:configure="com.noto.app.widget.note.NoteListWidgetConfigActivity"
     android:widgetFeatures="reconfigurable"
     tools:targetApi="s" />
