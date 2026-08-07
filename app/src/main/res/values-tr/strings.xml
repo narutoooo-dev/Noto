@@ -614,7 +614,7 @@
     <string name="bold">Kalın</string>
     <string name="italic">İtalik</string>
     <string name="heading">Başlık</string>
-    <string name="list">Liste</string>
+    <string name="md_list">Liste</string>
     <string name="quote">Alıntı</string>
     <string name="code">Kod</string>
     <string name="preview">Önizleme</string>
