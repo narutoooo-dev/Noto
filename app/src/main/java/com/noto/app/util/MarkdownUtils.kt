@@ -163,7 +163,7 @@ object MarkdownUtils {
         content: String,
         accentColor: NotoColor,
     ): String {
-        // تحويل اللون إلى كود Hex
+        // استخدام else للتعامل مع جميع الألوان
         val accentHex = when (accentColor) {
             NotoColor.Red -> "#E53935"
             NotoColor.Pink -> "#D81B60"
@@ -183,8 +183,7 @@ object MarkdownUtils {
             NotoColor.Gray -> "#757575"
             NotoColor.BlueGray -> "#546E7A"
             NotoColor.Black -> "#000000"
-            NotoColor.White -> "#FFFFFF"
-            // إذا لم يتم التعرف على اللون، استخدم اللون الأزرق كافتراضي
+            // أي لون غير معروف سيستخدم اللون الأزرق كافتراضي
             else -> "#1E88E5"
         }
 
