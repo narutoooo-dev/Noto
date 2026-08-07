@@ -618,5 +618,5 @@
     <string name="quote">Alıntı</string>
     <string name="code">Kod</string>
     <string name="preview">Önizleme</string>
-    <string name="edit">Düzenle</string>
+    <string name="md_edit">Düzenle</string>
 </resources>
