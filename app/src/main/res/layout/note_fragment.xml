@@ -259,7 +259,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_format_list"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/list" />
+                    android:contentDescription="@string/md_list" />
 
                 <ImageButton
                     android:id="@+id/md_quote"
