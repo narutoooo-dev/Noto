@@ -125,7 +125,6 @@
         android:animateLayoutChanges="true"
         android:overScrollMode="never"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-        <!--        app:layout_behavior="com.noto.app.util.BounceScrollingViewBehavior">-->
 
         <LinearLayout
             android:id="@+id/ll"
@@ -195,7 +194,8 @@
                 android:autoLink="all"
                 android:linksClickable="true"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:layout_marginHorizontal="@dimen/spacing_normal"
                 android:layout_marginTop="@dimen/spacing_small"
                 android:layout_marginBottom="@dimen/spacing_normal"
@@ -206,6 +206,101 @@
                 android:inputType="text|textCapSentences|textMultiLine"
                 android:textColor="?attr/notoPrimaryColor"
                 tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry." />
+
+            <!-- Markdown Toolbar -->
+            <LinearLayout
+                android:id="@+id/ll_markdown_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_normal"
+                android:paddingVertical="@dimen/spacing_small"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:background="?attr/notoSurfaceColor"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+                <ImageButton
+                    android:id="@+id/md_bold"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_format_bold"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/bold" />
+
+                <ImageButton
+                    android:id="@+id/md_italic"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_format_italic"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/italic" />
+
+                <ImageButton
+                    android:id="@+id/md_heading"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_format_header"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/heading" />
+
+                <ImageButton
+                    android:id="@+id/md_list"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_format_list"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/list" />
+
+                <ImageButton
+                    android:id="@+id/md_quote"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_format_quote"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/quote" />
+
+                <ImageButton
+                    android:id="@+id/md_code"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_code"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/code" />
+
+                <ImageButton
+                    android:id="@+id/md_preview"
+                    style="@style/ClickableView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_round_preview_24"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/preview" />
+            </LinearLayout>
+
+            <!-- WebView for Markdown Preview -->
+            <WebView
+                android:id="@+id/wv_preview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:background="?attr/notoBackgroundColor"
+                tools:visibility="visible" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_created_at"
