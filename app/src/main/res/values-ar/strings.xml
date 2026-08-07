@@ -702,7 +702,7 @@
     <string name="bold">غامق</string>
     <string name="italic">مائل</string>
     <string name="heading">عنوان</string>
-    <string name="list">قائمة</string>
+    <string name="md_list">قائمة</string>
     <string name="quote">اقتباس</string>
     <string name="code">كود</string>
     <string name="preview">معاينة</string>
