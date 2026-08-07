@@ -698,4 +698,13 @@
     <string name="release_2_3_0_quick_note">إصلاح حوارات متعددة يتم فتحها عند إنشاء ملاحظة سريعة.</string>
     <string name="release_2_3_1_languages">دعم الكورية.</string>
     <string name="release_2_3_1_auto_scroll">تحسين السحب التلقائي عند كتابة الملاحظات.</string>
+    <!-- Markdown Toolbar -->
+    <string name="bold">غامق</string>
+    <string name="italic">مائل</string>
+    <string name="heading">عنوان</string>
+    <string name="md_list">قائمة</string>
+    <string name="quote">اقتباس</string>
+    <string name="code">كود</string>
+    <string name="preview">معاينة</string>
+    <string name="md_edit">تحرير</string>
 </resources>

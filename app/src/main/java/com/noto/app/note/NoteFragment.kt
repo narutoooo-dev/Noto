@@ -25,6 +25,7 @@ import com.noto.app.domain.model.NotoColor
 import com.noto.app.label.labelItem
 import com.noto.app.label.newLabelItem
 import com.noto.app.util.*
+import com.noto.app.util.MarkdownUtils
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,12 +38,15 @@ class NoteFragment : Fragment() {
     private val args by navArgs<NoteFragmentArgs>()
 
     private val noteBodyOnFocusCompositeListener = OnFocusChangedCompositeListener()
+    
+    private var isEditMode = true
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         NoteFragmentBinding.inflate(inflater, container, false).withBinding {
             setupMixedTransitions()
             setupState()
             setupListeners()
+            setupMarkdownToolbar()
         }
 
     @Suppress("UNCHECKED_CAST")
@@ -446,6 +450,17 @@ class NoteFragment : Fragment() {
                 viewModel.setIsUndoOrRedo()
                 viewModel.setNoteBody(body)
             }
+            
+        // Markdown preview - observe body changes
+        etNoteBody.textAsFlow(emitInitialText = true)
+            .filterNotNull()
+            .map { it.toString() }
+            .onEach { body ->
+                if (!isEditMode) {
+                    renderMarkdown(body)
+                }
+            }
+            .launchIn(lifecycleScope)
     }
 
     private fun NoteFragmentBinding.enableBottomAppBarActions() {
@@ -947,6 +962,82 @@ class NoteFragment : Fragment() {
     private fun List<Triple<Int, Int, String>>.subListNew(currentText: String): List<Triple<Int, Int, String>> {
         val indexOfCurrentText = indexOfFirst { it.third == currentText }
         return subList(indexOfCurrentText, size)
+    }
+    
+    // ==================== MARKDOWN FEATURES ====================
+    
+    private fun NoteFragmentBinding.setupMarkdownToolbar() {
+        // Mode toggle - Edit/Preview
+        mdPreview.setOnClickListener {
+            if (isEditMode) {
+                // Switch to Preview mode
+                isEditMode = false
+                switchToPreviewMode()
+            } else {
+                // Switch to Edit mode
+                isEditMode = true
+                switchToEditMode()
+            }
+        }
+        
+        // Markdown formatting buttons
+        mdBold.setOnClickListener { insertMarkdown("**", "**") }
+        mdItalic.setOnClickListener { insertMarkdown("*", "*") }
+        mdHeading.setOnClickListener { insertMarkdown("## ", "") }
+        mdList.setOnClickListener { insertMarkdown("- ", "") }
+        mdQuote.setOnClickListener { insertMarkdown("> ", "") }
+        mdCode.setOnClickListener { insertMarkdown("`", "`") }
+    }
+    
+    private fun NoteFragmentBinding.switchToEditMode() {
+        isEditMode = true
+        etNoteBody.visibility = View.VISIBLE
+        wvPreview.visibility = View.GONE
+        mdPreview.setImageResource(R.drawable.ic_round_preview_24)
+    }
+    
+    private fun NoteFragmentBinding.switchToPreviewMode() {
+        isEditMode = false
+        etNoteBody.visibility = View.GONE
+        wvPreview.visibility = View.VISIBLE
+        mdPreview.setImageResource(R.drawable.ic_round_edit_24)
+        
+        // Render markdown
+        val body = etNoteBody.text.toString()
+        renderMarkdown(body)
+    }
+    
+    private fun NoteFragmentBinding.renderMarkdown(body: String) {
+        val html = MarkdownUtils.markdownToHtml(body)
+        val title = etNoteTitle.text.toString()
+        val accentColor = viewModel.folder.value.color
+        
+        val fullHtml = MarkdownUtils.buildHtmlDocument(
+            title = title,
+            content = html,
+            accentColor = accentColor
+        )
+        
+        wvPreview.loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
+    }
+    
+    private fun NoteFragmentBinding.insertMarkdown(prefix: String, suffix: String) {
+        val start = etNoteBody.selectionStart
+        val end = etNoteBody.selectionEnd
+        val selected = etNoteBody.text?.substring(start, end) ?: ""
+        val insert = prefix + (selected.ifEmpty { "text" }) + suffix
+        etNoteBody.text?.replace(start, end, insert)
+        
+        if (selected.isEmpty()) {
+            etNoteBody.setSelection(start + prefix.length, start + prefix.length + 4)
+        }
+        
+        // Auto-save after inserting markdown
+        viewModel.createOrUpdateNote(
+            etNoteTitle.text.toString(),
+            etNoteBody.text.toString(),
+            trimContent = false
+        )
     }
 }
 
