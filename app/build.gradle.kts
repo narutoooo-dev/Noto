@@ -34,13 +34,23 @@ android {
 
     signingConfigs {
         create("release") {
+            // استخدام debug keystore افتراضياً في حالة عدم وجود local.properties
             val properties = Properties().apply {
-                load(project.rootProject.file("local.properties").inputStream())
+                try {
+                    val file = project.rootProject.file("local.properties")
+                    if (file.exists()) {
+                        load(file.inputStream())
+                    }
+                } catch (e: Exception) {
+                    // تجاهل الخطأ واستخدم القيم الافتراضية
+                }
             }
-            storeFile = file(properties["store.file"] as String)
-            storePassword = properties["store.password"] as String
-            keyAlias = properties["key.alias"] as String
-            keyPassword = properties["key.password"] as String
+            
+            // استخدام قيم افتراضية للبناء في CI
+            storeFile = file(properties.getProperty("store.file", "debug.keystore"))
+            storePassword = properties.getProperty("store.password", "android")
+            keyAlias = properties.getProperty("key.alias", "androiddebugkey")
+            keyPassword = properties.getProperty("key.password", "android")
         }
     }
 
