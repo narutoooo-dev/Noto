@@ -699,4 +699,14 @@
 
     <string name="release_2_3_2" translatable="false">@string/release_bug_fixes_and_design_improvements</string>
 
+    <!-- Markdown Toolbar -->
+    <string name="bold">Bold</string>
+    <string name="italic">Italic</string>
+    <string name="heading">Heading</string>
+    <string name="list">List</string>
+    <string name="quote">Quote</string>
+    <string name="code">Code</string>
+    <string name="preview">Preview</string>
+    <string name="edit">Edit</string>
+
 </resources>
