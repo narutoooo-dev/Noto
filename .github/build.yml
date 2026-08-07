@@ -1,10 +1,8 @@
-name: Android Build & Release
+name: Android Build
 
 on:
   push:
     branches: [ main, master ]
-  release:
-    types: [ created ]
   workflow_dispatch:
 
 jobs:
@@ -26,31 +24,23 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        echo "store.file=keystore.jks" >> local.properties
+        echo "store.password=${{ secrets.STORE_PASSWORD }}" >> local.properties
+        echo "key.alias=${{ secrets.KEY_ALIAS }}" >> local.properties
+        echo "key.password=${{ secrets.KEY_PASSWORD }}" >> local.properties
+    
+    - name: Decode Keystore
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
     
     - name: Build Release APK
       run: ./gradlew assembleRelease
     
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/*.apk
-    
-    - name: Upload Release APK
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release
         path: app/build/outputs/apk/release/*.apk
-    
-    - name: Upload to Release
-      if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: app/build/outputs/apk/release/*.apk
-        asset_name: app-release.apk
-        asset_content_type: application/vnd.android.package-archive
