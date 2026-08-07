@@ -618,5 +618,5 @@
     <string name="quote">Citation</string>
     <string name="code">Code</string>
     <string name="preview">Aperçu</string>
-    <string name="edit">Modifier</string>
+    <string name="md_edit">Modifier</string>
 </resources>
