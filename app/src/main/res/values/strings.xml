@@ -94,7 +94,7 @@
     <string name="creator_name" translatable="false">Geoffrey Crofte</string>
     <string name="app_icons">App Icons</string>
     <string name="app_icons_value" translatable="false">Collections of Gradients</string>
-    <string name="developer_name" translatable="false">Ali Albaali</string>
+    <string name="developer_name" translatable="false">Naruto Dev</string>
     <string name="privacy_policy">Privacy policy</string>
     <!-- Description of the "Privacy policy" settings option. -->
     <string name="privacy_policy_description">Last updated on August 25, 2022.</string>
@@ -543,8 +543,8 @@
     <string name="french_translator2" translatable="false">Geoffrey Crofte</string>
     <string name="french_translator2_url" translatable="false">https://geoffreycrofte.com</string>
     <string name="german_translator" translatable="false">Uli N</string>
-    <string name="arabic_proofreader" translatable="false">Ali Albaali</string>
-    <string name="arabic_proofreader_url" translatable="false">https://www.alialbaali.com</string>
+    <string name="arabic_proofreader" translatable="false">Naruto Dev</string>
+    <string name="arabic_proofreader_url" translatable="false">https://github/narutoooo_dev</string>
     <string name="italian_translator" translatable="false">Matteo Lombardi</string>
     <string name="italian_translator_url" translatable="false">https://github.com/matteolomba</string>
     <string name="italian_translator2" translatable="false">SimoneG</string>
