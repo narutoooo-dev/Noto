@@ -703,7 +703,7 @@
     <string name="bold">Bold</string>
     <string name="italic">Italic</string>
     <string name="heading">Heading</string>
-    <string name="list">List</string>
+    <string name="md_list">List</string>
     <string name="quote">Quote</string>
     <string name="code">Code</string>
     <string name="preview">Preview</string>
