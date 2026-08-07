@@ -707,6 +707,6 @@
     <string name="quote">Quote</string>
     <string name="code">Code</string>
     <string name="preview">Preview</string>
-    <string name="edit">Edit</string>
+    <string name="md_edit">Edit</string>
 
 </resources>
