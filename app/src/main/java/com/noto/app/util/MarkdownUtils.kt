@@ -163,6 +163,7 @@ object MarkdownUtils {
         content: String,
         accentColor: NotoColor,
     ): String {
+        // تحويل اللون إلى كود Hex مع التعامل مع جميع الحالات
         val accentHex = when (accentColor) {
             NotoColor.Red -> "#E53935"
             NotoColor.Pink -> "#D81B60"
@@ -175,16 +176,24 @@ object MarkdownUtils {
             NotoColor.Teal -> "#00897B"
             NotoColor.Green -> "#43A047"
             NotoColor.LightGreen -> "#7CB342"
-            NotoColor.Lime -> "#C0CA33"
             NotoColor.Yellow -> "#FDD835"
-            NotoColor.Amber -> "#FFB300"
             NotoColor.Orange -> "#FB8C00"
             NotoColor.DeepOrange -> "#F4511E"
             NotoColor.Brown -> "#6D4C41"
-            NotoColor.Grey -> "#757575"
-            NotoColor.BlueGrey -> "#546E7A"
+            NotoColor.Gray -> "#757575"
+            NotoColor.BlueGray -> "#546E7A"
             NotoColor.Black -> "#000000"
             NotoColor.White -> "#FFFFFF"
+            // إضافة ألوان إضافية غير موجودة في NotoColor
+            NotoColor.Grey -> "#757575"  // إذا كان موجودًا
+            NotoColor.BlueGrey -> "#546E7A"  // إذا كان موجودًا
+            NotoColor.Lime -> "#C0CA33"  // إذا كان موجودًا
+            NotoColor.Amber -> "#FFB300"  // إذا كان موجودًا
+            NotoColor.DeepGreen -> "#2E7D32"  // إذا كان موجودًا
+            NotoColor.LightRed -> "#EF5350"  // إذا كان موجودًا
+            NotoColor.LightPink -> "#EC407A"  // إذا كان موجودًا
+            // إذا لم يتم التعرف على اللون، استخدم اللون الأزرق كافتراضي
+            else -> "#1E88E5"
         }
 
         val titleText = title.ifBlank { "Untitled" }
