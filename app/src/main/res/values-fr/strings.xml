@@ -610,4 +610,13 @@
     <string name="release_2_3_0_quick_note">Correction de l\'ouverture de plusieurs fenêtres de dialogue lors de la création d\'une note rapide.</string>
     <string name="release_2_3_1_languages">Supported Korean.</string>
     <string name="release_2_3_1_auto_scroll">Improved auto-scroll when writing notes.</string>
+    <!-- Markdown Toolbar -->
+    <string name="bold">Gras</string>
+    <string name="italic">Italique</string>
+    <string name="heading">Titre</string>
+    <string name="list">Liste</string>
+    <string name="quote">Citation</string>
+    <string name="code">Code</string>
+    <string name="preview">Aperçu</string>
+    <string name="edit">Modifier</string>
 </resources>
